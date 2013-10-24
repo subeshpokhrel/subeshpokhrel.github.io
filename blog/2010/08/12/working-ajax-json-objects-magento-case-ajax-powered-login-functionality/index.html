@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Working with Ajax and JSON Objects in Magento [Case: Ajax Powered Login Functionality] - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Previously I have written about Working With Ajax in Magento. And after a huge response I received from that post I was compelled to write more on &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/08/12/working-ajax-json-objects-magento-case-ajax-powered-login-functionality">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Working With Ajax and JSON Objects in Magento [Case: Ajax Powered Login Functionality]</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-12T00:00:00+05:45" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Previously I have written about <a href="http://subesh.com.np/2009/11/working-with-ajax-in-magento/">Working With Ajax in Magento</a>. And after a huge response I received from that post I was compelled to write more on implementing Ajax in Magento. And this time I want to say additionally about handling JSON (<strong>JavaScript Object Notation</strong>) along with Ajax, within the Magento enviornment. JSON Objects and Ajax can be very helpful technique to get the work done. You can learn about JSON from <a href="http://www.json.org/">Here</a>.
+
+I will try to describe this issue by taking a case of changing the Magento&#8217;s login functionality to a Ajax powered login functionality. So after this you will be able to implement a login function in a pop-up div in any page, unlike the default Magento&#8217;s seperate login page. I will leave the pop-up div part to you and get started with the real business (AJAX and JSON).
+
+Presuming that you will use <strong>Mini-Login</strong> form. Here is how you proceed.
+<ol>
+	<li>Change Submit type button to Button type button.</li>
+	<li>Register OnClick Javascript event of that button and its Handler</li>
+	<li>In the Handler function call Ajax Request for login</li>
+	<li>Show Error Message or redirect to customer Dashboard</li>
+</ol>
+Your mini.login.phtml should be like this
+
+[source language=&#8221;html&#8221;]
+&lt;form action=&quot;&lt;?php //echo $this-&gt;getPostActionUrl() ?&gt;&quot; id=&quot;mini-login-form&quot; method=&quot;post&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__(&#8216;Email&#8217;) ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[username]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__(&#8216;Password&#8217;) ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[password]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;input type=&quot;button&quot; onClick=&quot;handlerFunction()&quot; value=&quot;&lt;?php echo $this-&gt;__(&#8216;Login&#8217;) ?&gt;&quot; /&gt;&lt;/p&gt;
+    &lt;/fieldset&gt;
+&lt;/form&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;!&#8211;
+function handlerFunction(){
+
+// Write These codes only after form Validation
+
+// Making Ajax Request
+		var request = new Ajax.Request(
+			//Defining Ajax Request URL, We are calling custom Controller Ns_Mylogin_AccountController Class (Defined Below)
+        	&#8216;&lt;?php echo $this-&gt;getUrl(&quot;mylogin/account/loginPost&quot;) ?&gt;&#8217;,
+           	{
+            	method: &#8216;post&#8217;,
+                onComplete: function(transport){ // Defining Complete Callback Function
+
+                	// Getting Ajax Response Text Which is JSON Object
+                	var jsonResponse=transport.responseText;
+                	//Checking JSON Objects property and performing related action
+                	// You will understand the response Text format after going through the controller description (Below)
+                	if(jsonResponse.error){
+                		alert(&quot;Error Occured&quot;);
+						return false;
+                	}
+                	else{
+                		window.location.href=jsonResponse.url;
+                	}
+                },
+                parameters: Form.serialize($(&quot;mini-login-form&quot;))	// Seriallizing the form input values
+        	}
+        );
+}
+//&#8211;&gt;
+&lt;/script&gt;
+[/source]
+
+Please see inline comments for better understanding. Now our next set should be setting up our custom controller. I&#8217;ll not get into details of setting up modules and all but directly to our controller class <strong>Ns_Mylogin_AccountController</strong>. What I&#8217;ve done is just taken the core&#8217;s  <strong>loginPostAction </strong>function of <strong>Mage_Customer_AccountController</strong> and added some codes there. Please see there is a comment on each line added apart from the default Magento&#8217;s core code.
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+require_once(&quot;Mage/Customer/controllers/AccountController.php&quot;);
+class Ns_Mylogin_AccountController extends Mage_Customer_AccountController{
+	/**
+	 * Login post action
+	 * @return JSON Object
+	 */
+	public function loginPostAction()
+	{
+		// Added Line #1
+		$result[&quot;error&quot;]=0;
+
+		$session = $this-&gt;_getSession();
+
+		if ($this-&gt;getRequest()-&gt;isPost()) {
+			$login = $this-&gt;getRequest()-&gt;getPost(&#8216;login&#8217;);
+			if (!empty($login[&#8216;username&#8217;]) &amp;amp;&amp;amp; !empty($login[&#8216;password&#8217;])) {
+				try {
+					$session-&gt;login($login[&#8216;username&#8217;], $login[&#8216;password&#8217;]);
+					if ($session-&gt;getCustomer()-&gt;getIsJustConfirmed()) {
+						$this-&gt;_welcomeCustomer($session-&gt;getCustomer(), true);
+					}
+				} catch (Mage_Core_Exception $e) {
+					switch ($e-&gt;getCode()) {
+						case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
+							//Added Line #2
+							$result[&quot;error&quot;]=1;
+							$message = Mage::helper(&#8216;customer&#8217;)-&gt;__(&#8216;This account is not confirmed. &lt;a href=&quot;%s&quot;&gt;Click here&lt;/a&gt; to resend confirmation email.&#8217;, 						Mage::helper(&#8216;customer&#8217;)-&gt;getEmailConfirmationUrl($login[&#8216;username&#8217;]));
+							break;
+						case Mage_Customer_Model_Customer::EXCEPTION_INVALID_EMAIL_OR_PASSWORD:
+							//Added Line #3
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+							break;
+						default:
+							//Added Line #4
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+					}
+					$session-&gt;addError($message);
+					$session-&gt;setUsername($login[&#8216;username&#8217;]);
+				} catch (Exception $e) {
+					// Mage::logException($e); // PA DSS violation: this exception log can disclose customer password
+				}
+			} else {
+				//Added Line #5
+				$result[&quot;error&quot;]=1;
+				$session-&gt;addError($this-&gt;__(&#8216;Login and password are required&#8217;));
+				//Added Line #6
+				$this-&gt;getResponse()-&gt;setBody(Mage::helper(&#8216;core&#8217;)-&gt;jsonEncode($result));
+			}
+		}
+		//Added Line #7
+		$result[&quot;url&quot;]=$this-&gt;_loginPostRedirect();
+		//Added Line #8
+		$this-&gt;getResponse()-&gt;setBody(Mage::helper(&#8216;core&#8217;)-&gt;jsonEncode($result));
+	}
+[/source]
+
+What I&#8217;ve done is added an array <strong>$result</strong> that will hold value if there is error or not while processing the user&#8217;s request. If there is error that array will hold $result[&#8216;error&#8217;]=1 else it will be as initiallized in <em>Added Line #1</em>. From <em>Added Line #2</em> through <em>Added Line #5</em>, we have various condition to check for error and set our <strong>$result</strong> variable.
+
+On <em>Added Line #7</em> we have called another function (which we we rewrite as well) that will give us the url location identifying which location should be redirect after successful login. The implementation of function is given below. Finally in <em>Added Line #8</em> and <em>Line #6</em> we have encoded our $result array into <strong>JSON</strong> format and send as the response.
+
+For visuallization our $result array will be one of the following.
+<ol>
+	<li> Case (No Error) : $result[&#8220;error&#8221;]=0; $result[&#8220;url&#8221;]=&#8221;SOME Redirect URL&#8221;</li>
+	<li> Case (Error) 	 :	$result[&#8220;error&#8221;]=1;</li>
+</ol>
+This JSON encoded response will be then used by the ajax call back function defined and perform related action.
+
+Here&#8217;s the <strong>_loginPostRedirect()</strong> function which I mentioned (Added Line #7).
+
+[source language=&#8221;php&#8221;]
+/**
+	 * Define target URL and redirect customer after logging in
+	 */
+	protected function _loginPostRedirect()
+	{
+		$session = $this-&gt;_getSession();
+
+		if (!$session-&gt;getBeforeAuthUrl() || $session-&gt;getBeforeAuthUrl() == Mage::getBaseUrl() ) {
+
+			// Set default URL to redirect customer to
+			$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getAccountUrl());
+
+			// Redirect customer to the last page visited after logging in
+			if ($session-&gt;isLoggedIn())
+			{
+				if (!Mage::getStoreConfigFlag(&#8216;customer/startup/redirect_dashboard&#8217;)) {
+					if ($referer = $this-&gt;getRequest()-&gt;getParam(Mage_Customer_Helper_Data::REFERER_QUERY_PARAM_NAME)) {
+						$referer = Mage::helper(&#8216;core&#8217;)-&gt;urlDecode($referer);
+						if ($this-&gt;_isUrlInternal($referer)) {
+							$session-&gt;setBeforeAuthUrl($referer);
+						}
+					}
+				}
+				else if ($session-&gt;getAfterAuthUrl()) {
+					$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+				}
+			} else {
+				$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getLoginUrl());
+			}
+		} else if ($session-&gt;getBeforeAuthUrl() == Mage::helper(&#8216;customer&#8217;)-&gt;getLogoutUrl()) {
+			$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getDashboardUrl());
+		}
+		else {
+			if (!$session-&gt;getAfterAuthUrl()) {
+				$session-&gt;setAfterAuthUrl($session-&gt;getBeforeAuthUrl());
+			}
+			if ($session-&gt;isLoggedIn()) {
+				$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+			}
+		}
+		// Changed Here
+		return $session-&gt;getBeforeAuthUrl(true);
+	}
+[/source]
+
+You can download the code From <a href="http://code.google.com/p/subeshexamples/downloads/detail?name=Ajax_Json_Magento_subesh.com.np.zip#makechanges">Here</a>.
+
+Hope it helps! Happy Coding.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-12T00:00:00+05:45" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/08/12/working-ajax-json-objects-magento-case-ajax-powered-login-functionality/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/08/12/working-ajax-json-objects-magento-case-ajax-powered-login-functionality/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/08/11/displaying-currency-code-after-the-price-value-in-magento/" title="Previous Post: Displaying Currency code after the price value in Magento">&laquo; Displaying Currency code after the price value in Magento</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout/" title="Next Post: Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML Layout">Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML Layout &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting all custom options of a product in Magento - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Custom options are the options that can be added to any product, which gives an option for the user of the site to select what type of product they &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2009/12/22/custom-options-product-magento">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting All Custom Options of a Product in Magento</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Custom options are the options that can be added to any product, which gives an option for the user of the site to select what type of product they actually want. Here is a scenario where custom option can be helpful. If you have a product say ball and your stores sells plastic,rubber,glass balls. So you need to give the user to select what type of ball they actually want. Yes, you can do this by using configurable product as well, but why create an attribute for one product only! In this case custom option might be very helpful.
+
+Here&#8217;s the code to get the all the custom options of a product. Please see that you need to specify the id of the product for which you are retriving custom option for. I&#8217;ve echoed some text as well to give you an idea what exactly you are getting in each loop.
+
+[sourcecode language=&#8221;php&#8221;]
+$product = Mage::getModel(&quot;catalog/product&quot;)-&gt;load(167);
+	$i = 1;
+
+	echo &quot;&lt;pre&gt;&quot;;
+
+	foreach ($product-&gt;getOptions() as $o) {
+
+		echo &quot;&lt;strong&gt;Custom Option:&quot; . $i . &quot;&lt;/strong&gt;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TYPE: &quot; . $o-&gt;getType() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TITLE: &quot; . $o-&gt;getTitle() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option Values: &lt;br/&gt;&quot;;
+
+		// Getting Values if it has option values, case of select,dropdown,radio,multiselect
+
+		$values = $o-&gt;getValues();
+		foreach ($values as $v) {
+
+				print_r($v-&gt;getData());
+		}
+
+		$i++;
+
+		echo &quot;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-&lt;br/&gt;&quot;;
+	}
+[/sourcecode]
+
+Happy coding in Magento!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2009/12/22/custom-options-product-magento/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2009/12/22/custom-options-product-magento/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/12/22/adding-custom-options-product-magento/" title="Previous Post: Adding custom options to a product in Magento">&laquo; Adding custom options to a product in Magento</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/12/22/options-select-multiselect-attribute-magento-attribute-code/" title="Next Post: Get all options of select or multiselect attribute in Magento by attribute code">Get all options of select or multiselect attribute in Magento by attribute code &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

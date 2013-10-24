@@ -1,0 +1,1119 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend/">Adding Custom Javascript on Admin Form in Magento (Backend)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-28T00:00:00+05:45" pubdate data-updated="true">Sep 28<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are extened from the Magento&#8217;s core form widget. So there is a less flexibiliy of adding a custom Javasccript code in such types of Admin forms. What to do if you really need to add some custom Javascripts to give user a better user experience? In this post I&#8217;d like to point two conditions how/where to add such custom Javascript codes in the Form class, so that you can give user an interactive Admin form.
+
+The two conditions are:
+<ol>
+	<li>If an element of the form already has a value, disable that form element.</li>
+	<li>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value.</li>
+</ol>
+
+<h2>If an element of the form already has a value, disable that form element</h2>
+
+Lets take an example of core&#8217;s customer creation Admin form. What we can see while creating a customer from Admin end, the field &#8220;Associate to Website&#8221; is available to change for the first time. But when you are editing a customer info the very field is disabled. Lets see how this can be acheivable. If you look into <strong>Mage_Adminhtml_Block_Customer_Edit_Tab_Account</strong> class you can see the following chunk of code.
+
+[source language=&#8221;php&#8221;]
+  if ($customer-&gt;getId()) {
+            $form-&gt;getElement(&#8216;website_id&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+            $form-&gt;getElement(&#8216;created_in&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+        }
+[/source]
+
+What this does is checks for the Id of the customer if it is present the form elements disabled attribute is set to disabled. So initially while creating a new customer this condition is not fulfilled while on edition of the customer data the condition is fulfilled and hence the form element <em>website_id</em> and the <em>created_in</em> are disabled. This was just an example, you can also write similar conditions for your custom form. Suppose your data for the current form is in <em>$formData</em> variable and then by checking certain field value you can add similar condition.
+
+[source language=&#8221;php&#8221;]
+$formData=Mage::registry(&#8216;current_custom_data&#8217;);
+
+if(!empty($formData-&gt;getMyField())){
+	$targetElement=$form-&gt;getElement(&quot;my_field&quot;);
+
+	//For Disabling the field (Value will not be posted on form submit)
+	$targetElement-&gt;setDisabled(&#8216;disabled&#8217;);
+
+	//Or for making the field readonly
+	$targetElement-&gt;setReadonly(true);
+
+}
+[/source]
+
+
+<h2>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value</h2>
+
+
+Lets take the same customer edition page, you can see a checkbox with label <strong>Send auto-generated password</strong>. If you check that checkbox then the <strong>New Password</strong> textfield above it gets disabled. To get the similar interactivity for custom form you will have to do as following.
+
+[source language=&#8221;php&#8221;]
+$eventElem=$fieldset-&gt;addField(&#8216;nocode&#8217;, &#8216;checkbox&#8217;, array(
+                &#8216;label&#8217; =&gt; Mage::helper(&#8216;customer&#8217;)-&gt;__(&#8216;Event Element&#8217;),
+                &#8216;name&#8217;  =&gt; &#8216;eventelem&#8217;,
+                &#8216;id&#8217;    =&gt; &#8216;eventelem&#8217;,
+				&#8216;value&#8217;=&gt;1,
+				&#8216;onclick&#8217;=&gt;&#8217;modifyTargetElement(this)&#8217;,
+            ));
+
+		$eventElem-&gt;setAfterElementHtml(&#8216;&lt;script&gt;
+			function modifyTargetElement(checkboxElem){
+				if(checkboxElem.checked){
+					$(&quot;target_element&quot;).disabled=true;
+				}
+				else{
+					$(&quot;target_element&quot;).disabled=false;
+				}
+			}
+		&lt;/script&gt;&#8217;);
+[/source]
+
+What you can see is after an element of a form is initiallized you can add HTML codes (which of course for us is only Javascript code) by calling a <strong>setAfterElementHtml</strong> method and write the implementation of the function called on the event of the Event element.
+I&#8217;ve tried to be more explanatory as possible, if you still have any confusion there is always a comment box below. Happy Coding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout/">Adding CSS Class Name to My Account Link (Anchor Tag) in Magento Through XML Layout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-23T00:00:00+05:45" pubdate data-updated="true">Sep 23<span>rd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">At the first instance I thought WTH! must be pretty simple, add params in XML layout and &#8221;<strong>Voila!</strong>&#8221;. But later I found that it was not simpler as I thought. I had to get into the addLink method for sometime <strong>(1/2hr)</strong> and finally I came up with correct structure of XML layout. At the end it again seemed simple though, but it needed a healthy effort.
+
+Here&#8217;s the XML structure of layout from <em>customer.xml</em> where you add class to <strong>My Account link</strong>.
+
+[source language=&#8221;xml&#8221;]
+&lt;!&#8211; customer.xml&#8211;&gt;
+    &lt;reference name=&quot;top.links&quot;&gt;
+        &lt;action method=&quot;addLink&quot; translate=&quot;label title&quot; module=&quot;customer&quot;&gt;
+			&lt;label&gt;My Account&lt;/label&gt;
+			&lt;url helper=&quot;customer/getAccountUrl&quot;/&gt;
+			&lt;title&gt;My Account&lt;/title&gt;
+			&lt;prepare/&gt;
+			&lt;urlParams/&gt;
+			&lt;class/&gt;
+			&lt;position&gt;10&lt;/position&gt;
+			&lt;aParams&gt;
+				&lt;class&gt;my-class-name&lt;/class&gt;
+			&lt;/aParams&gt;
+		&lt;/action&gt;
+    &lt;/reference&gt;
+&lt;!&#8211; customer.xml&#8211;&gt;
+[/source]
+
+One notable thing in the structure above is the <strong>aParams</strong> which is responsible for adding the class to the Anchor tag, not the List tag. Hope this helps someone! Happy Coding.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/12/working-ajax-json-objects-magento-case-ajax-powered-login-functionality/">Working With Ajax and JSON Objects in Magento [Case: Ajax Powered Login Functionality]</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-12T00:00:00+05:45" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Previously I have written about <a href="http://subesh.com.np/2009/11/working-with-ajax-in-magento/">Working With Ajax in Magento</a>. And after a huge response I received from that post I was compelled to write more on implementing Ajax in Magento. And this time I want to say additionally about handling JSON (<strong>JavaScript Object Notation</strong>) along with Ajax, within the Magento enviornment. JSON Objects and Ajax can be very helpful technique to get the work done. You can learn about JSON from <a href="http://www.json.org/">Here</a>.
+
+I will try to describe this issue by taking a case of changing the Magento&#8217;s login functionality to a Ajax powered login functionality. So after this you will be able to implement a login function in a pop-up div in any page, unlike the default Magento&#8217;s seperate login page. I will leave the pop-up div part to you and get started with the real business (AJAX and JSON).
+
+Presuming that you will use <strong>Mini-Login</strong> form. Here is how you proceed.
+<ol>
+	<li>Change Submit type button to Button type button.</li>
+	<li>Register OnClick Javascript event of that button and its Handler</li>
+	<li>In the Handler function call Ajax Request for login</li>
+	<li>Show Error Message or redirect to customer Dashboard</li>
+</ol>
+Your mini.login.phtml should be like this
+
+[source language=&#8221;html&#8221;]
+&lt;form action=&quot;&lt;?php //echo $this-&gt;getPostActionUrl() ?&gt;&quot; id=&quot;mini-login-form&quot; method=&quot;post&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__(&#8216;Email&#8217;) ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[username]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__(&#8216;Password&#8217;) ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[password]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;input type=&quot;button&quot; onClick=&quot;handlerFunction()&quot; value=&quot;&lt;?php echo $this-&gt;__(&#8216;Login&#8217;) ?&gt;&quot; /&gt;&lt;/p&gt;
+    &lt;/fieldset&gt;
+&lt;/form&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;!&#8211;
+function handlerFunction(){
+
+// Write These codes only after form Validation
+
+// Making Ajax Request
+		var request = new Ajax.Request(
+			//Defining Ajax Request URL, We are calling custom Controller Ns_Mylogin_AccountController Class (Defined Below)
+        	&#8216;&lt;?php echo $this-&gt;getUrl(&quot;mylogin/account/loginPost&quot;) ?&gt;&#8217;,
+           	{
+            	method: &#8216;post&#8217;,
+                onComplete: function(transport){ // Defining Complete Callback Function
+
+                	// Getting Ajax Response Text Which is JSON Object
+                	var jsonResponse=transport.responseText;
+                	//Checking JSON Objects property and performing related action
+                	// You will understand the response Text format after going through the controller description (Below)
+                	if(jsonResponse.error){
+                		alert(&quot;Error Occured&quot;);
+						return false;
+                	}
+                	else{
+                		window.location.href=jsonResponse.url;
+                	}
+                },
+                parameters: Form.serialize($(&quot;mini-login-form&quot;))	// Seriallizing the form input values
+        	}
+        );
+}
+//&#8211;&gt;
+&lt;/script&gt;
+[/source]
+
+Please see inline comments for better understanding. Now our next set should be setting up our custom controller. I&#8217;ll not get into details of setting up modules and all but directly to our controller class <strong>Ns_Mylogin_AccountController</strong>. What I&#8217;ve done is just taken the core&#8217;s  <strong>loginPostAction </strong>function of <strong>Mage_Customer_AccountController</strong> and added some codes there. Please see there is a comment on each line added apart from the default Magento&#8217;s core code.
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+require_once(&quot;Mage/Customer/controllers/AccountController.php&quot;);
+class Ns_Mylogin_AccountController extends Mage_Customer_AccountController{
+	/**
+	 * Login post action
+	 * @return JSON Object
+	 */
+	public function loginPostAction()
+	{
+		// Added Line #1
+		$result[&quot;error&quot;]=0;
+
+		$session = $this-&gt;_getSession();
+
+		if ($this-&gt;getRequest()-&gt;isPost()) {
+			$login = $this-&gt;getRequest()-&gt;getPost(&#8216;login&#8217;);
+			if (!empty($login[&#8216;username&#8217;]) &amp;amp;&amp;amp; !empty($login[&#8216;password&#8217;])) {
+				try {
+					$session-&gt;login($login[&#8216;username&#8217;], $login[&#8216;password&#8217;]);
+					if ($session-&gt;getCustomer()-&gt;getIsJustConfirmed()) {
+						$this-&gt;_welcomeCustomer($session-&gt;getCustomer(), true);
+					}
+				} catch (Mage_Core_Exception $e) {
+					switch ($e-&gt;getCode()) {
+						case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
+							//Added Line #2
+							$result[&quot;error&quot;]=1;
+							$message = Mage::helper(&#8216;customer&#8217;)-&gt;__(&#8216;This account is not confirmed. &lt;a href=&quot;%s&quot;&gt;Click here&lt;/a&gt; to resend confirmation email.&#8217;, 						Mage::helper(&#8216;customer&#8217;)-&gt;getEmailConfirmationUrl($login[&#8216;username&#8217;]));
+							break;
+						case Mage_Customer_Model_Customer::EXCEPTION_INVALID_EMAIL_OR_PASSWORD:
+							//Added Line #3
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+							break;
+						default:
+							//Added Line #4
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+					}
+					$session-&gt;addError($message);
+					$session-&gt;setUsername($login[&#8216;username&#8217;]);
+				} catch (Exception $e) {
+					// Mage::logException($e); // PA DSS violation: this exception log can disclose customer password
+				}
+			} else {
+				//Added Line #5
+				$result[&quot;error&quot;]=1;
+				$session-&gt;addError($this-&gt;__(&#8216;Login and password are required&#8217;));
+				//Added Line #6
+				$this-&gt;getResponse()-&gt;setBody(Mage::helper(&#8216;core&#8217;)-&gt;jsonEncode($result));
+			}
+		}
+		//Added Line #7
+		$result[&quot;url&quot;]=$this-&gt;_loginPostRedirect();
+		//Added Line #8
+		$this-&gt;getResponse()-&gt;setBody(Mage::helper(&#8216;core&#8217;)-&gt;jsonEncode($result));
+	}
+[/source]
+
+What I&#8217;ve done is added an array <strong>$result</strong> that will hold value if there is error or not while processing the user&#8217;s request. If there is error that array will hold $result[&#8216;error&#8217;]=1 else it will be as initiallized in <em>Added Line #1</em>. From <em>Added Line #2</em> through <em>Added Line #5</em>, we have various condition to check for error and set our <strong>$result</strong> variable.
+
+On <em>Added Line #7</em> we have called another function (which we we rewrite as well) that will give us the url location identifying which location should be redirect after successful login. The implementation of function is given below. Finally in <em>Added Line #8</em> and <em>Line #6</em> we have encoded our $result array into <strong>JSON</strong> format and send as the response.
+
+For visuallization our $result array will be one of the following.
+<ol>
+	<li> Case (No Error) : $result[&#8220;error&#8221;]=0; $result[&#8220;url&#8221;]=&#8221;SOME Redirect URL&#8221;</li>
+	<li> Case (Error) 	 :	$result[&#8220;error&#8221;]=1;</li>
+</ol>
+This JSON encoded response will be then used by the ajax call back function defined and perform related action.
+
+Here&#8217;s the <strong>_loginPostRedirect()</strong> function which I mentioned (Added Line #7).
+
+[source language=&#8221;php&#8221;]
+/**
+	 * Define target URL and redirect customer after logging in
+	 */
+	protected function _loginPostRedirect()
+	{
+		$session = $this-&gt;_getSession();
+
+		if (!$session-&gt;getBeforeAuthUrl() || $session-&gt;getBeforeAuthUrl() == Mage::getBaseUrl() ) {
+
+			// Set default URL to redirect customer to
+			$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getAccountUrl());
+
+			// Redirect customer to the last page visited after logging in
+			if ($session-&gt;isLoggedIn())
+			{
+				if (!Mage::getStoreConfigFlag(&#8216;customer/startup/redirect_dashboard&#8217;)) {
+					if ($referer = $this-&gt;getRequest()-&gt;getParam(Mage_Customer_Helper_Data::REFERER_QUERY_PARAM_NAME)) {
+						$referer = Mage::helper(&#8216;core&#8217;)-&gt;urlDecode($referer);
+						if ($this-&gt;_isUrlInternal($referer)) {
+							$session-&gt;setBeforeAuthUrl($referer);
+						}
+					}
+				}
+				else if ($session-&gt;getAfterAuthUrl()) {
+					$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+				}
+			} else {
+				$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getLoginUrl());
+			}
+		} else if ($session-&gt;getBeforeAuthUrl() == Mage::helper(&#8216;customer&#8217;)-&gt;getLogoutUrl()) {
+			$session-&gt;setBeforeAuthUrl(Mage::helper(&#8216;customer&#8217;)-&gt;getDashboardUrl());
+		}
+		else {
+			if (!$session-&gt;getAfterAuthUrl()) {
+				$session-&gt;setAfterAuthUrl($session-&gt;getBeforeAuthUrl());
+			}
+			if ($session-&gt;isLoggedIn()) {
+				$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+			}
+		}
+		// Changed Here
+		return $session-&gt;getBeforeAuthUrl(true);
+	}
+[/source]
+
+You can download the code From <a href="http://code.google.com/p/subeshexamples/downloads/detail?name=Ajax_Json_Magento_subesh.com.np.zip#makechanges">Here</a>.
+
+Hope it helps! Happy Coding.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/11/displaying-currency-code-after-the-price-value-in-magento/">Displaying Currency Code After the Price Value in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-11T00:00:00+05:45" pubdate data-updated="true">Aug 11<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I had a time to research on Magento&#8217;s currency format and its display  on Magento webshop. I then came across a block where I could change the  format of currency display, in this case I am talking about moving the  currency symbol to the right of the price value. In other words I found a  way to show $10.00 as 10.00$. Notice the <strong>$</strong> (Dollar) sign moving at the right of the price value.
+Here&#8217;s a description of how this can be achievable. The basic idea is to rewrite <strong>Mage_Core_Model_Locale</strong> class&#8217;s currency function and add additional code. First you must write a rewrite code in your module&#8217;s<strong> config.xml</strong>.
+
+[source language=&#8221;xml&#8221;]
+ &lt;core&gt;
+ &lt;rewrite&gt;
+ &lt;locale&gt;Namespace_Module_Model_Locale&lt;/locale&gt;
+ &lt;/rewrite&gt;
+ &lt;/core&gt;
+ [/source]
+
+Then in <strong>Namespace_Module_Model_Locale</strong> class you can add the following code.
+
+[source language=&#8221;php&#8221;]
+ class Namespace_Module_Model_Locale extends Mage_Core_Model_Locale{
+ /*
+ * Code: subesh.com.np
+ */
+
+public function currency($currency)
+ {
+ Varien_Profiler::start(&#8216;locale/currency&#8217;);
+ if (!isset(self::$_currencyCache[$this-&gt;getLocaleCode()][$currency])) {
+ try {
+ $currencyObject = new Zend_Currency($currency, $this-&gt;getLocale());
+
+// Additionally Added Code
+ // The options array&#8217;s position key has other values as well.
+
+// 	Zend_Currency::STANDARD
+ // 	Zend_Currency::RIGHT
+ //	Zend_Currency::LEFT
+
+$options = array(
+ &#8216;position&#8217;	=&gt; Zend_Currency::RIGHT
+ );
+
+$currencyObject-&gt;setFormat($options);
+
+// END Additionally Added Code
+
+} catch (Exception $e) {
+ $currencyObject = new Zend_Currency($this-&gt;getCurrency(), $this-&gt;getLocale());
+ $options = array(
+ &#8216;name&#8217;      =&gt; $currency,
+ &#8216;currency&#8217;  =&gt; $currency,
+ &#8216;symbol&#8217;    =&gt; $currency
+ );
+ $currencyObject-&gt;setFormat($options);
+ }
+
+self::$_currencyCache[$this-&gt;getLocaleCode()][$currency] = $currencyObject;
+ }
+ Varien_Profiler::stop(&#8216;locale/currency&#8217;);
+ return self::$_currencyCache[$this-&gt;getLocaleCode()][$currency];
+ }
+
+}
+
+[/source]
+
+You can see the comment of the code above for more detail understanding.
+
+<strong><em>P.S: Be informed that you need to change the Class Name you are about to create on the basis of your Namespace and Module name.</em></strong>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/08/06/magento-setting-default-shipping-method-cart-page/">Magento: Setting Up a Default Shipping Method on Cart Page</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-08-06T00:00:00+05:45" pubdate data-updated="true">Aug 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I recently came to a situation where I need to show a shipping price amount on cart before selecting the shipping address from the checkout page. Basically shipping price is shown after the user has added the shipping address and selected the shipping method. So to show shipping price on cart page load, I needed to find out the following. Shipping Address (Actually only<strong> country_id</strong> will work) Shipping Method (Set to Flatrate in the code below) So what I did was first check if the user has already specified the shipping address (when user have added the shipping address in the checkout page and navigated back to cart page). If the shipping address is not present then I checked if the user is logged in and checked for default shipping address of the customer and used its country_id (if present), but if the user is not logged in or default shipping address is not present then I set the shipping address (<strong>country_id</strong>) to some country <strong>(NL).</strong>After setting the country I then set the shipping method and then saved the quote so that the prices are calculated.Here&#8217;s the snippet.
+
+[source language=&#8221;php&#8221;]
+/*** Setting Default Shipping Method
+ * Checking If Quote Already Has Address Or Not
+ * - If Yes then leave as it is
+ * - Else check if Customer has default Shipping Address or Not
+ * &#8211; Yes then get Default Shipping Address and set Shipping Method
+ * &#8211; No Set Default Shipping address to NL*/
+ if(!Mage::getSingleton(&#8216;checkout/type_onepage&#8217;)-&gt;getQuote()-&gt;getShippingAddress()-&gt;getCountryId()){
+		$customerSession=Mage::getSingleton(&quot;customer/session&quot;);
+		if($customerSession-&gt;isLoggedIn()){
+		$customerAddress=$customerSession-&gt;getCustomer()-&gt;getDefaultShippingAddress();
+			if($customerAddress-&gt;getId()){
+			$customerCountry=$customerAddress-&gt;getCountryId();
+				$shipping = Mage::getSingleton(&#8216;checkout/type_onepage&#8217;)-&gt;getQuote()-&gt;getShippingAddress()-&gt;setCountryId($customerCountry)-&gt;setShippingMethod(&#8216;flatrate_flatrate&#8217;)-&gt;save();
+		}else{
+			$shipping = Mage::getSingleton(&#8216;checkout/type_onepage&#8217;)-&gt;getQuote()-&gt;getShippingAddress()-&gt;setCountryId(&#8216;NL&#8217;)-&gt;setShippingMethod(&#8216;flatrate_flatrate&#8217;)-&gt;save();
+			}
+		}
+	}
+[/source]
+
+Cheers!
+
+
+[UPDATE]
+The original solution seems to show some issue. Thanks to the great reader of this blog the &#8220;perfect&#8221; solution for this case can be found in comments. As always new and better solutions are always welcome.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/07/09/worldcup-german-coach-to-file-a-case-against-spanish-in-fifa/">Worldcup: German Coach to File a Case Against Spanish in FIFA</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-07-09T00:00:00+05:45" pubdate data-updated="true">Jul 9<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Normally, I post tech stuff in my blog, but can&#8217;t get away from football world cup fever. And my friend broke a news that German coach will file a case against Spanish, claiming that Germans should have also got the ball during the play at semis, because they were also playing the same game.
+
+LOL!
+
+Can&#8217;t wait for the trial sessions.. HAHAHAHAHAHA
+
+Go SPAIN!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/06/09/magento-creating-ajax-updated-tabs-frontend-product-management-tabs-backend/">Magento: Creating Ajax Updated Tabs in Frontend, Like Product Management Tabs of Backend</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-09T00:00:00+05:45" pubdate data-updated="true">Jun 9<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Magento&#8217;s Product Management GUI in back-end has Tabbed Navigation. There are two types of Tabs implemented there. One type of Tab is normal tab, loading content on page load while other type of tab has its content loaded by &#8220;Ajax&#8221;. Another interesting thing to note is that once the Ajax loaded tab&#8217;s content is loaded it will not &#8220;recall&#8221; Ajax to load its content, rather earlier loaded tab content is show. If are &#8220;confused&#8221; then just see how the &#8220;Categories&#8221; tab of the Product Management works.
+
+I successfully used the same &#8220;behavior&#8221; of tabbed navigation in &#8220;front-end&#8221;, was easy at the end (always with Magento, when you get it), but I was struggling at the start. So, like my other posts, to share here&#8217;s how I used the same type of tab in Magento&#8217;s Front-end.
+
+First thing is add the Tab&#8217;s Java-script file. You can either include by layout or in PHTML file. If you want to do from layout then,
+
+[source language=&#8221;xml&#8221;]
+&lt;reference name=&quot;head&quot;&gt;
+        	 &lt;action method=&quot;addJs&quot;&gt;&lt;script&gt;mage/adminhtml/tabs.js&lt;/script&gt;&lt;/action&gt;
+&lt;/reference&gt;
+[/source]
+
+Next thing is to create Tab&#8217;s Menu inside UL & LI. Here&#8217;s the structure. (Self Explanatory)
+
+[source language=&#8221;html&#8221;]
+&lt;!&#8211; TAB MENU STRUCTURE &#8211;&gt;
+
+&lt;ul id=&quot;page_tabs&quot;&gt;
+	&lt;!&#8211; NORMAL TAB &#8211;&gt;
+	&lt;li&gt;
+		&lt;a id=&quot;normaltab&quot; name=&quot;normaltab&quot; class=&quot;tab-item-link&quot; href=&quot;#&quot;&gt; NORMAL TAB &lt;/a&gt;
+		&lt;!&#8211; NOTE: class has to be tab-item-link&#8211;&gt;
+
+		&lt;div id=&quot;normaltab_content&quot;&gt; Normal Tab HTML&lt;/div&gt;
+		&lt;!&#8211; NOTE: See the id of this div content it has id equal to its anchor&#8217;s (&lt;a&gt;) id + Underscore + content &#8211;&gt;
+	&lt;/li&gt;
+	&lt;!&#8211; NORMAL TAB END&#8211;&gt;
+
+	&lt;!&#8211; AJAX LOADED TAB &#8211;&gt;
+	&lt;li&gt;
+		&lt;a id=&quot;ajaxtab&quot; name=&quot;ajaxtab&quot; class=&quot;tab-item-link ajax notloaded&quot; href=&quot;http://example.com/magento/module/controller/action&quot;&gt; AJAX TAB &lt;/a&gt;
+		&lt;!&#8211; NOTE 1: class has to be tab-item-link ajax notloaded &#8211;&gt;
+		&lt;!&#8211; NOTE 2: Since this is Ajax Loaded Tab its Anchor should have href value = SOME URL &#8211;&gt;
+
+		&lt;div id=&quot;ajaxtab_content&quot;&gt;&lt;/div&gt;
+		&lt;!&#8211; NOTE 1: See the id of this div content it has id equal to its anchor&#8217;s (&lt;a&gt;) id + Underscore + content &#8211;&gt;
+		&lt;!&#8211; NOTE 2: Since its innerHTML will be loaded by by Ajax you can set its innerHTML &quot;blank&quot; &#8211;&gt;
+
+	&lt;/li&gt;
+	&lt;!&#8211; AJAX LOADED TAB END &#8211;&gt;
+&lt;/ul&gt;
+&lt;!&#8211; TAB MENU STRUCTURE END &#8211;&gt;
+
+&lt;!&#8211; TAB CONTENT CONTAINER DIV&#8211;&gt;
+&lt;div id=&quot;tabcontainer&quot;&gt;&lt;/div&gt;
+&lt;!&#8211; TAB CONTENT CONTAINER DIV&#8211;&gt;
+[/source]
+
+Now its the time to use the Tabs JS included, like below.
+
+[source language=&#8221;js&#8221;]
+&lt;script&gt;
+	// Form Key Required for POST AJAX Method
+	var FORM_KEY=&quot;&lt;?php echo Mage::getSingleton(&#8216;core/session&#8217;)-&gt;getFormKey() ?&gt;&quot;;
+
+	// Set this to false, Guess used for some other purpose in backend, not really required in frontend.
+	var varienGlobalEvents=false;
+
+	// Initiallizing Varien Tabs
+	/**
+	* @param 1 : UL Menu ID
+	* @param 2 : Target Tab Content ID
+	* @param 3 : Initially Loading Tab&#8217;s Id
+	* @param 4 : Don&#8217;t know yet, just use as it is (LOL)
+	*/
+
+	frontend_tabsJsTabs = new varienTabs(&#8216;page_tabs&#8217;, &#8216;tabcontainer&#8217;, &#8216;normaltab&#8217;,[]);
+
+&lt;/script&gt;
+[/source]
+
+Done! You must now have a functioning Tab loading by Ajax and Normal, but yes tab would look good if you add CSS to your Tabs. :P Here is how it works.
+
+<ol>
+<li>
+On load it first copies the tab_content div inside the Target Tab Content ID div.
+</li>
+<li>
+On tabbed menu clicked it checks its class name and if it class name does not have &#8220;ajax&#8221; it simply shows the its_content div.
+</li>
+<li>
+If the menu clicked has &#8220;ajax&#8221; then it checks for another class name &#8220;notloaded&#8221;. So if its ajax and notloaded it then makes an Ajax request and updates the responseText to itsid_content div and then removes the &#8220;notloaded&#8221; class name for the menu. After that it then displays the itsid_content div, hiding previous ones.
+</li>
+<li>
+If you re-click the &#8220;Ajax&#8221; typed menu, it will not find &#8220;notloaded&#8221; class in its menu, then it just shows its_content div.
+</li>
+</ol>
+
+A good trick, I thought while doing this, using class name to restrict the Ajax call.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/13/analysis-usage-collections-magento/">Analysis & Usage of Collections in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-13T00:00:00+05:45" pubdate data-updated="true">May 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">As a Magento Programmer I am fascinated by the use &amp; simplicity of collection used in Magento. Simplicity, does not really mean being simple (it is rather complex structured) but easy to use. With the help of one of my colleague, I got down to understand how collection really represents the &#8220;collection&#8221; of data we are actually trying to get from database. Here is what I found drilling down into the Magento&#8217;s Core. I may be &#8220;not quite right&#8221; with the analysis, you can always comment.
+
+Almost all the collections found inside  <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model/Collection.php</strong> are the child of parent Class <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong>. Primary thing done in the class constructor is initializing its resource and Model. If you look into one of the Collection class you can see in its constructor.
+
+[source language=&#8221;php&#8221;]
+/**
+	 * @class Mage_Checkout_Model_Mysql4_Agreement_Collection
+     * Initialize resource
+     *
+     */
+    protected function _construct()
+    {
+        $this-&gt;_init(&#8216;checkout/agreement&#8217;);
+    }
+[/source]
+
+And this _init function has been implemented in its parent class as
+
+[source language=&#8221;php&#8221;]
+/**
+     * Standard resource collection initalization
+     *
+     * @param string $model
+     * @return Mage_Core_Model_Mysql4_Collection_Abstract
+     */
+    protected function _init($model, $resourceModel=null)
+    {
+        $this-&gt;setModel($model);
+        if (is_null($resourceModel)) {
+            $resourceModel = $model;
+        }
+        $this-&gt;setResourceModel($resourceModel);
+        return $this;
+    }
+[/source]
+
+The resource class can be found in <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model.php</strong>. And this resource class in turn initializes the database table to be used in the Module along with the table&#8217;s primary key.
+
+[source language=&#8221;php&#8221;]
+class Mage_Checkout_Model_Mysql4_Agreement extends Mage_Core_Model_Mysql4_Abstract
+	{
+
+	protected function _construct()
+    {
+        $this-&gt;_init(&#8216;checkout/agreement&#8217;, &#8216;agreement_id&#8217;);
+    }
+	&#8230;&#8230;
+	}
+[/source]
+
+It is this resource class that actually works out the database connections, read/write adapters and performs transactions. So this is the basic deduction about the link of collection with the database and its tables. But how are those collection formed still remains a mystery, not anymore! In this section of the post I will try to explain how are the collections really formed.
+
+If I can, &#8221;<strong>collection</strong>&#8221; can be defined as collection or array of its resource. And in Magento case, most of the resources are database&#8217;s query results. Simply you can visualize &#8221;<strong>collection</strong>&#8221; to be array of your model&#8217;s resource. If a &#8221;<strong>query</strong>&#8221; in Magento returns a collection of all the products then it would mean that the very collection is an array of all the individual product&#8217;s object. But one question still remains how will the database query&#8217;s result transform into a Magento &#8221;<strong>collection</strong>&#8221;. To understand that we need to understand the collection class and its parents.
+
+The class Structure for <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong> is like this.
+
+Mage_Core_Model_Mysql4_Collection_Abstract
+<p style="padding-left: 30px;">|__ Varien_Data_Collection_Db (C)</p>
+<p style="padding-left: 60px;">|__	Varien_Data_Collection (C)</p>
+<p style="padding-left: 90px;">|__ IteratorAggregate (I)</p>
+<p style="padding-left: 90px;">|__ Countable (I)</p>
+You can see that all collection implements two Interfaces <strong>IteratorAggregate </strong>&amp; <strong>Countable</strong>.
+
+<a href="http://goo.gl/MjAT" target="_blank">IteratorAggregate </a> is predefined in Standard PHP Library that extends Abstract Base Class <a href="http://goo.gl/rzXS" target="_blank">Traversable </a>. On using this Interface you can then <a href="http://goo.gl/hgtI" target="_blank">Iterate Through Object</a> using &#8221;<strong>foreach</strong>&#8221; construct. Countable returns the size of the Collection Object.
+
+Among the two Interfaces, <strong>IteratorAggregate </strong>is particularly important. As you can see in Class Hierarchy both the interfaces are implemented by<strong> Varien_Data_Collection</strong> concrete class. <strong>IteratorAggregate</strong> has abstract public method <strong>getIterator()</strong> which returns the Iterator interface and the concrete Class has to implement the method on its own. It is this Iterator that provides the real iteration functionality. You can get a detailed description about Iterator <a href="http://goo.gl/C9Nx" target="_blank">Here</a>.
+
+So if you look into the <strong>Varien_Data_Collection</strong> you will find the <strong>getIterator()</strong> implemented like this.
+
+[source language=&#8221;php&#8221;]
+/**
+	 * @class Varien_Data_Collection
+     * Implementation of IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        $this-&gt;load();
+        return new ArrayIterator($this-&gt;_items);
+    }
+[/source]
+
+As you can see that it first loads the &#8221;<strong>items</strong>&#8221; (I will get back to this Items) and instanciates the value to an internal Class <a href="http://goo.gl/8LAi" target="_blank">ArrayIterator </a>. And the Iterator returned by this function can then be iterated using <strong>foreach </strong>construct.
+
+Looks like it is going to be a looonnnnng post, let be summarize what I&#8217;ve tried to point out until now. I&#8217;ve tried to show the link between the collection class or rather object with the database table and explain the iteration behavior of the collection object. But one question still remains how will the database query&#8217;s result transform into a Magento&#8217;s &#8221;<strong>collection</strong>&#8221;. This is where the &#8221;<strong>items</strong>&#8221; explanation need to be done.
+
+&#8221;<strong>Items</strong>&#8221; are actually array if individual object (item) of the collection which represents the array of tuple of the database query result. As you see in the snippet above the <strong>ArrayIterator </strong>takes <strong>$this-&gt;_items</strong> are parameter. But <strong>$this-&gt;_items</strong> are not populated here on <strong>Varien_Data_Collection</strong> but rather on is child class <strong>Varien_Data_Collection_Db</strong>. Here&#8217;s the snippet from Varien_Data_Collection_Db.
+
+[source language=&#8221;php&#8221;]
+/**
+     * Load data
+     * @class Varien_Data_Collection_Db
+     * @return  Varien_Data_Collection_Db
+     */
+    public function load($printQuery = false, $logQuery = false)
+    {
+        if ($this-&gt;isLoaded()) {
+            return $this;
+        }
+
+        $this-&gt;_renderFilters()
+             -&gt;_renderOrders()
+             -&gt;_renderLimit();
+
+        $this-&gt;printLogQuery($printQuery, $logQuery);
+
+		// Getting Data from DB
+        $data = $this-&gt;getData();
+
+        $this-&gt;resetData();
+
+        if (is_array($data)) {
+
+		    // Looping on each result row
+            foreach ($data as $row) {
+			    // Creating Empty &quot;item&quot; Varien_Object&#8217;s object
+                $item = $this-&gt;getNewEmptyItem();
+
+                if ($this-&gt;getIdFieldName()) {
+                    $item-&gt;setIdFieldName($this-&gt;getIdFieldName());
+                }
+
+				// Setting Varien_Object&#8217;s values to that of the row
+                $item-&gt;addData($row);
+
+				/**
+				* Adding the &quot;item&quot; to the collection @class Varien_Data_Collection
+				* So while referring to $this-&gt;_items @class Varien_Data_Collection it will return array of this &quot;item&quot;
+				*/
+                $this-&gt;addItem($item);
+            }
+
+        }
+
+        $this-&gt;_setIsLoaded();
+        $this-&gt;_afterLoad();
+        return $this;
+    }
+
+    /**
+     * Get all data array for collection
+     * @class Varien_Data_Collection_Db
+     * @return array
+     */
+    public function getData()
+    {
+        if ($this-&gt;_data === null) {
+            $this-&gt;_renderFilters()
+                 -&gt;_renderOrders()
+                 -&gt;_renderLimit();
+
+			// Fetching all the row with the Select query set
+            $this-&gt;_data = $this-&gt;_fetchAll($this-&gt;_select);
+            $this-&gt;_afterLoadData();
+        }
+        return $this-&gt;_data;
+    }
+[/source]
+
+You can go through the inline comments I&#8217;ve added. This is it, I&#8217;ve finally worked out the explanation of structure &amp; creation of Magento&#8217;s Collection and its iterative behavior. I&#8217;ve tried to show pictorially (below) what I have just described. Confused! Plz comment and of course please do comment if I am wrong, because there are &#8220;times&#8221; when you try to understand things even though they actually aren&#8217;t just like you think. I&#8217;d like to quote <strong>Paulo </strong> :<strong><em>&#8220;I see the world in terms of what I would like to see happen, not what actually does&#8221;</em></strong>!
+
+<img class="alignnone size-full wp-image-249" title="hierarchy" src="http://subesh.com.np/wp-content/uploads/2010/05/hierarchy.jpg" alt="hierarchy" width="505" height="604" />
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/06/re-post%3Amagento-ecommerce%3A-how-to-reset-all-test-order-information/">Re-Post:Magento eCommerce: How to Reset All Test Order Information</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-06T00:00:00+05:45" pubdate data-updated="true">May 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"></div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/06/magento-ecommerce-how-to-reset-all-test-order-information-and-set-unique-prefix-for-orders-invoices-shipments-and-credit-memos/">Magento eCommerce: How to Reset All Test Order Information and Set Unique Prefix for Orders, Invoices, Shipments, and Credit Memos</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-06T00:00:00+05:45" pubdate data-updated="true">May 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Nice Post I stumbled upon.. from www.eliasinteractive.com. This is a very helpful hack Lee has posted to reset order information while moving from development stage to production stage. I&#8217;d tried this in Enterprise Edition as well and it worked!
+
+Just a Re-Post :P
+
+<a href="http://www.eliasinteractive.com/blog/magento-ecommerce-how-to-reset-all-test-order-information-and-set-unique-prefix-for-orders-invoices-shipments-and-credit-memos">Magento eCommerce: How To Reset All Test Order Information and Set Unique Prefix For Orders, Invoices, Shipments, and Credit Memos</a>.
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

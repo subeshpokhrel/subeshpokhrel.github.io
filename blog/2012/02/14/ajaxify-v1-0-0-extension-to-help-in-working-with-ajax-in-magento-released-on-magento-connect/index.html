@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ajaxify v1.0.0 : Extension to Help in working with Ajax in Magento Released on Magento Connect. - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Get Extension from Magento Connect I have few blog posts regarding working with Ajax on Magento. http://subesh.com.np/category/ajax/. And I see many &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2012/02/14/ajaxify-v1-0-0-extension-to-help-in-working-with-ajax-in-magento-released-on-magento-connect">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ajaxify v1.0.0 : Extension to Help in Working With Ajax in Magento Released on Magento Connect.</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-14T00:00:00+05:45" pubdate data-updated="true">Feb 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h6>Get Extension from Magento Connect</h6>
+<a href="http://www.magentocommerce.com/magento-connect/ajaxify-8411.html" title="Ajaxify" target="_blank"><img src="http://www.magentocommerce.com/magento-connect/skin/frontend/enterprise/connect/images/logo-appstore.png"/></a>
+
+I have few blog posts regarding working with Ajax on Magento. <a href="http://subesh.com.np/category/ajax/">http://subesh.com.np/category/ajax/</a>. And I see many people visiting those pages to get the information on working with Ajax in Magento. Sensing the need of developer I came up with an idea of making the whole process into a module in an effort to give back to the Magento community. I&#8217;ve tried to make the module simple for now, which of course can be extended a lot to incorporate all kinds of needs. But for now, if I may say, there are roughly these two things you might want to do (Purely in Magento terms).
+
+<ol>
+	<li>Request to a controller with params, do some changes in the model, set error/success message and show those message to the user.</li>
+	<li>Next, perform all the actions as #1 and in addition to that refresh the content of certain HTML elements.</li>
+</ol>
+
+This module has been devised just to meet these two actions. In addition, the module is loader ready and has by default a floating message block. 
+Followings are the ways you can perform those two actions using this module.
+
+<strong>Overview</strong>
+The core functionality implemenation is done in js/ajaxify/ajaxify.js file. If you look into that file, you will find a JS Class. The constructor for the class are:
+<ol>
+	<li>URL of the request controller.</li>
+	<li>Parameters (JSON object) to be sent as request params to the controller.</li>
+</ol>
+
+For request and show message just call <em>request()</em> method, while if you want an HTML element to be updated then call <em>requestUpdate(&#8216;elementID&#8217;)</em>, with element ID in the parameter.
+
+
+
+<strong>Request to a controller with params, do some changes in the model, set error/success message and show those message to the user.</strong>
+
+This is how you initillize the JS Object.
+[source lang=&#8221;javascript&#8221;]
+&lt;script type=&quot;text/javascript&quot;&gt;
+	var ajxObj =  new SpAjaxify(&#8216;&lt;?php echo $this-&gt;getUrl(&#8216;ajaxify/index/test&#8217;) ?&gt;&#8217;, {id: &#8216;12&#8217;, value: &#8216;23&#8217;});
+	ajxObj.request(); // Request
+&lt;/script&gt;
+[/source]
+To set the message error/success you have to use ajaxify/session model, because it is from this model the messages are shown.
+
+[source lang=&#8221;php&#8221;]
+/**
+     * Always use this session to set your error or success message
+     *
+     * @return Sp_Ajaxify_Model_Session
+     * 
+     * PLEASE DO NOT EDIT THIS
+     */
+    protected function _getSession()
+    {
+    	return Mage::getSingleton(&#8216;ajaxify/session&#8217;);
+    }
+
+	// Set Error message .
+   	$this-&gt;_getSession()-&gt;addError(&#8216;Item was not added to the shopping cart.&#8217;);
+    	
+    	// Set Success message
+    	$this-&gt;_getSession()-&gt;addSuccess(&#8216;Item was successfully added to the shopping cart.&#8217;);
+[/source]
+
+
+
+<strong>In addition to the above refresh the content of certain HTML elements.</strong>
+
+[source lang=&#8221;javascript&#8221;]
+&lt;script type=&quot;text/javascript&quot;&gt;
+	var ajxObj =  new SpAjaxify(&#8216;&lt;?php echo $this-&gt;getUrl(&#8216;ajaxify/index/test&#8217;) ?&gt;&#8217;, {id: &#8216;12&#8217;, value: &#8216;23&#8217;});
+
+	ajxObj.requestUpdate(&#8216;sidebar_cart&#8217;); // Ajax request with parameter to update the HTML element.
+&lt;/script&gt;
+[/source]
+
+The source also contains description of the hidden logic to manage templates/layouts required.
+
+<a href="https://github.com/subeshpokhrel/ajaxify"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-14T00:00:00+05:45" pubdate data-updated="true">Feb 14<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2012/02/14/ajaxify-v1-0-0-extension-to-help-in-working-with-ajax-in-magento-released-on-magento-connect/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2012/02/14/ajaxify-v1-0-0-extension-to-help-in-working-with-ajax-in-magento-released-on-magento-connect/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/02/07/ttt-edb-faqs/" title="Previous Post: External Database Connector FAQ's">&laquo; External Database Connector FAQ's</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/03/18/magnote-series-magento-log/" title="Next Post: MagNote Series - Magento Log">MagNote Series - Magento Log &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

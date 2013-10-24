@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Debugging Magento Using Eclipse on Ubuntu - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I&#8217;ve previously posted http://subesh.com.np/2010/01/debugging-magento-eclipse-pdt-zend-debugger but currently I think it was just a snub. What &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2012/01/27/debugging-magento-using-eclipse-on-ubuntu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Debugging Magento Using Eclipse on Ubuntu</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-27T00:00:00+05:45" pubdate data-updated="true">Jan 27<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">I&#8217;ve previously posted <a href="http://subesh.com.np/2010/01/debugging-magento-eclipse-pdt-zend-debugger/" title="http://subesh.com.np/2010/01/debugging-magento-eclipse-pdt-zend-debugger/" target="_blank">http://subesh.com.np/2010/01/debugging-magento-eclipse-pdt-zend-debugger</a> but currently I think it was just a snub. What I currently do now is far more better approach then the previous one. Here is how you can set up a debugging environment in Ubuntu using Eclipse for debugging Magento.
+
+[Note: I am describing here based on Ubuntu.]
+
+<strong>Step 1: Download and Install Eclipse</strong>
+<a href="http://www.eclipse.org/pdt/downloads/" title="Download" target="_blank">Download</a> and Install Eclipse. Choose the relevant package to download. Unzip the package and copy to some location. Lets say /home/user/ Please note that the Eclipse IDE requires that a Java Runtime Environment (JRE) be installed on your machine to run. Java SE 5 or greater is recommended.
+
+<strong>Step 2: Setting up PHP Project</strong>
+Next thing you have to do is to setup the project in Eclipse. Open the Eclipse IDE and it will ask for your Workspace. Browse to your workspace (Where your Magento site is running locally) or by default point it to <strong><em>/var/www</em></strong> and click OK. Now click on <strong>File&#8211;>New &#8211;> New PHP Project</strong>, and add your folder name on Project Name and click Finish. Eclipse will take few time on building your project, so take a coffee break if you want and be back in few minutes to go through the steps below.
+
+<strong>Step 3: Installing X-Debugger</strong>
+
+[source lang=&#8221;shell&#8221;]
+sudo apt-get install php5-xdebug
+[/source]
+
+<strong>Step 4: Configure X-Debugger</strong>
+Type this in your command prompt.
+[source lang=&#8221;shell&#8221;]
+sudo gedit /etc/php5/apache2/conf.d/xdebug.ini
+[/source]
+
+And add this settings on the .ini file
+
+[source lang=&#8221;shell&#8221;]
+xdebug.remote_enable=1
+[/source]
+
+And restart the apache server.
+
+[source lang=&#8221;shell&#8221;]
+sudo /etc/init.d/apache2 restart
+[/source]
+
+
+<strong>Step 5: Debug Configuration on Eclipse</strong>
+
+On menu click <strong>Window&#8211;>Preference</strong>. Find <strong>PHP&#8211;>Debug</strong> Node in the left. When you click Debug you can see screen like this. <strong>Select PHP Debugger - XDebug</strong>.
+
+<img alt="" src="https://lh4.googleusercontent.com/-VPXpprs69Zs/TyJt9pH7SUI/AAAAAAAAAIw/xNflpZ_t3GY/w612-h503-k/php-Debug.png" title="PHP - Eclipse - Debugger Settings" class="aligncenter" width="611" height="502" />
+
+To Set Server click <strong>PHP Servers</strong> and add new server as follows and click Finish.
+
+<img alt="" src="https://lh3.googleusercontent.com/-A9yecKpDgNk/TyJwssyq9MI/AAAAAAAAAJU/uwWKVvWvmiM/w306-h222-n-k/Server.png" title="PHP-Eclipse-Magento Server Configuration" class="aligncenter" width="306" height="222" />
+
+
+<strong>Step 6: Configuring debug conf for Magento Projects</strong>
+
+On menu click<strong> Run&#8211;> Debug Configurations</strong>. Find <strong>PHP Web Page</strong> and Right click for adding new configuration. Add something similar to like this.
+
+<img alt="" src="https://lh6.googleusercontent.com/-e0CrUe0yLyE/TyJ3RqF5VPI/AAAAAAAAAJ0/0btGPXdLfcA/w291-h222-n-k/Debug%2BSettings.png" title="PHP - Eclipse - Magento - Web Page configuration." class="aligncenter" width="291" height="222" />
+
+
+<strong>Step 7: Add Break-Point and start debugging</strong>
+
+Now almost all the settings are done. Now you can just add a break-point on your code and start debugging your script by clicking the BUG icon on the top bar.
+
+Few tips though before you start.
+
+<ol>
+	<li> Set up an external browser to run your debug configuation. Go to <strong>Window&#8211;>Preference</strong> and type in <strong><em>web browse</em>r</strong> in the top left search. And you will get a result. Click on Web Browser to select Use External Web Browser. If that is not clickable first click the restore default button and then the external web browser should be clickable.</li>	
+<li> You can enable multi-session debug, because you do not want to always click the debug button after each debug end. For that go to preference. Search for debug. Find <strong> PHP &#8211;> Debug &#8211;>Installed Debugger</strong>. Click the <strong>XDebug</strong> and then click configure. You can then Check the <strong>Use Multisession</strong> checkbox and save.</li>
+
+</ol>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-27T00:00:00+05:45" pubdate data-updated="true">Jan 27<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2012/01/27/debugging-magento-using-eclipse-on-ubuntu/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2012/01/27/debugging-magento-using-eclipse-on-ubuntu/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/09/30/happy-dashain-holidays/" title="Previous Post: Happy Dashain Holidays!">&laquo; Happy Dashain Holidays!</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/02/01/magdoc-powered-by-scribd-released-on-magento-connect/" title="Next Post: MagDoc – Powered by Scribd Released on Magento Connect">MagDoc – Powered by Scribd Released on Magento Connect &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

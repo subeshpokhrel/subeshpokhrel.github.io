@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Checking if the domain is registered or not ? - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="On doing one of my project, I came across this situation when I need to find out whether the domain name supplied by the user is available or not? I &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2008/06/17/checking-if-the-domain-is-registered-or-not">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Checking if the Domain Is Registered or Not ?</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-17T00:00:00+05:45" pubdate data-updated="true">Jun 17<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">On doing one of my project, I came across this situation when I need to find out whether the domain name supplied by the user is available or not? I then came up with a solution, here&#8217;s is what I did. But before that let me explain somethings. There is something called WHOIS LOOKUP. WHOIS LOOKUP is action relating to look on official WHOIS database server for the information related to domain name.
+
+According to wikipedia WHOIS &#8220;WHOIS  is a TCP-based query-response  protocol for querying an official database in order to determine the owner of a domain name, an IP address, or an autonomous system number on the Internet&#8221;. ICAAN is presently undertaking the task for managing the WHOIS information.
+
+For querying WHOIS servers here is the PHP code.
+[sourcecode=&#8221;php&#8221;]
+function check_domain($domain,$ext)
+{
+
+	/************************	SERVER DEFINITIONS	************************************/
+	$serverdefs= array(
+							&#8220;com&#8221; => array(&#8220;whois.crsnic.net&#8221;,&#8221;No match for&#8221;),
+							&#8220;net&#8221; => array(&#8220;whois.crsnic.net&#8221;,&#8221;No match for&#8221;),
+							&#8220;org&#8221; => array(&#8220;whois.pir.org&#8221;,&#8221;NOT FOUND&#8221;),
+							&#8220;biz&#8221; => array(&#8220;whois.biz&#8221;,&#8221;Not found&#8221;),
+							&#8220;info&#8221; => array(&#8220;whois.afilias.net&#8221;,&#8221;NOT FOUND&#8221;),
+
+					);
+	/*********************** 	END SERVER DEFINITIONS	*********************************/
+
+
+    $server = $serverdefs[$ext][0];
+    $nomatch = $serverdefs[$ext][1];
+
+	$output=&#8221;&#8220;;
+    if(($sc = fsockopen($server,43))==false){return 2;}
+           fputs($sc,&#8221;$domain.$ext\n&#8221;);
+
+	while(!feof($sc)){$output.=fgets($sc,128);}
+    fclose($sc);
+    //compare what has been returned by the server
+    if (eregi($nomatch,$output)){
+		return true; // if matched
+    }else{
+        return false;
+    }
+}
+[/sourcecode]
+
+<strong>Code #04 - #13</strong> defines the array of official WHOIS server for respective extensions of domains and the respective responses (a chunk of) we get after querying the database servers. For example if we query <em>whois.crsnic.net</em> we get response which contains the phrase &#8221;<em>No match for</em>&#8221; if the domain does not exists.
+<strong>Code #19 - #23</strong> requests the respective server on the basis of extension  and gets the response in form of string on variable <em>$output</em>.
+Then the response is matched with the respective value of response defined in the array (which contains the phrase when the domain does not exists). Then it outputs the boolean value accordingly if the domain does not exists or can be registered it returns <em>true</em>, <em>false </em>otherwise.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-17T00:00:00+05:45" pubdate data-updated="true">Jun 17<span>th</span>, 2008</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2008/06/17/checking-if-the-domain-is-registered-or-not/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2008/06/17/checking-if-the-domain-is-registered-or-not/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2008/06/11/how-to-generate-thumbnail-of-html-pages/" title="Previous Post: How To Generate Thumbnail of HTML Pages">&laquo; How To Generate Thumbnail of HTML Pages</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2008/06/18/latitude-and-longitude-of-a-place-in-google-maps-using-zip-code/" title="Next Post: Latitude and Longitude Of a Place in Google Maps Using Zip Code">Latitude and Longitude Of a Place in Google Maps Using Zip Code &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

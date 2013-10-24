@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML Layout - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="At the first instance I thought WTH! must be pretty simple, add params in XML layout and &#8221;Voila!&#8221;. But later I found that it was not &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Adding CSS Class Name to My Account Link (Anchor Tag) in Magento Through XML Layout</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-23T00:00:00+05:45" pubdate data-updated="true">Sep 23<span>rd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">At the first instance I thought WTH! must be pretty simple, add params in XML layout and &#8221;<strong>Voila!</strong>&#8221;. But later I found that it was not simpler as I thought. I had to get into the addLink method for sometime <strong>(1/2hr)</strong> and finally I came up with correct structure of XML layout. At the end it again seemed simple though, but it needed a healthy effort.
+
+Here&#8217;s the XML structure of layout from <em>customer.xml</em> where you add class to <strong>My Account link</strong>.
+
+[source language=&#8221;xml&#8221;]
+&lt;!&#8211; customer.xml&#8211;&gt;
+    &lt;reference name=&quot;top.links&quot;&gt;
+        &lt;action method=&quot;addLink&quot; translate=&quot;label title&quot; module=&quot;customer&quot;&gt;
+			&lt;label&gt;My Account&lt;/label&gt;
+			&lt;url helper=&quot;customer/getAccountUrl&quot;/&gt;
+			&lt;title&gt;My Account&lt;/title&gt;
+			&lt;prepare/&gt;
+			&lt;urlParams/&gt;
+			&lt;class/&gt;
+			&lt;position&gt;10&lt;/position&gt;
+			&lt;aParams&gt;
+				&lt;class&gt;my-class-name&lt;/class&gt;
+			&lt;/aParams&gt;
+		&lt;/action&gt;
+    &lt;/reference&gt;
+&lt;!&#8211; customer.xml&#8211;&gt;
+[/source]
+
+One notable thing in the structure above is the <strong>aParams</strong> which is responsible for adding the class to the Anchor tag, not the List tag. Hope this helps someone! Happy Coding.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-23T00:00:00+05:45" pubdate data-updated="true">Sep 23<span>rd</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/08/12/working-ajax-json-objects-magento-case-ajax-powered-login-functionality/" title="Previous Post: Working with Ajax and JSON Objects in Magento [Case: Ajax Powered Login Functionality]">&laquo; Working with Ajax and JSON Objects in Magento [Case: Ajax Powered Login Functionality]</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend/" title="Next Post: Adding Custom Javascript on Admin form in Magento (Backend)">Adding Custom Javascript on Admin form in Magento (Backend) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

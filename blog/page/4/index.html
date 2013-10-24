@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I recently got to a situation where I needed to add a new frontend template for some module and after some action show the error or success message. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/04/solution-error-message-showing-frontends-magento/">Solution: Error Message Not Showing Up in Frontend in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-04T00:00:00+05:45" pubdate data-updated="true">May 4<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I recently got to a situation where I needed to add a new frontend template for some module and after some action show the error or success message. Not the first time though :P. Interesting thing was even if I added this code in the PHTML file.
+
+[source language=&#8221;php&#8221;]
+
+&lt;?php echo $this-&gt;getMessagesBlock()-&gt;getGroupedHtml() ?&gt;
+
+[/source]
+
+It did not work. Yes, after adding this block it had worked before. In my case, the probable case might be that I had called the module&#8217;s template from CMS page. In other case it should work. So, I looked for work around and the following did the trick.
+
+[source language=&#8221;php&#8221;]
+// Getting Messages from Session
+$messages=Mage::getSingleton(&quot;customer/session&quot;)-&gt;getMessages();
+
+// Creating Block Mage_Core_Block_Messages
+// Setting Message
+// echoing the Message&#8217;s HTML
+echo $this-&gt;getLayout()-&gt;createBlock(&quot;core/messages&quot;)-&gt;setMessages($messages)-&gt;getGroupedHtml();
+
+[/source]
+
+The Error/Success or Notice messages are set on session. So what I did was take those message/s from the session and create a new block, same as what <strong>$this->getMessagesBlock()</strong> might have called, and set those message to the created block and echoed its HTML.
+
+Clever? or not?
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/30/redirect-location-model-observer-magento/">Redirect to Some Other Location From Model or Observer in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-30T00:00:00+05:45" pubdate data-updated="true">Mar 30<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Redirection in Magento&#8217;s controller is simple. You just need to call a <strong>_redirect() </strong>or <strong>_forward() </strong>function and provide appropriate router/controller/action parameter. But if you want to redirect to some other page from Model or from Observer, then this can be tricky. Lets take an example, for explaining what I am referring to, Suppose you are building a module that will only allow user of certain group to view a product in frontend. Then, you will have options like:
+
+<ul>
+<ol>
+Rewrite you catalog/product/view controller and add that logic.
+</ol>
+<ol>
+Rewrite Block of that page and show error message accordingly.
+</ol>
+<ol>
+Any other..?
+</ol>
+</ul>
+
+Yeha, I do have another option as well. The Event-Observer Method. You can observe an event <strong>controller_action_predispatch_catalog_product_view</strong> and set up an observer where you can write your own logic there and redirect accordingly.
+
+You can observe that event by setting up your config something like this.
+
+[source language=&#8221;xml&#8221;]
+&lt;controller_action_predispatch_catalog_product_view&gt;
+	&lt;observers&gt;
+		&lt;mymodel&gt;
+			&lt;type&gt;singleton&lt;/type&gt;
+			&lt;class&gt;mymodel/controller_observer&lt;/class&gt;
+			&lt;method&gt;controller_action_predispatch_catalog_product_view&lt;/method&gt;
+		&lt;/mymodel&gt;
+	&lt;/observers&gt;
+&lt;/controller_action_predispatch_catalog_product_view&gt;
+[/source]
+
+And on the observer&#8217;s <strong>controller_action_predispatch_catalog_product_view</strong> method, you can check your logic for visibiliy of that product to the logged in user group and redirect if not visible.
+
+Here&#8217;s the main point of this post (Did I take a lot of your time ?), in that same method you can directly redirect using the following snippet of code.
+
+[source language=&#8221;php&#8221;]
+
+Mage::app()-&gt;getResponse()-&gt;setRedirect(Mage::getUrl(&quot;myrouter/mycontroller/noview&quot;));
+
+[/source]
+
+Adding an error message to the session would be a good idea, for user to understand what is happening. Else you can directly call a template in the redirected controller&#8217;s action with appropriate message.
+
+I think this sums up the post for now..and as always hoping it helps somebody and waiting for the response.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/24/generating-backend-admin-url-key-parameters-magento/">Generating Backend-Admin URL With Key and Parameters in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T00:00:00+05:45" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">When you log into adminstrator part of the Magento webshop, and look into the url you may see something like this.
+[caption id=&#8221;attachment_230&#8221; align=&#8221;alignnone&#8221; width=&#8221;419&#8221; caption=&#8221;Admin URL with Keys and Parameters&#8221;]<img src="http://subesh.com.np/wp-content/uploads/2010/03/adminurl.png" alt="Admin URL with Keys and Parameters" title="Admin URL with Keys and Parameters" width="419" height="42" class="size-full wp-image-230" />[/caption]
+
+<p>The part in &#8220;RED&#8221; are module controller(router)/action. And the part in &#8220;GREEN&#8221; is what we call as &#8221;<strong>Paramerters</strong>&#8221; and the &#8220;BLUE&#8221; part is the &#8221;<strong>Key</strong>&#8221;. The Key (which is also a URL parameter) in the URL has been added for security reasons and is checked against the session&#8217;s values for every action. If store owner does not want to use the key in admin url, then it can be set off from administrator settings.</p>
+<p>My point in this post is, if you are a developer and creating a module that has Admin controller and you are simply calling some action of your controller lets say,<strong> <em>mymodule/adminhtml_mycontroller/myaction/param1/1/param2/2</em> </strong>the it does not redirect you to your intended page, but will redirect to dashboard, IF key is enabled. You will have to add the key parameter to the URL to go to your page. So here is a simple snippet of code that will help you to build your URL with valid keys.</p>
+
+[source language=&#8221;php&#8221;]
+echo Mage::helper(&quot;adminhtml&quot;)-&gt;getUrl(&quot;mymodule/adminhtml_mycontroller/myaction/&quot;,array(&quot;param1&quot;=&gt;1,&quot;param2&quot;=&gt;2));
+[/source]
+
+<p>The &#8220;adminhtml&#8221; helper will automatically create url with keys attached to the URL.</p>
+<p>Next thing, if you see the key of various pages in admin you will see that those keys are not same, there is a different logic behind creating those key values. The keys generated depends upon the controller and action you are about to execute. Keys can be seperatly generated as follows.</p>
+
+[source language=&#8221;php&#8221;]
+Mage::getSingleton(&#8216;adminhtml/url&#8217;)-&gt;getSecretKey(&quot;adminhtml_mycontroller&quot;,&quot;myaction&quot;);
+[/source]
+<p>Hope this helps, and this can be particularly helpful when you are using templates in admin modules and adding buttons to redirect to some other location. At least that was my case!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier/">Magento Module Release: Uses Layout to List Post, Made by AW Blog, on the Basis of Category Identifier</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-16T00:00:00+05:45" pubdate data-updated="true">Mar 16<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I&#8217;ve always wanted to contribute something in Magento Community and I think today the day has arrived. The module is named as Sirius Blog Helper, just a name, Who cares about the &#8220;Name&#8221; unless it works :D. The basic function of the Module is to list the post made via <a href="http://www.magentocommerce.com/extension/1516/blog">AW Blog</a> extension, categorized by category identifier of the post, using Layout. Yes, only through layout you can list the post anywhere you want. Not only that you can also restrict the size of the list through layout as well.
+
+Suppose you want to list 5 recent post made under &#8220;news&#8221; category identifier. Here&#8217;s how you can do it easily, of course you have to install the module first. The Module can be currently downloaded from <a href="http://subeshexamples.googlecode.com/files/Sirius_Bloghelper.zip">Here</a>, and will be soon available in Magento Connect as well.
+
+[source language=&#8221;xml&#8221;]
+&lt;reference name=&quot;right&quot;&gt;
+	&lt;block type=&quot;sbloghelper/helper&quot; name=&quot;news.list&quot;&gt;
+		&lt;action method=&quot;addCategoryIdentifier&quot;&gt;
+			&lt;identifier&gt;news&lt;/identifier&gt;
+		&lt;/action&gt;
+		&lt;action method=&quot;addListSize&quot;&gt;
+			&lt;size&gt;5&lt;/size&gt;
+		&lt;/action&gt;
+	&lt;/block&gt;
+&lt;/reference&gt;
+[/source]
+
+Simple isn&#8217;t it? You can place similar kind of code in layout out to list other post categorically. Hope this helps to someone. Please do post your feedbacks.
+
+[caption id=&#8221;attachment_226&#8221; align=&#8221;alignnone&#8221; width=&#8221;253&#8221; caption=&#8221;Frontend Screen Shots&#8221;]<img src="http://subesh.com.np/wp-content/uploads/2010/03/frontend-253x300.png" alt="Frontend Screen Shots" title="Frontend Screen Shots" width="253" height="300" class="size-medium wp-image-226" />[/caption] 
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/12/creating-product-links-magento-custom-query/">Creating Product Links in Magento Using Custom Query</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-12T00:00:00+05:45" pubdate data-updated="true">Mar 12<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I&#8217;ve already made a post in this blog about <a href="http://subesh.com.np/2009/11/adding-related-product-and-other-links-to-product-in-magento/">Adding Related Product and other links to Product in Magento </a>. But when I used the method to creating links among product&#8217;s, while importing very large number of products and creating large number of product links, it took a lot of time and resource. So I thought why not give it a try by direclty creating a link using SQL? And YES! it worked.
+
+Below is the code how I created those links using Custom SQL. But I have to tell you that the former methods looks organized, this is just a work around to a situation. You might know what I am trying to say!
+
+[source language=&#8221;php&#8221;]
+$resource 	= Mage :: getSingleton( &#8216;core/resource&#8217; );
+$read= $resource -&gt; getConnection( &#8216;core_read&#8217; );
+$write= $resource-&gt;getConnection(&#8216;core_write&#8217;);
+$linkTable=$resource-&gt;getTableName(&#8216;catalog/product_link&#8217;);
+
+// Creating Upsell Product link
+
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id=&#8217;&quot;.$productId.&quot;&#8217;,
+							linked_product_id=&#8217;&quot;.$linkProduct.&quot;&#8217;,
+							link_type_id=&#8217;&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_UPSELL.&quot;&#8217;
+			&quot;);
+
+// Creating Related Product link
+
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id=&#8217;&quot;.$productId.&quot;&#8217;,
+							linked_product_id=&#8217;&quot;.$linkProduct.&quot;&#8217;,
+							link_type_id=&#8217;&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_RELATED.&quot;&#8217;
+			&quot;);
+
+// Creating Crosssell Product Link
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id=&#8217;&quot;.$productId.&quot;&#8217;,
+							linked_product_id=&#8217;&quot;.$linkProduct.&quot;&#8217;,
+							link_type_id=&#8217;&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_CROSSSELL.&quot;&#8217;
+			&quot;);
+[/source]
+
+
+Happy Coding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/11/creating-collection-objects-magento-magical-classvarien_data_collection/">Creating Collection of Objects in Magento Using a &#8220;Magical Class&#8221;:Varien_Data_Collection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-11T00:00:00+05:45" pubdate data-updated="true">Mar 11<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Have you ever wondered how Collection in Magento are built, containing array of individual Entity Objects of Magento? Collections are one of the most important data structure (if I am right) used in Magento. Most of the queries in Magento will result into collection, and then you will apply a foreach loop to access individual Entity Objects and their values. Today I came into a different situation where I had individual objects but needed to create a collection of those objects, so that I could return the collection from a function.
+
+I have not drilled down to the details of collection, untill today when I really need it! Do you think its very late? because I have been into Magento for more than a year now!. Better late than never! So, I got the way of working out my situation. Here is how I created a collection from Magento&#8217;s &#8220;Magical Class&#8221; Varien_Data_Collection. I call this &#8220;Magical Class&#8221;, because it worked like a Magic to me :D
+
+[source language=&#8221;php&#8221;]
+$collection=new Varien_Data_Collection();
+$collection-&gt;addItem($objProduct);
+[/source]
+
+There are various other functions in this class you might need to &#8220;work around&#8221; a problem. So, have a look and certainly do comment if you also think this class to be a Magical Class!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/10/ordered-items-detail-order-id-magento/">Getting Ordered Items and Their Detail From Order ID in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-10T00:00:00+05:45" pubdate data-updated="true">Mar 10<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Here is a small snippet of code, yet useful, to get ordered items and its details. I&#8217;ve deviced this code a lot before and posted in Magento Commerce&#8217;s Forum as well. But felt like writting it again, so that I can have a quick refrence to it as well. Next thing, I&#8217;ve tried a lot to get all orders and their items details by single query, but have not yet come up with a solution. If you have any method of finding order and its details by a single query, then please do response. The code below first needs an order ID as it parameters to give order details.
+
+[source language=&#8221;php&#8221;]
+$order = Mage::getModel(&#8216;sales/order&#8217;)-&gt;load($order_id);
+$items = $order-&gt;getAllItems();
+$itemcount=count($items);
+$name=array();
+$unitPrice=array();
+$sku=array();
+$ids=array();
+$qty=array();
+foreach ($items as $itemId =&gt; $item)
+{
+	$name[] = $item-&gt;getName();
+	$unitPrice[]=$item-&gt;getPrice();
+	$sku[]=$item-&gt;getSku();
+	$ids[]=$item-&gt;getProductId();
+	$qty[]=$item-&gt;getQtyToInvoice();
+}
+[/source]
+
+Hope this might &#8220;just&#8221; help somebody in need.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/02/create-download-xls-report-file-magentos-core/">Create and Download XLS Report File Using Magento&#8217;s Core</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-02T00:00:00+05:45" pubdate data-updated="true">Mar 2<span>nd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Reporting can be a very important part of the Module you might be developing for Mageneto. If you are showing your data in Grid that&#8217;s good, but it will be better if you add XLS file generation action on that grid, so that the site administrator can see the report in paper. And if you have in paper you can visualize more clearly than on screen.
+
+I came this condition recently, and found out that Magento has functions to chanage your Grid (in Admin) to XLS files and if you dig more than you can change your data Array to XLS file using Magento&#8217;s function.
+
+First let me say you about exporing data from the Admin Grid you have already populated. You need do the following in your grid Block&#8217;s _prepareColumn function.
+
+[source language=&#8221;php&#8221;]
+$this-&gt;addExportType(&#8216;router/controller/action&#8217;, Mage::helper(&#8216;reports&#8217;)-&gt;__(&#8216;Excel&#8217;));
+[/source]
+
+And in your controller you will have to do this.
+
+[source language=&#8221;php&#8221;]
+/**
+     * Export grid to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+        $fileName   = &#8216;grid.xls&#8217;;
+
+		/**
+		* This is the part where Grid Columns and Data are created as Excel XML and returned as stream.
+		* The implementation of this code is done in the parent class of Grid Mynamespace_Mymodule_Block_Adminhtml_Grid
+		* And that class should be Mage_Adminhtml_Block_Widget_Grid
+		*/
+
+        $content    = $this-&gt;getLayout()-&gt;createBlock(&#8216;mymodule_adminhtml/mygrid_grid&#8217;)
+            -&gt;getExcel($fileName);
+
+    /**
+	* This is for Force Download implemented below
+	*/
+	$this-&gt;_prepareDownloadResponse($fileName, $content);
+    }
+
+	/**
+	 * Force Download Code block in your controller
+     * Declare headers and content file in responce for file download
+     *
+     * @param string $fileName
+     * @param string $content set to null to avoid starting output, $contentLength should be set explicitly in that case
+     * @param string $contentType
+     * @param int $contentLength explicit content length, if strlen($content) isn&#8217;t applicable
+     * @return Mage_Adminhtml_Controller_Action
+     */
+    protected function _prepareDownloadResponse($fileName, $content, $contentType = &#8216;application/octet-stream&#8217;, $contentLength = null)
+    {
+        $session = Mage::getSingleton(&#8216;admin/session&#8217;);
+        if ($session-&gt;isFirstPageAfterLogin()) {
+            $this-&gt;_redirect($session-&gt;getUser()-&gt;getStartupPageUrl());
+            return $this;
+        }
+        $this-&gt;getResponse()
+            -&gt;setHttpResponseCode(200)
+            -&gt;setHeader(&#8216;Pragma&#8217;, &#8216;public&#8217;, true)
+            -&gt;setHeader(&#8216;Cache-Control&#8217;, &#8216;must-revalidate, post-check=0, pre-check=0&#8217;, true)
+            -&gt;setHeader(&#8216;Content-type&#8217;, $contentType, true)
+            -&gt;setHeader(&#8216;Content-Length&#8217;, is_null($contentLength) ? strlen($content) : $contentLength)
+            -&gt;setHeader(&#8216;Content-Disposition&#8217;, &#8216;attachment; filename=&#8217; . $fileName)
+            -&gt;setHeader(&#8216;Last-Modified&#8217;, date(&#8216;r&#8217;));
+        if (!is_null($content)) {
+            $this-&gt;getResponse()-&gt;setBody($content);
+        }
+        return $this;
+    }
+[/source]
+
+Now you can export your Grid data to XLS sheet. But what about your array you are not displaying in the grid? This should be fun too.. for you now.. because it was not fun for me to find out in the first hand :P.
+
+Lets take the same controller now.
+
+[source language=&#8221;php&#8221;]
+ /**
+     * Export Array to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+		$filename   = &#8216;array.xls&#8217;;
+		$exportData=Mage::getSingleton(&quot;adminhtml/session&quot;)-&gt;getMyData();
+
+		/**
+		* Example Data Format
+		* $data[0][&#8216;product_id&#8217;]=10
+		* $data[0][&#8216;product_name&#8217;]=HTC Diamond
+		* $data[0][&#8216;vendor_name&#8217;]=HTC JMKYZY
+		* $data[1][&#8216;product_id&#8217;]=11
+		* $data[1][&#8216;product_name&#8217;]=HTC Ruby
+		* $data[1][&#8216;vendor_name&#8217;]=HTC JMKYZY
+		*
+		*/
+
+		// Setting headers columns
+			$data[0]=array($this-&gt;__(&quot;Product ID&quot;),$this-&gt;__(&quot;Product Name&quot;),$this-&gt;__(&quot;Vendors&quot;));
+
+		// Setting Column Data
+			$i=1;
+			foreach($exportData as $key=&gt;$value){
+				$data[$i]=array($value[&#8216;product_id&#8217;],$value[&#8216;product_name&#8217;],$value[&#8216;vendor_name&#8217;]);
+				$i++;
+			}
+
+		// Unparsing in Excel Format
+			$xmlObj = new Varien_Convert_Parser_Xml_Excel();
+			$xmlObj-&gt;setVar(&#8216;single_sheet&#8217;, $filename);
+			$xmlObj-&gt;setData($data);
+			$xmlObj-&gt;unparse();
+			$content=$xmlObj-&gt;getData();
+
+			// Force Download
+			$this-&gt;_prepareDownloadResponse($filename,$content);
+	}
+[/source]
+
+So by comparing the two export controller methods, you can see that the Admin Grid&#8217;s Parent already has the functionality to get data from Grid and set that data to Varien_Convert_Parser_Xml_Excel Object and unparse its. As I said we need to dig further to know what going on inside Magento.
+
+Happy Coding.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/">Debugging Magento Using Eclipse PDT & Zend Debugger</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-22T00:00:00+05:45" pubdate data-updated="true">Jan 22<span>nd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><strong>Latest Post on Debugging Magento: <a href="http://subesh.com.np/2012/01/debugging-magento-using-eclipse-on-ubuntu/" title="Debugging Magento On Ubuntu">Debugging Magento Using Eclipse on Ubuntu</a></strong>
+
+I had always thought of using Eclipse to debug Magento&#8217;s complex code flow, and tried number of times before. But without any success I had to abandon it, and thought was not applicable for Magento, remember the fox and the sour grapes :D I also tried using Trial Version of Zend Studio, but with no sucess.
+
+But today I was looking at fontis&#8217;s blog <a href="http://www.fontis.com.au/blog/magento/debugging-with-xdebug">http://www.fontis.com.au/blog/magento/debugging-with-xdebug</a> and they had indeed used XDebugger and are debugging Magento through command line. So, I thought why not give it a try once again! And as you have already expected i was successfull today!! Wasn&#8217;t easy though :P
+
+Here&#8217;s what I&#8217;ve done to get it working on WAMP. Before getting this done I assume you have created a new PHP Project and imported all files, beforehand in Eclipse.
+
+<strong>Step 1</strong>. A very good explanation of downloading Eclipse PDT with Zend Debugger can be found here <a href="http://www.thierryb.net/pdtwiki/index.php?title=Using_PDT_:_Installation_:_Installing_the_Zend_Debugger">Installing_the_Zend_Debugger</a>
+
+<strong>Step 2</strong>. Configuring the Zend Debugger can also be found on same location but I would like to emphasize on its setting here, coz I missed myself on first run :D
+
+Use these settings for For Zend debugger in <strong>php.ini</strong>
+
+[Zend]
+zend_extension_ts=D:/wamp/bin/php/php5.2.5/ext/ZendDebugger.dll
+zend_debugger.allow_hosts=127.0.0.1
+zend_debugger.expose_remotely=always
+
+You should not forget to enable <strong>Zend Debugger</strong> extension on WAMP. Now restart Wamp. You are now well set with Eclipse PDT and Zend Debugger. Next thing you need to do is make debugging settings in your Eclipse.
+
+<strong>Step 3</strong>. In you Eclipse Go to <strong>Windows&#8211;&gt;Preference&#8211;&gt;Debug</strong> and set as follows
+
+<img class="alignnone size-full wp-image-194" title="debugsettings" src="http://subesh.com.np/wp-content/uploads/2010/01/debugsettings.jpg" alt="debugsettings" width="500" height="497" />
+
+<strong>Step 4</strong>. Then <strong>Windows&#8211;&gt;Preference&#8211;&gt;Server</strong> and set as follows
+
+<img class="alignnone size-full wp-image-198" title="Debug Server" src="http://subesh.com.np/wp-content/uploads/2010/01/debugserver.jpg" alt="Debug Server" width="500" height="497" />
+
+While setting Server configuration you will be prompt to add server path in path mapping, place that relative to your www root Example: <strong>/mysite</strong> (which will open as localhost/mysite) and select the files in your workspace.
+
+<strong>Step 5</strong>. Now all your settings are done. Now let me tell you about debugging a Block Class of Magento, say <strong>Mage_Catalog_Block_Product_List</strong>. Go to the class file and add a breakpoint anywhere inside <strong>_getProductCollection </strong> function.
+
+<strong>Step 6</strong>. Go to <strong>Run&#8211;&gt;Open Run Dialog</strong> and configure as following
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" target="_blank"><img class="alignnone size-full wp-image-200" title="Run Profile1" src="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" alt="Run Profile1" width="500" height="369" /></a>
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" target="_blank"><img class="alignnone size-full wp-image-202" title="Profile 2" src="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" alt="Profile 2" width="502" height="367" /></a>
+
+<strong>Step 7</strong>. All set to go now, Run profile as web page Run&#8211;&gt;Debug As&#8211;&gt;PHP Webpage.
+
+You can now see PHP Debug perspective, and use Step Over or Step Into to debug your values. Here is what I got.
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" target="_blank"><img class="alignnone size-full wp-image-204" title="debugging" src="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" alt="debugging" width="501" height="263" /></a>
+
+Hope this might be a life changer.. at least it is for me!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/18/customers-info-single-query-including-billing-shipping-addresses/">Getting Customer&#8217;s Info Using Single Query Including Billing and Shipping Addresses</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-18T00:00:00+05:45" pubdate data-updated="true">Jan 18<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Query in Magento can be quite troublesome, if you are a starter..or non-starter. So I&#8217;ve tried to share some of the difficult queries using collection in Magento, so that it will be helpful to my blog readers and also a place where I can later refer to. Here is one of them, may not be dificult to all, but for me I had a very bad time initially, when I first started on Magento about a year ago. I had always thought to post on my blog, but when one of my collegue asked me about this I remembered and here&#8217;s the query.
+
+[source language=&#8221;php&#8221;]
+$collection = Mage::getResourceModel(&#8216;customer/customer_collection&#8217;)
+				-&gt;addNameToSelect()
+				-&gt;addAttributeToSelect(&#8216;email&#8217;)
+				-&gt;addAttributeToSelect(&#8216;created_at&#8217;)
+				-&gt;addAttributeToSelect(&#8216;group_id&#8217;)
+				-&gt;joinAttribute(&#8216;billing_street&#8217;, &#8216;customer_address/street&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_postcode&#8217;, &#8216;customer_address/postcode&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_city&#8217;, &#8216;customer_address/city&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_telephone&#8217;, &#8216;customer_address/telephone&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_fax&#8217;, &#8216;customer_address/fax&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_region&#8217;, &#8216;customer_address/region&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;billing_country_code&#8217;, &#8216;customer_address/country_id&#8217;, &#8216;default_billing&#8217;, null, &#8216;left&#8217;)
+
+				-&gt;joinAttribute(&#8216;shipping_street&#8217;, &#8216;customer_address/street&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_postcode&#8217;, &#8216;customer_address/postcode&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_city&#8217;, &#8216;customer_address/city&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_telephone&#8217;, &#8216;customer_address/telephone&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_fax&#8217;, &#8216;customer_address/fax&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_region&#8217;, &#8216;customer_address/region&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;shipping_country_code&#8217;, &#8216;customer_address/country_id&#8217;, &#8216;default_shipping&#8217;, null, &#8216;left&#8217;)
+				-&gt;joinAttribute(&#8216;taxvat&#8217;, &#8216;customer/taxvat&#8217;, &#8216;entity_id&#8217;, null, &#8216;left&#8217;);
+
+[/source]
+
+Hope this helps somebody!
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

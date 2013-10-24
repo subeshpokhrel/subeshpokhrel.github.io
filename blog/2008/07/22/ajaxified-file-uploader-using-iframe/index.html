@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ajaxified File Uploader Using IFrame - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Today, while writing a code for AJAX file uploader, I was trying to do with [wiki]SALAJAX[/wiki]. But, with SALAJAX I could not manage to send the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2008/07/22/ajaxified-file-uploader-using-iframe">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ajaxified File Uploader Using IFrame</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-07-22T00:00:00+05:45" pubdate data-updated="true">Jul 22<span>nd</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Today, while writing a code for AJAX file uploader, I was trying to do with [wiki]SALAJAX[/wiki]. But, with <strong>SALAJAX</strong> I could not manage to send the headers for <strong>$_FILES</strong>. So I thought of an alternative. And the alternative was to load the action page of the form on [wiki]IFrame[/wiki], whose display would be hidden and the work for uploading the file will be done on the background without refreshing the page. Yeha.. Its not [wiki]AJAX[/wiki], but it gives a user the feel of asynchronous working on the page. So, my code is <strong>Asynchronous Feel Without Javascript and XML (AFWJAX)</strong>. What do think about this?
+So, Here&#8217;s the code.The code below is for the form.
+[sourcecode=&#8221;html&#8221;]
+<form action="iframeinc.php" method="post" enctype="multipart/form-data" id="uploadform" target="iframe" name="uploadform">
+ File:
+  <input name="pic" type="file" id="pic" style="margin-right:50px;" />
+  <br />
+<input type="submit" name="Submit" value="Upload" ><br />
+<iframe name="iframe" src="iframeinc.php" width="200" height="500" style="display:none;"> </iframe>
+</form>
+[/sourcecode]
+
+You can see on <strong>#1</strong> the action of the form is <strong>iframeinc.php</strong>. The code for this page is given below. There are some other things you should remember. Like the <strong>target</strong> for the form is set <strong>iframe</strong>, whose <strong>display</strong> is set <strong>none</strong> so that it is not seen.  And this iframe is the of the iframe created on <strong>#6</strong>, whose source is the <strong>iframeinc.php</strong>. Now here&#8217;s its code.
+[sourcecode=&#8221;php&#8221;]
+<?php
+if($_POST){
+
+	// $newname is the new path/name of the file on the server.
+	$copied = copy($_FILES['pic']['tmp_name'], "$newname");
+
+}
+?>
+[/sourcecode]
+
+Remember to set <strong>$newname</strong> value before running this. At first run you may see this as a regular post script, but try to reload with f5 or reload button of your browser, you will not be asked to retry or resend the post header. So, there are own ways of catching your nose.
+<a href="http://subeshexamples.googlecode.com/files/upload.rar"><strong>[Download Source]</strong></a>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-07-22T00:00:00+05:45" pubdate data-updated="true">Jul 22<span>nd</span>, 2008</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2008/07/22/ajaxified-file-uploader-using-iframe/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2008/07/22/ajaxified-file-uploader-using-iframe/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2008/07/16/tabbed-infowindow-in-google-maps/" title="Previous Post: Tabbed Infowindow in Google Maps">&laquo; Tabbed Infowindow in Google Maps</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2008/09/23/facebook-chat-on-a-side-bar-of-mozilla/" title="Next Post: Facebook Chat On a Side Bar Of Mozilla">Facebook Chat On a Side Bar Of Mozilla &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

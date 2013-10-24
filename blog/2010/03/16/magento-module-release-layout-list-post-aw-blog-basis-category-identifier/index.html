@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Magento Module Release: Uses Layout To List Post, made by AW Blog, on the basis of Category Identifier - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I&#8217;ve always wanted to contribute something in Magento Community and I think today the day has arrived. The module is named as Sirius Blog &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Magento Module Release: Uses Layout to List Post, Made by AW Blog, on the Basis of Category Identifier</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-16T00:00:00+05:45" pubdate data-updated="true">Mar 16<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">I&#8217;ve always wanted to contribute something in Magento Community and I think today the day has arrived. The module is named as Sirius Blog Helper, just a name, Who cares about the &#8220;Name&#8221; unless it works :D. The basic function of the Module is to list the post made via <a href="http://www.magentocommerce.com/extension/1516/blog">AW Blog</a> extension, categorized by category identifier of the post, using Layout. Yes, only through layout you can list the post anywhere you want. Not only that you can also restrict the size of the list through layout as well.
+
+Suppose you want to list 5 recent post made under &#8220;news&#8221; category identifier. Here&#8217;s how you can do it easily, of course you have to install the module first. The Module can be currently downloaded from <a href="http://subeshexamples.googlecode.com/files/Sirius_Bloghelper.zip">Here</a>, and will be soon available in Magento Connect as well.
+
+[source language=&#8221;xml&#8221;]
+&lt;reference name=&quot;right&quot;&gt;
+	&lt;block type=&quot;sbloghelper/helper&quot; name=&quot;news.list&quot;&gt;
+		&lt;action method=&quot;addCategoryIdentifier&quot;&gt;
+			&lt;identifier&gt;news&lt;/identifier&gt;
+		&lt;/action&gt;
+		&lt;action method=&quot;addListSize&quot;&gt;
+			&lt;size&gt;5&lt;/size&gt;
+		&lt;/action&gt;
+	&lt;/block&gt;
+&lt;/reference&gt;
+[/source]
+
+Simple isn&#8217;t it? You can place similar kind of code in layout out to list other post categorically. Hope this helps to someone. Please do post your feedbacks.
+
+[caption id=&#8221;attachment_226&#8221; align=&#8221;alignnone&#8221; width=&#8221;253&#8221; caption=&#8221;Frontend Screen Shots&#8221;]<img src="http://subesh.com.np/wp-content/uploads/2010/03/frontend-253x300.png" alt="Frontend Screen Shots" title="Frontend Screen Shots" width="253" height="300" class="size-medium wp-image-226" />[/caption] 
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-16T00:00:00+05:45" pubdate data-updated="true">Mar 16<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/03/12/creating-product-links-magento-custom-query/" title="Previous Post: Creating Product Links in Magento Using Custom Query">&laquo; Creating Product Links in Magento Using Custom Query</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/03/24/generating-backend-admin-url-key-parameters-magento/" title="Next Post: Generating Backend-Admin URL with Key and Parameters in Magento">Generating Backend-Admin URL with Key and Parameters in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

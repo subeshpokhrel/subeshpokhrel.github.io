@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Image Resize In Magento & cache the resized image - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Handling Products image in Magento is quite easy to do. Magento has deviced as very good class and function to create product&#8217;s image by &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2009/11/24/image-resize-magento-cache-resized-image">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Image Resize in Magento & Cache the Resized Image</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-24T00:00:00+05:45" pubdate data-updated="true">Nov 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Handling Products image in Magento is quite easy to do. Magento has deviced as very good class and function to create product&#8217;s image by defining widht and height and in addition it caches that image created if you want to get the same sized image next time. But managing other images like category images or other image you may need in your module can be quite troublesome. I went to the core of the function used to cache product&#8217;s image and came up with the script which can be used to cache any other images, like the product&#8217;s image.
+
+Basically the theroy is to create the image of sizes defined in the function parameter and while it is being fetched for the second time checked if the same size image exists or not. If yes then returnt the http url of that image else create new image.Next trick is to save the new size image in the folder with name as widhtXheight (101X65), which can be helpful to check if image exists or not for the given width and height parameters.
+
+Below is the code for doing this, you can place this code in your helper, for easy access.
+
+[source language=&#8221;php&#8221;]
+<?php
+/**
+ * @author Subesh Pokhrel
+ * @website subesh.com.np
+ *
+ */
+class Namespace_Module_Helper_Data extends Mage_Core_Helper_Abstract
+{
+
+	/**
+	 * Returns the resized Image URL
+	 *
+	 * @param string $imgUrl - This is relative to the the media folder (custom/module/images/example.jpg)
+	 * @param int $x Width
+	 * @param int $y Height
+	 */
+	public function getResizedUrl($imgUrl,$x,$y=NULL){
+		$imgPath=$this->splitImageValue($imgUrl,&#8221;path&#8221;);
+		$imgName=$this->splitImageValue($imgUrl,&#8221;name&#8221;);
+
+		/**
+		 * Path with Directory Seperator
+		 */
+		$imgPath=str_replace(&#8220;/&#8221;,DS,$imgPath);
+
+		/**
+		 * Absolute full path of Image
+		 */
+		$imgPathFull=Mage::getBaseDir(&#8220;media&#8221;).DS.$imgPath.DS.$imgName;
+
+
+		/**
+		 * If Y is not set set it to as X
+		 */
+		$widht=$x;
+		$y?$height=$y:$height=$x;
+
+		/**
+		 * Resize folder is widthXheight
+		 */
+		$resizeFolder=$widht.&#8221;X&#8221;.$height;
+
+		/**
+		 * Image resized path will then be
+		 */
+		$imageResizedPath=Mage::getBaseDir(&#8220;media&#8221;).DS.$imgPath.DS.$resizeFolder.DS.$imgName;
+
+		/**
+		 * First check in cache i.e image resized path
+		 * If not in cache then create image of the width=X and height = Y
+		 */
+		if (!file_exists($imageResizedPath)&amp;amp;&amp;amp; file_exists($imgPathFull)) :
+			$imageObj = new Varien_Image($imgPathFull);
+			$imageObj->constrainOnly(TRUE);
+			$imageObj->keepAspectRatio(TRUE);
+			$imageObj->resize($widht,$height);
+			$imageObj->save($imageResizedPath);
+		endif;
+
+		/**
+		 * Else image is in cache replace the Image Path with / for http path.
+		 */
+		$imgUrl=str_replace(DS,&#8221;/&#8221;,$imgPath);
+
+		/**
+		 * Return full http path of the image
+		 */
+		return Mage::getBaseUrl(&#8220;media&#8221;).$imgUrl.&#8221;/&#8221;.$resizeFolder.&#8221;/&#8221;.$imgName;
+	}
+
+	/**
+	 * Splits images Path and Name
+	 *
+	 * Path=custom/module/images/
+	 * Name=example.jpg
+	 *
+	 * @param string $imageValue
+	 * @param string $attr
+	 * @return string
+	 */
+	public function splitImageValue($imageValue,$attr=&#8221;name&#8221;){
+		$imArray=explode(&#8220;/&#8221;,$imageValue);
+
+		$name=$imArray[count($imArray)-1];
+		$path=implode(&#8220;/&#8221;,array_diff($imArray,array($name)));
+		if($attr==&#8221;path&#8221;){
+			return $path;
+		}
+		else
+			return $name;
+
+	}
+}
+[/source]
+
+And you can access this from anywhere by just this.
+
+[source language=&#8221;php&#8221;]
+
+/**
+*But remember your base image or big image must be in Root/media/custom/module/images/example.jpg
+*/
+
+echo Mage::helper(&#8216;yourmodulehelper&#8217;)->getResizedUrl(&#8220;custom/module/images/example.jpg&#8221;,101,65)
+
+/**
+*By doing this new image will be created in Root/media/custom/module/images/101X65/example.jpg
+*/
+
+[/source]
+
+Stay tuned for more on Magento!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-24T00:00:00+05:45" pubdate data-updated="true">Nov 24<span>th</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2009/11/24/image-resize-magento-cache-resized-image/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2009/11/24/image-resize-magento-cache-resized-image/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/11/23/product-import-in-magento-alongwith-updating-the-attributes-options/" title="Previous Post: Product Import In Magento Alongwith Updating The Attribute's Options">&laquo; Product Import In Magento Alongwith Updating The Attribute's Options</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/11/25/converting-text-to-image-in-php-formatted-by-alignment/" title="Next Post: Converting Text to Image in PHP formatted by alignment">Converting Text to Image in PHP formatted by alignment &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

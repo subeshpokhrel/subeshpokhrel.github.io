@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Configuring TinyMCE:Simple Setup - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Everybody is already familiar with WYSIWYG editor. Before, doing CMS projects I used to use fckeditor, and I always had a problem with its bad design &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2008/06/26/configuring-tinymcesimple-setup">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Configuring TinyMCE:Simple Setup</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-26T00:00:00+05:45" pubdate data-updated="true">Jun 26<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Everybody is already familiar with WYSIWYG editor. Before, doing CMS projects I used to use fckeditor, and I always had a problem with its bad design and loading time. Though you can config the editor to just the actions you need. I still felt something was not right about it. And I searched about editors, then I came across TinyMCE editor.
+
+TinyMCE is platform independent, javascript based editor and has a very special feature of changing the textareas into the editor&#8217;s instance. It takes lesser time then fckeditor or other editors I have used. It also has a simple look and can fit into any designs. And its pretty easy to configure too. You can download it from <a href="http://tinymce.moxiecode.com/download.php">http://tinymce.moxiecode.com/download.php</a>. Here is code that may help you through configuring it for minimal use.
+
+[sourcecode=&#8221;javascript&#8221;]
+
+<script language="JavaScript" type="text/javascript" src="../tinymce/tiny_mce.js"></script>
+
+<script language="javascript" type="text/javascript">
+tinyMCE.init({
+	theme : "advanced",
+	mode: "exact",
+	elements : "content",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_buttons1 : "bold,italic,underline,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,outdent,indent,separator,undo,redo",
+	theme_advanced_buttons2 : "",
+	theme_advanced_buttons3 : "",
+	height:"350px",
+	width:"600px"
+});
+</script>
+[/sourcecode]
+
+<strong>Code #1 :</strong> Includes the tinymce files for the page.
+<strong>Code #4-#14:</strong> Initiates the tinymce instance for the page.
+<strong>Code#5-#6:</strong> TinyMCE has a lots of themes and mode which you can configure to exactly what you want. Let&#8217;s leave this for now. Just keep those two.
+<strong>Code#7:</strong> Now here&#8217;s the tricky part. You should keep here the name/Id of the textarea on which tinyMCE is decorated. If you want many editor&#8217;s instance on the same page, just add other textarea element seperated with commas.
+<strong>Code#8:</strong> Defines where the toolbar is placed. The other option is bottom.
+<strong>Code#9: </strong>Defines the tools avaliable. You can put custom tools wherever you like, either on button1 or button2 or button3.
+<strong>Code #12-#13:</strong> Defines the height and width of the editor.
+
+This is just a simple set up for tinyMCE, I am looking forward to adding more on this. Catch me later.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-26T00:00:00+05:45" pubdate data-updated="true">Jun 26<span>th</span>, 2008</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2008/06/26/configuring-tinymcesimple-setup/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2008/06/26/configuring-tinymcesimple-setup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2008/06/18/latitude-and-longitude-of-a-place-in-google-maps-using-zip-code/" title="Previous Post: Latitude and Longitude Of a Place in Google Maps Using Zip Code">&laquo; Latitude and Longitude Of a Place in Google Maps Using Zip Code</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2008/07/04/surprised-i-installed-a-new-theme-yeha/" title="Next Post: Surprised ! I installed a new theme.. Yeha">Surprised ! I installed a new theme.. Yeha &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Moving Magento Shop from Development Enviornment to Production Enviornment or Production to Local - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Today, I had really a good chance to move Magento Shop from Development Enviournment to Product Enviornment. On that course I faced some big &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Moving Magento Shop From Development Enviornment to Production Enviornment or Production to Local</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-31T00:00:00+05:45" pubdate data-updated="true">Dec 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Today, I had really a good chance to move Magento Shop from Development Enviournment to Product Enviornment. On that course I faced some big difficulty in moving the database. I already had the files and DB of the development enviornment, imporing DB was a PIA. I uploaded all the files, which was easy. And next thing I did was uploaded DB dumpped files to root of Magento. Then I logged into SSH and logged into MYSQL. Then Used the following commands to import the dumpped DB files. But first made the database say &#8220;magento&#8221;.
+
+[source language=&#8217;sql&#8217;]
+/**Using the Previously created DB**/
+mysql> use magento
+
+/**Import the Dumpped SQL**/
+mysql>source pathToMagentoRoot/mySql.sql
+
+[/source]
+
+
+So after the command is executed I had the whole DB on production enviornment. Similarly we can also import dumpped data of Production on Local database running on WAMP server.
+To import Dumpped SQL data on WAMP, first create a database, say magento and then use the following commands
+
+[source language=&#8217;sql&#8217;]
+/**
+	Using the Previously created DB.
+	-p password part is optional if you have not configured password for MYSQL locally
+	-u Username (root by default)
+**/
+
+mysql> C:\wamp\bin\mysql\mysql5.0.51b\bin>mysql.exe -use magento -u root -p password
+
+/**Import the Dumpped SQL**/
+mysql>source pathToSQLSource/mySql.sql
+
+[/source]
+
+By Now we have the database synced between Local and Production. Next is configuring the database name used by Magento. Browse to app/etc/local.xml and change in the following part.
+
+[source language=&#8221;xml&#8221;]
+    <connection>
+                    <host><![CDATA[localhost
+                    username_here
+                    password_here
+                    databasename_here
+                    1
+    
+[/source]
+
+Finally, browsed through table core_config_data and find value of path: web/unsecure/base_url and path: web/secure/base_url and change their values accordingly.
+
+Now I had my Shop enviorment switched. Most work for you as well. LOL.]]>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-31T00:00:00+05:45" pubdate data-updated="true">Dec 31<span>st</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/12/25/creating-block-code-magento/" title="Previous Post: Creating Block From the Code in Magento">&laquo; Creating Block From the Code in Magento</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/01/08/custom-table-custom-module-magento/" title="Next Post: Using Custom Table for Custom Module in Magento">Using Custom Table for Custom Module in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

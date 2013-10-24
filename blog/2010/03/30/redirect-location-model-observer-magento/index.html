@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Redirect to some other location from Model or Observer in Magento - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Redirection in Magento&#8217;s controller is simple. You just need to call a _redirect() or _forward() function and provide appropriate router/ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/03/30/redirect-location-model-observer-magento">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Redirect to Some Other Location From Model or Observer in Magento</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-30T00:00:00+05:45" pubdate data-updated="true">Mar 30<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Redirection in Magento&#8217;s controller is simple. You just need to call a <strong>_redirect() </strong>or <strong>_forward() </strong>function and provide appropriate router/controller/action parameter. But if you want to redirect to some other page from Model or from Observer, then this can be tricky. Lets take an example, for explaining what I am referring to, Suppose you are building a module that will only allow user of certain group to view a product in frontend. Then, you will have options like:
+
+<ul>
+<ol>
+Rewrite you catalog/product/view controller and add that logic.
+</ol>
+<ol>
+Rewrite Block of that page and show error message accordingly.
+</ol>
+<ol>
+Any other..?
+</ol>
+</ul>
+
+Yeha, I do have another option as well. The Event-Observer Method. You can observe an event <strong>controller_action_predispatch_catalog_product_view</strong> and set up an observer where you can write your own logic there and redirect accordingly.
+
+You can observe that event by setting up your config something like this.
+
+[source language=&#8221;xml&#8221;]
+&lt;controller_action_predispatch_catalog_product_view&gt;
+	&lt;observers&gt;
+		&lt;mymodel&gt;
+			&lt;type&gt;singleton&lt;/type&gt;
+			&lt;class&gt;mymodel/controller_observer&lt;/class&gt;
+			&lt;method&gt;controller_action_predispatch_catalog_product_view&lt;/method&gt;
+		&lt;/mymodel&gt;
+	&lt;/observers&gt;
+&lt;/controller_action_predispatch_catalog_product_view&gt;
+[/source]
+
+And on the observer&#8217;s <strong>controller_action_predispatch_catalog_product_view</strong> method, you can check your logic for visibiliy of that product to the logged in user group and redirect if not visible.
+
+Here&#8217;s the main point of this post (Did I take a lot of your time ?), in that same method you can directly redirect using the following snippet of code.
+
+[source language=&#8221;php&#8221;]
+
+Mage::app()-&gt;getResponse()-&gt;setRedirect(Mage::getUrl(&quot;myrouter/mycontroller/noview&quot;));
+
+[/source]
+
+Adding an error message to the session would be a good idea, for user to understand what is happening. Else you can directly call a template in the redirected controller&#8217;s action with appropriate message.
+
+I think this sums up the post for now..and as always hoping it helps somebody and waiting for the response.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-30T00:00:00+05:45" pubdate data-updated="true">Mar 30<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/03/30/redirect-location-model-observer-magento/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/03/30/redirect-location-model-observer-magento/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/03/24/generating-backend-admin-url-key-parameters-magento/" title="Previous Post: Generating Backend-Admin URL with Key and Parameters in Magento">&laquo; Generating Backend-Admin URL with Key and Parameters in Magento</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/05/04/solution-error-message-showing-frontends-magento/" title="Next Post: Solution: Error Message Not Showing up in Frontend in Magento">Solution: Error Message Not Showing up in Frontend in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

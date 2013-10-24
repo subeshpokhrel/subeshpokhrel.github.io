@@ -1,0 +1,1033 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="In one of those time when you need to know what attributes of a product is used to make the current configurable product &#8220;configurable&#8221;, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/14/configurable-attributes-super-attributes-configurable-product/">Getting Configurable Attributes (Super Attributes) of a Configurable Product</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-14T00:00:00+05:45" pubdate data-updated="true">Jan 14<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">In one of those time when you need to know what attributes of a product is used to make the current configurable product &#8220;configurable&#8221;, then here it goes :D Those configurable attributes are called as &#8220;Super Attributes&#8221;. Looking into the lower level at the Database level the attributes id are saved in the table &#8220;catalog_product_super_attribute&#8221;. In this configurable product&#8217;s Id and the attribute are saved. To get the attribute&#8217;s id you can directly write a custom query and fetch it. But to get its attribute code, attribute level you will then have to create an object attribute using the fetched id. But there is one shot option as well to do the same, in a managed Magento Way!
+
+Here is the way. The code comments are self explanatory I guess!!
+
+[source language=&#8221;php&#8221;]
+/**
+	 * Load Product you want to get Super attributes of
+	 */
+	$product=Mage::getModel(&quot;catalog/product&quot;)-&gt;load(52520);
+
+	/**
+	 * Get Configurable Type Product Instace and get Configurable attributes collection
+	 */
+	$configurableAttributeCollection=$product-&gt;getTypeInstance()-&gt;getConfigurableAttributes();
+
+	/**
+	 * Use the collection to get the desired values of attribute
+	 */
+	foreach($configurableAttributeCollection as $attribute){
+		echo &quot;Attr-Code:&quot;.$attribute-&gt;getProductAttribute()-&gt;getAttributeCode().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Label:&quot;.$attribute-&gt;getProductAttribute()-&gt;getFrontend()-&gt;getLabel().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Id:&quot;.$attribute-&gt;getProductAttribute()-&gt;getId().&quot;&lt;br/&gt;&quot;;
+	}
+[/source]
+
+Happy Codding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/">Creating Custom Sourced Multiselect Product Attribute</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-13T00:00:00+05:45" pubdate data-updated="true">Jan 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Creating Multiselect type of product attribute whose source will be the Magento&#8217;s core tables is pretty simple. Just go to Manage Attributes and create a new one. But if you want the attribute&#8217;s source table be a custom table, then you need to think. Some times a case pops up that the store admin wants to save custom type of data for attribute&#8217;s option and you need to manage an image according to the attribute&#8217;s option. So for each option of the multiselect attribute option there is an image associated with it. In this case one of the method to sort out the things is to create a module that gives you an GUI to save option&#8217;s data in custom table and give option to upload the image along with it. Later, use this tables data as source of the attribute for product. The first part, saving the data in custom option is not our concern. You can go through <a href="http://subesh.com.np/2010/01/custom-table-custom-module-magento/">this</a> for doing those. But the main point of this article is to use the custom source as source of the muliselect attributes.
+
+Assumming that first part, i.e. the saving of options are already done, you will now need to create a product attributes through SQL Setup
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+$installer = $this;
+$setup = new Mage_Eav_Model_Entity_Setup(&#8216;core_setup&#8217;);
+$installer-&gt;startSetup();
+$setup-&gt;addAttribute(&#8216;catalog_product&#8217;, &#8216;my_attribute&#8217;, array(
+    &#8216;input&#8217;         =&gt; &#8216;multiselect&#8217;,
+	&#8216;required&#8217;		=&gt; false,
+    &#8216;type&#8217;          =&gt; &#8216;text&#8217;,
+    &#8216;label&#8217;         =&gt; &#8216;My Attribute Label&#8217;,
+    &#8216;source&#8217;        =&gt; &#8216;mymodule/source_option&#8217;,
+    &#8216;backend&#8217;       =&gt; &#8216;mymodule/backend_option&#8217;,
+    &#8216;global&#8217;        =&gt; Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    &#8216;visible&#8217;       =&gt; 1,
+));
+$installer-&gt;startSetup();
+$installer-&gt;endSetup();
+[/source]
+
+The source of the attribute is set to some Model, Ynamespace_Mymodule_Model_Source_Option. This file should look like this.
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Module_Model_Source_Option
+extends Mage_Eav_Model_Entity_Attribute_Source_Table
+{
+	public function getAllOptions()
+	{
+		return $this-&gt;getOptionFromTable();
+	}
+
+	private function getOptionFromTable(){
+		$return=array();
+		$col=Mage::getModel(&quot;modules/model&quot;)-&gt;getCollection();
+		/**
+		* Given that table has column as id,title,image_name
+		*
+		*/
+		foreach($col as $row){
+			array_push($return,array(&#8216;label&#8217;=&gt;$row-&gt;getTitle(),&#8217;value&#8217;=&gt;$row-&gt;getId()));
+		}
+		return $return;
+
+	}
+
+	public function getOptionText($value)
+	{
+		$options = $this-&gt;getAllOptions();
+		foreach ($options as $option) {
+			if(is_array($value)){
+				if (in_array($option[&#8216;value&#8217;],$value)) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+			else{
+				if ($option[&#8216;value&#8217;]==$value) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+
+		}
+		return false;
+	}
+}
+[/source]
+
+As you can see that the option are retrieved from the custom table in label and value pair. Remember that  getAllOptions is called during product export/import as well.
+
+Next important thing you must know is the backend model. Backend model comes into play when you save and load the product. Let me explain. Let us consider a case when you are saving product. The option of this multiselect attribute is sent in post variables as array, but the values cannot be saved as array, either you have to serialize it or implode it into string to save. So to do this change, backend model is there. Similarly, on load you need to explode or unserialize the data from the database to array. So the major functions of backend model are beforeSave() and afterLoad(), which are triggerd as product is saved or loaded. The backend model should look like this:
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Modules_Model_Backend_Option
+    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
+{
+    /**
+     * Before Attribute Save Process
+     *
+     * @param Varien_Object $object
+     * @return Mage_Catalog_Model_Category_Attribute_Backend_Sortby
+     */
+    public function beforeSave($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if (!is_array($data)) {
+                $data = array();
+            }
+            $object-&gt;setData($attributeCode, join(&#8216;,&#8217;, $data));
+        }
+        return $this;
+    }
+
+    public function afterLoad($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if ($data) {
+                $object-&gt;setData($attributeCode, split(&#8216;,&#8217;, $data));
+            }
+        }
+        return $this;
+    }
+}
+[/source]
+
+Now you are all set, you should have the values of the multiselect attribute saved in database joined by comma seperated values and while on load those values will be exploded as array. Last thing you can do is export the product data using default profile and check if the error shows up or not regarding this attributes. Must not! I think I&#8217;ve checked its integrity with import and export as well. If it shows any, feel free to contact me.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/08/custom-table-custom-module-magento/">Using Custom Table for Custom Module in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-08T00:00:00+05:45" pubdate data-updated="true">Jan 8<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">If you want to create a custom module in Magento that has something to do with storing data into a custom table and using that later, then this is just the right post you have bumped into! I will presume that you already know about Models in Magento, what are they and how you can create them. Also I will presume that you will also know the basic module structure in Magento.
+You will have to place this in your config.xml
+[source language=&#8221;xml&#8221;]
+&lt;global&gt;
+     &lt;ymodel&gt;
+            &lt;class&gt;YNamespace_YModule_Model&lt;/class&gt;
+	     &lt;resourceModel&gt;quotes_mysql4&lt;/resourceModel&gt;
+     &lt;/ymodel&gt;
+&lt;quotes_mysql4&gt;
+                &lt;class&gt;YNamespace_Ymodule_Model_Mymodel&lt;/class&gt;
+                &lt;entities&gt;
+			&lt;mymodel&gt;
+				&lt;table&gt;ymodel_ytable&lt;/table&gt;
+			&lt;/mymodel&gt;
+		&lt;/entities&gt;
+      &lt;/quotes_mysql4&gt;
+&lt;/global&gt;
+[/source]
+
+Then Create a Model
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+class YNamespace_Ymodule_Model_Mymodel extends Mage_Core_Model_Abstract
+{
+	public function _construct()
+	{
+		parent::_construct();
+		$this-&gt;_init(&#8216;ymodel/mymodel&#8217;);
+	}
+}
+[/source]
+As you can see in constructor of this class it inits the model (tag) defined in the config file. As model uses Resources, you now need to create a resource the module uses.
+[source language=&#8221;php&#8221;]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Ymodel extends Mage_Core_Model_Mysql4_Abstract
+{
+    public function _construct()
+    {
+        $this-&gt;_init(&#8216;ymodel/mymodel&#8217;, &#8216;id&#8217;);
+    }
+}
+
+[/source]
+So using this resource you now can access Table and add/alter. But you must not explicitly create a object of this class to do that. Creating a model of class above will make this resource usable.
+
+[source language=&#8221;php&#8221;]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokhrel&quot;)
+      -&gt;save();
+[/source]
+
+This will create a new row in table now given that name and lastname is the columns of the table. To edit row of a table do the following
+
+[source language=&#8221;php&#8221;]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;load($id)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokharel&quot;)
+      -&gt;save();
+[/source]
+
+Now to select, there is another procedure. Before that let me tell about collection. Think collections as the array of objects.When you Query in database you get result as collections in Magento and every row resulting from the query is a different Object.To create a collection
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Mymodel_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
+{
+    public function _construct()
+    {
+        parent::_construct();
+        $this-&gt;_init(&#8216;ymodel/mymodel&#8217;);
+    }
+}
+[/source]
+
+To Select All the row of Table
+
+[source language=&#8221;php&#8221;]
+$allCollection=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;getCollection();
+[/source]
+
+You can add filters in the above query as required.
+To get individual Row you can just loop through the collection :)
+
+[source language=&#8221;php&#8221;]
+foreach($allCollection as $objRow){
+	print_r($objRow);
+}
+
+[/source]
+
+Hope this helps if any one is in need&#8230; and @inchoo..please don&#8217;t twitt this as any other..link&#8230;you find in a weekend&#8230; :P.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/">Moving Magento Shop From Development Enviornment to Production Enviornment or Production to Local</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-31T00:00:00+05:45" pubdate data-updated="true">Dec 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Today, I had really a good chance to move Magento Shop from Development Enviournment to Product Enviornment. On that course I faced some big difficulty in moving the database. I already had the files and DB of the development enviornment, imporing DB was a PIA. I uploaded all the files, which was easy. And next thing I did was uploaded DB dumpped files to root of Magento. Then I logged into SSH and logged into MYSQL. Then Used the following commands to import the dumpped DB files. But first made the database say &#8220;magento&#8221;.
+
+[source language=&#8217;sql&#8217;]
+/**Using the Previously created DB**/
+mysql> use magento
+
+/**Import the Dumpped SQL**/
+mysql>source pathToMagentoRoot/mySql.sql
+
+[/source]
+
+
+So after the command is executed I had the whole DB on production enviornment. Similarly we can also import dumpped data of Production on Local database running on WAMP server.
+To import Dumpped SQL data on WAMP, first create a database, say magento and then use the following commands
+
+[source language=&#8217;sql&#8217;]
+/**
+	Using the Previously created DB.
+	-p password part is optional if you have not configured password for MYSQL locally
+	-u Username (root by default)
+**/
+
+mysql> C:\wamp\bin\mysql\mysql5.0.51b\bin>mysql.exe -use magento -u root -p password
+
+/**Import the Dumpped SQL**/
+mysql>source pathToSQLSource/mySql.sql
+
+[/source]
+
+By Now we have the database synced between Local and Production. Next is configuring the database name used by Magento. Browse to app/etc/local.xml and change in the following part.
+
+[source language=&#8221;xml&#8221;]
+    <connection>
+                    <host><![CDATA[localhost
+                    username_here
+                    password_here
+                    databasename_here
+                    1
+    
+[/source]
+
+Finally, browsed through table core_config_data and find value of path: web/unsecure/base_url and path: web/secure/base_url and change their values accordingly.
+
+Now I had my Shop enviorment switched. Most work for you as well. LOL.]]>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/25/creating-block-code-magento/">Creating Block From the Code in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-25T00:00:00+05:45" pubdate data-updated="true">Dec 25<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Here are some methods of creating block by code in Magento. This type of code can be used directly in template, not need to create a layout file or add a child node inside already existing layout file. You can use this to echo a different type of block inside already loading block and template.
+
+[source language=&#8221;php&#8221;]
+// Directly in the PHTML where you want to show the block
+<?php
+echo $this->getLayout()->createBlock(&#8220;module/block&#8221;)->setTemplate(&#8220;module/page.phtml&#8221;)->toHtml();
+?>
+[/source]
+
+What we have actually done is just load the layout and create an instance of a block class defined inside its paramerter, then assigned a template to the block and finally echoed as html. Simple! The code above will be equivalent to what we do as following in layout and in template file.
+
+[source language=&#8217;xml&#8217;]
+// In layout
+<block type="module/block" name="module.name" template="module/page.html"/>
+[/source]
+
+[source language=&#8221;php&#8221;]
+<?php
+// In parent PHTML
+$this->getChildHtml(&#8220;module.name&#8221;);
+?>
+[/source]
+
+May be helpful!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/22/rescent-rating-summary-product-magento/">Getting Rescent Rating Summary of a Product in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Magento has a default option to show the overall rating&#8217;s summary of the product, which is shown in the product view page. This summary is based on all the review posted and approved for the particular product. In the summary the stars are shown accordingly, by taking the sum of all reviews and calculating the average rating. But I had a case where I needed to show those star ratings, only based on the last approved user ratings. What I did was just a small tweak in the Magento&#8217;s default working!
+
+Magento gets all the reviews and processes it accordingly, so what I did was just added limit filter to get the rescent rating only, and left the Magento default working do the rest. Tricky! huh&#8230;.
+
+Here the block that can achieve the same.
+
+[source language=&#8221;php&#8221;]
+<?php
+class Namespace_Comment_Block_Comment extends Mage_Review_Block_Product_View
+{
+	/**
+	 * Get only Latest review.
+	 * Only adding PageSize filter to the collection sent by the parent::getReviewsCollection(), since parent already
+	 * sorts it by date.
+	 */
+	public function getRescentReview ()
+	{
+		$collection = $this->getReviewsCollection()->setPageSize(1);
+		return $collection;
+	}
+	/**
+	 * Getting Current Product&#8217;s name
+	 */
+	public function getProductName ()
+	{
+		return Mage::registry(&#8220;product&#8221;)->getName();
+	}
+	/**
+	 * Getting Rating summary only for the one Review (latest one)
+	 */
+	public function getRatingSummary ()
+	{
+		return Mage::getModel(&#8216;rating/rating&#8217;)->getReviewSummary($this->getReviewId());
+	}
+}
+[/source]
+
+And here is the phtml file.
+
+[source language=&#8221;html&#8221;]
+<?php
+// Retreiving rescent comment collection's Item
+$_items = $this->getRescentReview()->getItems();
+?>
+<?php if (count($_items)):
+// Loading review with the latest comment's id
+$_review=Mage::getModel("review/review")->load(array_keys($_items));
+$curRat=$_review->getData(&#8216;review_id&#8217;);
+
+// Setting the current Review Id to the block&#8217;s Object, used in Namespace_Comment_Block_Comment line #26
+$this->setReviewId($curRat);
+if($curRat!=1):
+?>
+<div >
+    <div>
+        <h2><?php echo $this->__(&#8216;Recente Reviews&#8217;) ?></h2>
+    </div>
+    <h3><?php echo $this->getProductName()?></h3>
+    <div class="rating-box">
+        <div class="rating" style="width:<?php echo ceil($this->getRatingSummary()->getSum() / ($this->getRatingSummary()->getCount())) ?>%;&#8221;></div>
+    </div>
+    <div>
+      <?php echo $_review->getDetail()?>
+    </div>
+</div>
+<?php
+endif;
+endif;
+?>
+[/source]
+
+You must call this in product detail page.
+
+[source language=&#8221;xml&#8221;]
+&#8211;
+<block type ="comment/comment" name="rescent.comment" template="comment/rescent.phtml"/>
+&#8211;
+[/source]
+
+By the end of this you will get the Rescent rating summary on your product detail page.
+
+Happy Coding in Magento!!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/22/products-price-current-currency-format-store/">Getting the Product&#8217;s Price in Current Currency Format of Store</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Magento gives an option to have different currency defined for each store. To get the product&#8217;s price based on the current store you can use the following code. It uses the default Magento&#8217;s helper class to do.
+
+[source language=&#8221;php&#8221;]
+<?php
+
+     /* @Class: Mage_Core_Helper_Data
+     * The params for the currency function
+     * @param   float $value
+     * @param   bool $format
+     * @param   bool $includeContainer
+     */
+echo Mage::helper('core')->currency($product->getFinalPrice(),true,false);
+
+ ?>
+[/source]
+
+In the code above $product is the product, whose price you will want to format.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/22/options-select-multiselect-attribute-magento-attribute-code/">Get All Options of Select or Multiselect Attribute in Magento by Attribute Code</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">One of the things that a Magento developer deal, time and again is finding out all the options of color or manufacturer or size attribute. You may also need to find out what are the options available for color attribute before you add new option programmatically. Or you may need to add assign the option&#8217;s ID to a product. Here&#8217;s what you need to do, just load the attribute by attribute code, then load all its options. Easy, isn&#8217;t it! Code is below.
+
+[source language=&#8221;php&#8221;]
+
+// Add the attribute code here.
+$attribute=$product->getResource()->getAttribute(&#8220;color&#8221;);
+
+// Checking if the attribute is either select or multiselect type.
+if($attribute->usesSource()){
+
+	// Getting all the sources (options) and print as label-value pair
+	$options = $attribute->getSource()->getAllOptions(false);
+
+	echo &#8221;<pre>";
+	print_r($options);
+}
+
+[/source] 
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/22/custom-options-product-magento/">Getting All Custom Options of a Product in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Custom options are the options that can be added to any product, which gives an option for the user of the site to select what type of product they actually want. Here is a scenario where custom option can be helpful. If you have a product say ball and your stores sells plastic,rubber,glass balls. So you need to give the user to select what type of ball they actually want. Yes, you can do this by using configurable product as well, but why create an attribute for one product only! In this case custom option might be very helpful.
+
+Here&#8217;s the code to get the all the custom options of a product. Please see that you need to specify the id of the product for which you are retriving custom option for. I&#8217;ve echoed some text as well to give you an idea what exactly you are getting in each loop.
+
+[sourcecode language=&#8221;php&#8221;]
+$product = Mage::getModel(&quot;catalog/product&quot;)-&gt;load(167);
+	$i = 1;
+
+	echo &quot;&lt;pre&gt;&quot;;
+
+	foreach ($product-&gt;getOptions() as $o) {
+
+		echo &quot;&lt;strong&gt;Custom Option:&quot; . $i . &quot;&lt;/strong&gt;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TYPE: &quot; . $o-&gt;getType() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TITLE: &quot; . $o-&gt;getTitle() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option Values: &lt;br/&gt;&quot;;
+
+		// Getting Values if it has option values, case of select,dropdown,radio,multiselect
+
+		$values = $o-&gt;getValues();
+		foreach ($values as $v) {
+
+				print_r($v-&gt;getData());
+		}
+
+		$i++;
+
+		echo &quot;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-&lt;br/&gt;&quot;;
+	}
+[/sourcecode]
+
+Happy coding in Magento!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/22/adding-custom-options-product-magento/">Adding Custom Options to a Product in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Adding custom option in Magento is pretty easy! You just need to know the format of an array, which is taken by catalog/product_option Model to set the custom option. I&#8217;ve deviced a simple function (<strong>setCustomOption</strong>) that just does that. The function, according to the input type and values assigned creates an array, which is then used by the <strong>catalog/product_option</strong> Model to save the option to the product.
+
+Here is the function.
+
+[source language=&#8221;php&#8221;]
+/**
+	 * @param $value - Must be comma seperated options.
+	 * @param $title - Title of the custom option.
+	 * @param $type - Type of custom option - drop_down,radio,checkbox,multiple,area,field.
+	 * @param $noOption - Specifies if the custom options has options or not.
+	 */
+	function setCustomOption ($value, $title, $type, $noOption = false)
+	{
+		$custom_options = array();
+		if ($type && $value != &#8220;&#8221; && $value) {
+			$values = explode(&#8216;,&#8217;, $value);
+			if (count($values)) {
+				/**If the custom option has options*/
+				if (! $noOption) {
+					$is_required = 0;
+					$sort_order = 0;
+					$custom_options[] = array(
+						&#8216;is_delete&#8217; => 0 , &#8216;title&#8217; => $title , &#8216;previous_group&#8217; => &#8221; , &#8216;previous_type&#8217; => &#8221; , &#8216;type&#8217; => $type , &#8216;is_require&#8217; => $is_required , &#8216;sort_order&#8217; => $sort_order , &#8216;values&#8217; => array()
+					);
+					foreach ($values as $v) {
+						$titleopt = ucfirst(trim($v));
+						switch ($type) {
+							case &#8216;drop_down&#8217;:
+							case &#8216;radio&#8217;:
+							case &#8216;checkbox&#8217;:
+							case &#8216;multiple&#8217;:
+							default:
+								$title = ucfirst(trim($v));
+								$custom_options[count($custom_options) - 1][&#8216;values&#8217;][] = array(
+									&#8216;is_delete&#8217; => 0 , &#8216;title&#8217; => $titleopt , &#8216;option_type_id&#8217; => - 1 , &#8216;price_type&#8217; => &#8221; , &#8216;price&#8217; => &#8221; , &#8216;sku&#8217; => &#8221; , &#8216;sort_order&#8217; => &#8221;
+								);
+							break;
+						}
+					}
+					return $custom_options;
+				}
+				/**If the custom option doesn&#8217;t have options | Case: area and field*/
+				else {
+					$is_required = 0;
+					$sort_order = &#8221;;
+					$custom_options[] = array(
+						&#8220;is_delete&#8221; => 0 , &#8220;title&#8221; => $title , &#8220;previous_group&#8221; => &#8220;text&#8221; , &#8220;price_type&#8221; => &#8216;fixed&#8217; , &#8220;price&#8221; => &#8221; , &#8220;type&#8221; => $type , &#8220;is_required&#8221; => $is_required
+					);
+					return $custom_options;
+				}
+			}
+		}
+		return false;
+	}
+[/source]
+
+And to save the custom option, first get the array built by the above function and pass it to the <strong>catalog/product_option</strong> Model&#8217;s function to save. Here&#8217;s how you do it.
+
+[source language=&#8221;php&#8221;]
+
+$arrayOption = array();
+	/**
+	 * For Creating dropdown,select,multiselect,radio type of custom option
+	 */
+	$arrayOption[] = setCustomOption(&#8220;OPT1,OPT2&#8221;, &#8220;Select Option&#8221;, &#8220;drop_down&#8221;);
+	/**
+	 * For Creating textfield and textarea type of custom option
+	 */
+	$arrayOption[] = setCustomOption(&#8220;Anyvalue&#8221;, &#8220;Area&#8221;, &#8220;area&#8221;, true);
+	/**
+	 * Load the product you want to assign custom option to
+	 */
+	$product = Mage::getModel(&#8220;catalog/product&#8221;)->load(167);
+	foreach ($arrayOption as $options) {
+		foreach ($options as $option) {
+			$opt = Mage::getModel(&#8216;catalog/product_option&#8217;);
+			$opt->setProduct($product);
+			$opt->addOption($option);
+			$opt->saveOptions();
+		}
+	}
+
+[/source]
+
+After running the code you will get something like this.
+
+[caption id=&#8221;attachment_156&#8221; align=&#8221;alignnone&#8221; width=&#8221;347&#8221; caption=&#8221;Custom Option added to a Product&#8221;]<img src="http://subesh.com.np/wp-content/uploads/2009/12/opt.png" alt="Custom Option added to a Product" title="Custom Option added to a Product" width="347" height="374" class="size-full wp-image-156" />[/caption]
+
+Hope you like this post!
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/6/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/4/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

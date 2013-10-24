@@ -1,0 +1,1316 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="In Magento, by default there is a reference place where breadcrumbs get showed, that is just above the content reference! But, sometimes you need to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/6">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/21/showing-breadcrumbs-magento/">Showing Breadcrumbs Anywhere in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-21T00:00:00+05:45" pubdate data-updated="true">Dec 21<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">In Magento, by default there is a reference place where breadcrumbs get showed, that is just above the content reference! But, sometimes you need to show the breadcrumbs twice! above and below the content. Or sometimes you just need to show the breadcrumbs inside the content, due to some designing issue! I&#8217;ve gone through these situation a lot, and thought why not post a solution in my blog? :D
+
+Here&#8217;s the &#8220;magic code&#8221; for breadcrumbs to show anywhere in Magento
+
+[source language=&#8221;PHP&#8221;]
+<?php  echo $this->getLayout()->getBlock(&#8220;breadcrumbs&#8221;)->toHtml()?>
+[/source]
+
+Its very simple, it just gets the block breadcrumbs defined in page.xml and echoes it as html.
+
+Happy coding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/11/debugging-technique-magento-chapter-1-debugging-layout/">Debugging Technique in Magento - Chapter 1 :: Debugging Layout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-11T00:00:00+05:45" pubdate data-updated="true">Dec 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I&#8217;ve been working in Magento, for 1 year now! During this whole year I have learnt a lot, and have been sharing my learnings through this Blog. One of the thing that strikes me a lot is the debugging technique. My collegue ask me a lot regarding Debugging Modules Functionalities, Debugging Module&#8217;s Layout and its template not showing in frontend and backend, Some products and category attribute not showing in the frontend, Installation of Magento Custom Module and its setup not working and many more. And guess what in most of the cases I&#8217;ve developed a procedure or debugging steps, which I follow time and again, to get to the core of the situation. Actually now, I thought of writting down these debugging technique&#8217;s procedure , so that I can tell, please do the following, before you call for my help!
+
+This is the first part of series of post. I&#8217;ll discuss here how to debug layout errors. I&#8217;ll come across other technique as well, later on.
+
+<strong>Case: If you have just added your Layout/Template and wondering why it is not working ?</strong>
+
+First and foremost, If you have installed a new Module or Changed Layout and is not working where/how it is supposed to work, clear the cache from Admin, even if you say i have disabled the cache.
+
+To test if your layout file say, example.xml, is actually being looked up while the page loads, first open your example.xml file and make some error on that file. The error may be invalid tag closing of XML. And then refresh your page. If XML load error is displayed then you are sure that your layout file is being referred.
+
+If not then first see what package/theme you are using in Design and confirm if the layout is uploaded or placed in correct path.
+
+After you are sure that layout is placed okai, then its now time to see whether your layout file is registed in config.xml of your Custom Module or not. Your layout file&#8217;s name should be set in config.xml of any module inside <frontend>. Please check if your tags are correct and under correct parents. Normally layout are inside Frontend&#8211;>Layout&#8211;>Updates.
+
+If you are through to this point, then your problem may lie in the Block defined. But before that see if you have defined correct reference name.
+
+Later on debugging Block. The post may be listed below. Stay tuned.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/09/adding-tabs-product-view-page-layout-magento/">Adding Tabs in Product View Page Through Layout in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-09T00:00:00+05:45" pubdate data-updated="true">Dec 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">One of my new colleague, today asked me how to add tabs in product view page in Magento. He told me earlier he had used his own tabs CSS and Javascript to do, but now he found out that Magento gives default Tab Javascript to do the same. Then, I thought why not share with everyone else! Here it goes&#8230;
+
+It is extremely easy to add a tab and its Javascript, but comparatively difficult to make its CSS, and I won&#8217;t talk about that here :D. You can manage tabs in product page of Magento just through layout files. No need to work on Javascript. Just use the following xml tags inside your catalog_product_view layout.
+
+[source language=&#8217;xml&#8217;]
+<block type="catalog/product_view_tabs" name="product.info.tabs" as="info_tabs" template="catalog/product/view/tabs.phtml" >
+                    <action method="addTab" translate="title" module="catalog"><alias>additional</alias><title>General Info</title><block>catalog/product_view_attributes</block><template>catalog/product/view/attributes.phtml</template></action>
+                    <action method="addTab" translate="title" module="catalog"><alias>deliverytime</alias><title>Delivery Time</title><block>    catalog/product_view</block><template>catalog/product/view/delivery.phtml</template></action>
+                    <action method="addTab" translate="title" module="catalog"><alias>printinginfo</alias><title>Printing Info</title><block>    catalog/product_view</block><template>catalog/product/view/printing_info.phtml</template></action>
+<!--  4th tab -->
+<action method="addTab" translate="title" module="catalog"><alias>notes</alias><title>Notes</title><block>catalog/product_view</block><template>catalog/product/view/notes.phtml</template></action>
+                </block>
+[/source]
+
+In the code above the fourth tab, we have called <strong>addTab </strong>method of <strong>catalog/product_view_tabs</strong> block, with the parameters <strong>alias </strong>as <strong><em>notes</em></strong>, <strong>title </strong>as <strong><em>Notes</em></strong>, <strong>block </strong>as <strong><em>catalog/product_view</em></strong> and <strong>template </strong>as <strong><em>catalog/product/view/notes.phtml</em></strong>.
+
+
+After adding this in your layout, echo the following in your view.phtml file.
+
+[source language=&#8217;php&#8217;]
+<?php
+ echo $this->getChildHtml(&#8216;product.info.tabs&#8217;);
+?>
+[/source]
+
+After that you will see four tabbed navigation in your product view page. Easy isn&#8217;t it?
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/08/using-custom-query-in-magento/">Using Custom Query in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-08T00:00:00+05:45" pubdate data-updated="true">Dec 8<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Magento has given us very good features to manage Models and Collection for interacting with Database tables. Nowonder, they are very helpful in most of the cases. Yet, we may need to write custom query in some cases (if you need it quick or if you are new to Models &amp; Collection in Magento). But by Magento&#8217;s standard this is not recommended. If you are a starter you may find this quering to database very helpful. Here is how you can do this.
+
+The idea is simply to get the core connection object and use its functions to run your query.
+
+[source language=&#8217;PHP&#8217;]
+<?php
+// For Read
+
+// fetch read database connection that is used in Mage_Core module
+$read= Mage::getSingleton('core/resource')->getConnection(&#8216;core_read&#8217;);
+$value=$read->query(&#8220;SE&#8230;&#8221;);
+$row = $value->fetch();
+
+print_r($row); // As Array
+
+// For Write
+
+// fetch write database connection that is used in Mage_Core module
+$write = Mage::getSingleton(&#8216;core/resource&#8217;)->getConnection(&#8216;core_write&#8217;);
+
+// now $write is an instance of Zend_Db_Adapter_Abstract
+$write->query(&#8220;insert into tablename values (&#8216;aaa&#8217;,&#8217;bbb&#8217;,&#8217;ccc&#8217;)&#8221;);
+
+?>
+
+[/source] 
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/12/04/general-workflow-of-magentos-importexport-dataflow/">General Workflow of Magento&#8217;s Import/Export - Dataflow</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-04T00:00:00+05:45" pubdate data-updated="true">Dec 4<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><strong>Magento&#8217;s Dataflow (Inport/Export)</strong> is one of distinguishing feature that makes Magento the leader in eCommerce Software. But for a programmer to understand how it workes in Magento can be quite nasty. I tried to understand how it workes and came up with following understanding.
+<h2><strong>General Work Flow (Profile)</strong></h2>
+During Import/Export there are normally two &#8221;<strong>Actors</strong>&#8221; involved. Actors may be the data source (<strong>Actor: Source</strong>) and the final destination of the data (<strong>Actor:Destination</strong>). While you are importing data into your Magento Sytem, the Source is the CSV or XML file while exporting it is the other way round. In any case (Import or Export) you need to first fetch the data from the source and process it and then save to its destination.
+
+So Basically there are three stages in product import. But the processing part has been split into two. Processing part has been divided into two processes namely Mapper and Parser. I&#8217;ll come to the detailed description later. So along with the extended processes, lets call there are four &#8220;Actions&#8221; occuring during Import or Export.For every &#8220;Action&#8221; to run there are seperate individual Models. And the defination of all these individual Models for each Action during the Import/Export Process (Dataflow) is called &#8221;<strong>Profile</strong>&#8221;.
+
+Here&#8217;s the basic workflow for Dataflow.
+
+[caption id=&#8221;attachment_124&#8221; align=&#8221;aligncenter&#8221; width=&#8221;473&#8221; caption=&#8221;General Workflow&#8221;]<img class="size-full wp-image-124" title="General Workflow" src="http://subesh.com.np/wp-content/uploads/2009/12/workflow.png" alt="General Workflow" width="473" height="355" />[/caption]
+
+That was the laymen description of Dataflow, lets see what are the Jargons used in Magento to call all the Models used in Dataflow. The Models used for all actions are listed below according to how the Dataflow works.
+<ol>
+	<li> Adapter</li>
+	<li> Parser</li>
+	<li> Mapper</li>
+	<li> Adapter (Yes twice)</li>
+	<li> Validator (Not Implemented yet in Magento, left for future implemention)</li>
+</ol>
+<h2><strong>Adapter</strong></h2>
+To understand what is Adapter, lets see Magento as a System and all the resources it uses during Import/Export as external source. So external source in Most of the cases can be either File or your Database (DB). Other external source include Webservice. I&#8217;ven&#8217;t came across other yet. :D So what Adapter does is it provides the channel through which the data actually flows in/out of the Magento System. As you can see in the images below is that there is always two Adapter involved. One that reads data from the file external resource and another that saves the data into the DB external resource. Now you should be clear why I wrote Adapter twice. If you are still wondering..then you can comment below.
+
+[caption id=&#8221;attachment_114&#8221; align=&#8221;aligncenter&#8221; width=&#8221;474&#8221; caption=&#8221;Case: Export&#8221;]<img class="size-full wp-image-114" title="Case: Export" src="http://subesh.com.np/wp-content/uploads/2009/12/adapter1.png" alt="Adapter: Export" width="474" height="358" />[/caption]
+
+[caption id=&#8221;attachment_121&#8221; align=&#8221;aligncenter&#8221; width=&#8221;479&#8221; caption=&#8221;Case: Import&#8221;]<img class="size-full wp-image-121" title="Import" src="http://subesh.com.np/wp-content/uploads/2009/12/adapter2.png" alt="Case: Import" width="479" height="357" />[/caption]
+
+Magento has provides us some Default Adapter to read/write from/to external resources. Here are the Adapters listed.
+
+<strong>Adapter For Files 			: 	Mage_Dataflow_Model_Convert_Adapter_Io</strong>
+
+<strong> Adapter For Customer(DB)	: 	Mage_Customer_Model_Convert_Adapter_Customer</strong>
+
+<strong> Adapter For Product (DB)	:	Mage_Catalog_Model_Convert_Adapter_Product </strong>
+
+Since the work of Adapter is to just Read or Write it has basically two Methods load() and save().
+<h2><strong>Parser</strong></h2>
+What parser does is that it just converts the raw data (Human Readable) from the source into Magento&#8217;s Format (Arrays and Setting Values of Magento&#8217;s Model) or from Magento&#8217;s Format into Human readable Format. Just to understand you can think of the CSV files seperated by comma changed into Arrays. After conversion is over it then saves the data to the Batch.Batch, what is Batch? if this is what you are thinking, here is your answer. Every row in CSV,XML or Row of the DB during the dataflow are saved as different rows in a table dataflow_batch_import or dataflow_batch_export. So if there are 100 rows in your CSV file you are importing into Magento, the batch will have 100 rows of parsed data in the table dataflow_batch_import. During the final stage of the Dataflow&#8217;s run this data is referred.
+
+Magento provides some default Parses as well.
+
+<strong>Parser for CSV files	:	Mage_Dataflow_Model_Convert_Parser_Csv</strong>
+
+<strong> Parser for XML files	: 	Mage_Dataflow_Model_Convert_Parser_Xml_Excel</strong>
+
+<strong> Parser for Product		:	Mage_Catalog_Model_Convert_Parser_Product</strong>
+
+<strong> Parser for Customer		:	Mage_Customer_Model_Convert_Parser_Customer</strong>
+<pre><strong>
+</strong></pre>
+In all these classes there are two main Methods which deservers to be stated here. parse() and unparse(). If you are Importing then parse() should be defined in your profile, because you are parsing the data that is required by the System. In case of Exporting, you already have the parsed data of the system as source, you will then need to unparse() the data into Human readable format. You can refer to images above to understand more clearly.
+
+So by the end of this during the profile run you will have Parsed/Unparsed data saved in the batch table, in you hand.
+<h2><strong>Mapper</strong></h2>
+Magento&#8217;s Dataflow is so flexible that you can set the header of the CSV or XML files that can mapped to the Magento&#8217;s default attributes. Let&#8217;s take an example if you want to export the product&#8217;s name into CSV with the CSV header as &#8220;Product Name&#8221;, you can specify that mapping in your profile where the Mapper will act. And in this the Magento&#8217;s attribute code &#8220;name&#8221; will be mapped to your specified &#8220;Product Name&#8221;. To do all this mapping rules, Mapper is there.
+
+It retrives the Parsed/Unparsed Data from the batch table, we got at the end of Parser&#8217;s work, Maps to the rule we defined and then again saves back to the same table. Easy!
+
+There is one default Mapper for all
+
+<strong>Mapper	: Mage_Dataflow_Model_Convert_Mapper_Column </strong>
+
+With one obvious method map().
+
+At the end of this stage you will have your Parsed/Unparsed - Mapped Data in your dataflow table.
+<h2><strong>Adapter (Again)</strong></h2>
+At last the Adapter will use the dataflow&#8217;s batch data to save(). And after all the rows of the batch table for one batch is acted upon the profile is complete.
+
+I guess this is the general way of explaining it, please comment if I am mistake, coz I am also new to this! LOL.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/25/converting-text-to-image-in-php-formatted-by-alignment/">Converting Text to Image in PHP Formatted by Alignment</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-25T00:00:00+05:45" pubdate data-updated="true">Nov 25<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">During one of my project works I came across a situation like changing the input of TINYMCE editor to image. Can you believe what can be the user&#8217;s requirement? :P Basically what the client needed was to change the text to image and text should be in American Typewriter Font with the option of showing text as image formatted by alignment. i.e Left Alignment, Center Alignment or Right Alignment in a white background image. Then I did some research, this is another way of saying I Googled a lot! lol. I came across two scripts, one which converted text to image and another a function to set alignment. So I thought that why not combine both the codes and publish for others, who may need it as well.
+
+<strong>The compiled code</strong>
+
+[source language=&#8221;php&#8221;]
+<?php
+/**
+ * Class for converting Text to Image.
+ * Font type can be specified
+ * The alignment where the text will echo can also be set.
+ *
+ * @compiled Subesh Pokhrel from PHP.net and PHPclasses.org
+ *
+ */
+define("ALIGN_LEFT", "left");
+define("ALIGN_CENTER", "center");
+define("ALIGN_RIGHT", "right");
+
+class TextToImage {
+
+	private $im;
+
+	/**
+	 * @name 				   : makeImageF
+	 *
+	 * Function for create image from text with selected font.
+	 *
+	 * @param String $text     : String to convert into the Image.
+	 * @param String $font     : Font name of the text.
+	 * @param int    $W        : Width of the Image.
+	 * @param int    $H        : Hight of the Image.
+	 * @param int	 $X        : x-coordinate of the text into the image.
+	 * @param int    $Y        : y-coordinate of the text into the image.
+	 * @param int    $fsize    : Font size of text.
+	 * @param array  $color	   : RGB color array for text color.
+	 * @param array  $bgcolor  : RGB color array for background.
+	 *
+	 */
+	public function makeImageF($text, $font="CENTURY.TTF", $W=800, $H=200, $X=0, $Y=0, $fsize=18, $color=array(0x0,0x0,0x0), $bgcolor=array(0xFF,0xFF,0xFF)){
+
+		$this->im = @imagecreate($W, $H)
+		or die(&#8220;Cannot Initialize new GD image stream&#8221;);
+
+		$background_color = imagecolorallocate($this->im, $bgcolor[0], $bgcolor[1], $bgcolor[2]);		//RGB color background.
+		$text_color = imagecolorallocate($this->im, $color[0], $color[1], $color[2]);			//RGB color text.
+
+		$this->imagettftextbox($this->im, $fsize,0, $X,$Y, $text_color, $font, $text,800);
+	}
+
+	/**
+	* This function works to set alignment in image and write image.
+	*/
+	public function imagettftextbox(&$image, $size, $angle, $left, $top, $color, $font, $text, $max_width)
+	{
+		$text_lines = explode(&#8220;\n&#8221;, $text); // Supports manual line breaks!
+
+		$lines = array();
+		$line_widths = array();
+
+		$largest_line_height = 0;
+
+		foreach($text_lines as $block)
+		{
+			$current_line = &#8221;; // Reset current line
+			$align=ALIGN_CENTER; // Setting Alignment
+			$words = explode(&#8217; &#8216;, $block); // Split the text into an array of single words
+
+			$first_word = TRUE;
+
+			$last_width = 0;
+
+			for($i = 0; $i < count($words); $i++)
+			{
+				$item = $words[$i];
+				$dimensions = imagettfbbox($size, $angle, $font, $current_line . ($first_word ? '' : ' ') . $item);
+				$line_width = $dimensions[2] - $dimensions[0];
+				$line_height = $dimensions[1] - $dimensions[7];
+
+				if($line_height > $largest_line_height) $largest_line_height = $line_height;
+
+				if($line_width > $max_width && !$first_word)
+				{
+					$lines[] = $current_line;
+
+					$line_widths[] = $last_width ? $last_width : $line_width;
+
+					/*if($i == count($words))
+					 {
+					 continue;
+					 }*/
+
+					$current_line = $item;
+				}
+				else
+				{
+					$current_line .= ($first_word ? &#8221; : &#8217; &#8216;) . $item;
+				}
+
+				if($i == count($words) - 1)
+				{
+					$lines[] = $current_line;
+
+					$line_widths[] = $line_width;
+				}
+
+				$last_width = $line_width;
+
+				$first_word = FALSE;
+			}
+
+			if($current_line)
+			{
+				$current_line = $item;
+			}
+		}
+
+		$i = 0;
+		foreach($lines as $line)
+		{
+			if($align == ALIGN_CENTER)
+			{
+				$left_offset = ($max_width - $line_widths[$i]) / 2;
+			}
+			elseif($align == ALIGN_RIGHT)
+			{
+				$left_offset = ($max_width - $line_widths[$i]);
+			}
+			imagettftext($image, $size, $angle, $left + $left_offset, $top + $largest_line_height + ($largest_line_height * $i), $color, $font, $line);
+			$i++;
+		}
+
+		return $largest_line_height * count($lines);
+	}
+
+	/**
+	 * @name showAsPng
+	 *
+	 * Function to show text as Png image.
+	 *
+	 */
+	public function showAsPng(){
+
+		header(&#8220;Content-type: image/png&#8221;);
+		return imagepng($this->im);
+	}
+
+}
+?>
+[/source]
+
+Save this file as <strong>TextToImage.class.php</strong>.
+
+And then use this code to call the classes instance.
+
+[source language=&#8221;php&#8221;]
+<?php
+/** Downloaded from PHP classes
+* Please note that KORONG.TTF font file should be present to run the code.
+*/
+
+ini_set("display_errors",1);
+require_once('TextToImage.class.php');
+$_im = new TextToImage();
+$_im->makeImageF(&#8220;Thank you ! Subesh Pokhrel \n subesh.com.np&#8221;,&#8221;KORONG.TTF&#8221;);
+$_im->showAsPng();
+?>
+[/source]
+
+Cheers!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/24/image-resize-magento-cache-resized-image/">Image Resize in Magento & Cache the Resized Image</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-24T00:00:00+05:45" pubdate data-updated="true">Nov 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Handling Products image in Magento is quite easy to do. Magento has deviced as very good class and function to create product&#8217;s image by defining widht and height and in addition it caches that image created if you want to get the same sized image next time. But managing other images like category images or other image you may need in your module can be quite troublesome. I went to the core of the function used to cache product&#8217;s image and came up with the script which can be used to cache any other images, like the product&#8217;s image.
+
+Basically the theroy is to create the image of sizes defined in the function parameter and while it is being fetched for the second time checked if the same size image exists or not. If yes then returnt the http url of that image else create new image.Next trick is to save the new size image in the folder with name as widhtXheight (101X65), which can be helpful to check if image exists or not for the given width and height parameters.
+
+Below is the code for doing this, you can place this code in your helper, for easy access.
+
+[source language=&#8221;php&#8221;]
+<?php
+/**
+ * @author Subesh Pokhrel
+ * @website subesh.com.np
+ *
+ */
+class Namespace_Module_Helper_Data extends Mage_Core_Helper_Abstract
+{
+
+	/**
+	 * Returns the resized Image URL
+	 *
+	 * @param string $imgUrl - This is relative to the the media folder (custom/module/images/example.jpg)
+	 * @param int $x Width
+	 * @param int $y Height
+	 */
+	public function getResizedUrl($imgUrl,$x,$y=NULL){
+		$imgPath=$this->splitImageValue($imgUrl,&#8221;path&#8221;);
+		$imgName=$this->splitImageValue($imgUrl,&#8221;name&#8221;);
+
+		/**
+		 * Path with Directory Seperator
+		 */
+		$imgPath=str_replace(&#8220;/&#8221;,DS,$imgPath);
+
+		/**
+		 * Absolute full path of Image
+		 */
+		$imgPathFull=Mage::getBaseDir(&#8220;media&#8221;).DS.$imgPath.DS.$imgName;
+
+
+		/**
+		 * If Y is not set set it to as X
+		 */
+		$widht=$x;
+		$y?$height=$y:$height=$x;
+
+		/**
+		 * Resize folder is widthXheight
+		 */
+		$resizeFolder=$widht.&#8221;X&#8221;.$height;
+
+		/**
+		 * Image resized path will then be
+		 */
+		$imageResizedPath=Mage::getBaseDir(&#8220;media&#8221;).DS.$imgPath.DS.$resizeFolder.DS.$imgName;
+
+		/**
+		 * First check in cache i.e image resized path
+		 * If not in cache then create image of the width=X and height = Y
+		 */
+		if (!file_exists($imageResizedPath)&amp;amp;&amp;amp; file_exists($imgPathFull)) :
+			$imageObj = new Varien_Image($imgPathFull);
+			$imageObj->constrainOnly(TRUE);
+			$imageObj->keepAspectRatio(TRUE);
+			$imageObj->resize($widht,$height);
+			$imageObj->save($imageResizedPath);
+		endif;
+
+		/**
+		 * Else image is in cache replace the Image Path with / for http path.
+		 */
+		$imgUrl=str_replace(DS,&#8221;/&#8221;,$imgPath);
+
+		/**
+		 * Return full http path of the image
+		 */
+		return Mage::getBaseUrl(&#8220;media&#8221;).$imgUrl.&#8221;/&#8221;.$resizeFolder.&#8221;/&#8221;.$imgName;
+	}
+
+	/**
+	 * Splits images Path and Name
+	 *
+	 * Path=custom/module/images/
+	 * Name=example.jpg
+	 *
+	 * @param string $imageValue
+	 * @param string $attr
+	 * @return string
+	 */
+	public function splitImageValue($imageValue,$attr=&#8221;name&#8221;){
+		$imArray=explode(&#8220;/&#8221;,$imageValue);
+
+		$name=$imArray[count($imArray)-1];
+		$path=implode(&#8220;/&#8221;,array_diff($imArray,array($name)));
+		if($attr==&#8221;path&#8221;){
+			return $path;
+		}
+		else
+			return $name;
+
+	}
+}
+[/source]
+
+And you can access this from anywhere by just this.
+
+[source language=&#8221;php&#8221;]
+
+/**
+*But remember your base image or big image must be in Root/media/custom/module/images/example.jpg
+*/
+
+echo Mage::helper(&#8216;yourmodulehelper&#8217;)->getResizedUrl(&#8220;custom/module/images/example.jpg&#8221;,101,65)
+
+/**
+*By doing this new image will be created in Root/media/custom/module/images/101X65/example.jpg
+*/
+
+[/source]
+
+Stay tuned for more on Magento!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/23/product-import-in-magento-alongwith-updating-the-attributes-options/">Product Import in Magento Alongwith Updating the Attribute&#8217;s Options</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-23T00:00:00+05:45" pubdate data-updated="true">Nov 23<span>rd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">As you may know or not ! Magento is the fastest growing eCommerce plateform, nowonder because Magento has a lots of flexibility in it. You can feel that too if you are a just a user and as for me as Programmer I just Love it. One of the salient feature that makes Magento a leader in eCommerce software is its ability to Import and Export data to an from the system.
+
+Magento gives you a default interface to import or export data, but you will need the specific format of your data.It is easy to customize that as well, but today lets be interested in standard import, but with one small (Yet important) modification. The important modification in the standard code is this code will be able to options to the attribute of <strong>Select/Multiselect/Radio/Checkbox</strong> input type, while the product is being imported.
+
+By default Magento only imports the values of the option, of any attribute, which are already avaliable. But this code can be used to create option at run time if it does not exits and assign to the product, during import. For doing this we need to first set up an Advanced Profile of Export/Import. Go to <strong>System&#8211;>Import/Export&#8211;>Advanced Profile</strong> and create new Profile. Then in the Action XML paste this.
+
+[source language=&#8221;XML&#8221;]
+
+&lt;!&#8211;
+Path=Path of the file relative to ROOT
+filename= File name of the XML(MS EXCEL 2003) where import data is saved in Magento&#8217;s Format
+format	= XML
+You can use CSV as well.
+&#8211;&gt;
+&lt;action type=&quot;dataflow/convert_adapter_io&quot; method=&quot;load&quot;&gt;
+    &lt;var name=&quot;type&quot;&gt;file&lt;/var&gt;
+    &lt;var name=&quot;path&quot;&gt;var/import&lt;/var&gt;
+    &lt;var name=&quot;filename&quot;&gt;&lt;![CDATA[products.xml]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;format&quot;&gt;&lt;![CDATA[xml]]&gt;&lt;/var&gt;
+&lt;/action&gt;
+
+&lt;!&#8211;
+adapter= Your Model path
+&#8211;&gt;
+&lt;action type=&quot;dataflow/convert_parser_xml_excel&quot; method=&quot;parse&quot;&gt;
+    &lt;var name=&quot;single_sheet&quot;&gt;&lt;![CDATA[]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;fieldnames&quot;&gt;true&lt;/var&gt;
+    &lt;var name=&quot;store&quot;&gt;&lt;![CDATA[0]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;number_of_records&quot;&gt;1&lt;/var&gt;
+    &lt;var name=&quot;decimal_separator&quot;&gt;&lt;![CDATA[.]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;adapter&quot;&gt;yourmodel/import&lt;/var&gt;
+    &lt;var name=&quot;method&quot;&gt;save&lt;/var&gt;
+&lt;/action&gt;
+[/source]
+
+The Model defined in the adapter should be like this. You can create a new module for this.
+
+[source language=&#8221;php&#8221;]
+
+&lt;?php
+class Namespace_Module_Model_Import extends Mage_Catalog_Model_Convert_Adapter_Product {
+
+	/**
+	 * Save product (import)
+	 * @param array $importData
+	 * @throws Mage_Core_Exception
+	 * @return bool
+	 */
+	public function saveRow(array $importData)
+	{
+		$product = $this-&gt;getProductModel()
+		-&gt;reset();
+
+		if (empty($importData[&#8216;store&#8217;])) {
+			if (!is_null($this-&gt;getBatchParams(&#8216;store&#8217;))) {
+				$store = $this-&gt;getStoreById($this-&gt;getBatchParams(&#8216;store&#8217;));
+			} else {
+				$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, required field &quot;%s&quot; not defined&#8217;, &#8216;store&#8217;);
+				Mage::throwException($message);
+			}
+		}
+		else {
+			$store = $this-&gt;getStoreByCode($importData[&#8216;store&#8217;]);
+		}
+
+		if ($store === false) {
+			$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, store &quot;%s&quot; field not exists&#8217;, $importData[&#8216;store&#8217;]);
+			Mage::throwException($message);
+		}
+
+		if (empty($importData[&#8216;sku&#8217;])) {
+			$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, required field &quot;%s&quot; not defined&#8217;, &#8216;sku&#8217;);
+			Mage::throwException($message);
+		}
+		$product-&gt;setStoreId($store-&gt;getId());
+		$productId = $product-&gt;getIdBySku($importData[&#8216;sku&#8217;]);
+
+		if ($productId) {
+			$product-&gt;load($productId);
+		}
+		else {
+			$productTypes = $this-&gt;getProductTypes();
+			$productAttributeSets = $this-&gt;getProductAttributeSets();
+
+			/**
+			 * Check product define type
+			 */
+			if (empty($importData[&#8216;type&#8217;]) || !isset($productTypes[strtolower($importData[&#8216;type&#8217;])])) {
+				$value = isset($importData[&#8216;type&#8217;]) ? $importData[&#8216;type&#8217;] : &#8221;;
+				$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, is not valid value &quot;%s&quot; for field &quot;%s&quot;&#8217;, $value, &#8216;type&#8217;);
+				Mage::throwException($message);
+			}
+			$product-&gt;setTypeId($productTypes[strtolower($importData[&#8216;type&#8217;])]);
+			/**
+			 * Check product define attribute set
+			 */
+			if (empty($importData[&#8216;attribute_set&#8217;]) || !isset($productAttributeSets[$importData[&#8216;attribute_set&#8217;]])) {
+				$value = isset($importData[&#8216;attribute_set&#8217;]) ? $importData[&#8216;attribute_set&#8217;] : &#8221;;
+				$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, is not valid value &quot;%s&quot; for field &quot;%s&quot;&#8217;, $value, &#8216;attribute_set&#8217;);
+				Mage::throwException($message);
+			}
+			$product-&gt;setAttributeSetId($productAttributeSets[$importData[&#8216;attribute_set&#8217;]]);
+
+			foreach ($this-&gt;_requiredFields as $field) {
+				$attribute = $this-&gt;getAttribute($field);
+				if (!isset($importData[$field]) &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute-&gt;getIsRequired()) {
+					$message = Mage::helper(&#8216;catalog&#8217;)-&gt;__(&#8216;Skip import row, required field &quot;%s&quot; for new products not defined&#8217;, $field);
+					Mage::throwException($message);
+				}
+			}
+		}
+
+		$this-&gt;setProductTypeInstance($product);
+
+		if (isset($importData[&#8216;category_ids&#8217;])) {
+			$product-&gt;setCategoryIds($importData[&#8216;category_ids&#8217;]);
+		}
+
+		foreach ($this-&gt;_ignoreFields as $field) {
+			if (isset($importData[$field])) {
+				unset($importData[$field]);
+			}
+		}
+
+		if ($store-&gt;getId() != 0) {
+			$websiteIds = $product-&gt;getWebsiteIds();
+			if (!is_array($websiteIds)) {
+				$websiteIds = array();
+			}
+			if (!in_array($store-&gt;getWebsiteId(), $websiteIds)) {
+				$websiteIds[] = $store-&gt;getWebsiteId();
+			}
+			$product-&gt;setWebsiteIds($websiteIds);
+		}
+
+		if (isset($importData[&#8216;websites&#8217;])) {
+			$websiteIds = $product-&gt;getWebsiteIds();
+			if (!is_array($websiteIds)) {
+				$websiteIds = array();
+			}
+			$websiteCodes = split(&#8216;,&#8217;, $importData[&#8216;websites&#8217;]);
+			foreach ($websiteCodes as $websiteCode) {
+				try {
+					$website = Mage::app()-&gt;getWebsite(trim($websiteCode));
+					if (!in_array($website-&gt;getId(), $websiteIds)) {
+						$websiteIds[] = $website-&gt;getId();
+					}
+				}
+				catch (Exception $e) {}
+			}
+			$product-&gt;setWebsiteIds($websiteIds);
+			unset($websiteIds);
+		}
+
+		foreach ($importData as $field =&gt; $value) {
+			if (in_array($field, $this-&gt;_inventoryFields)) {
+				continue;
+			}
+			if (in_array($field, $this-&gt;_imageFields)) {
+				continue;
+			}
+
+			$attribute = $this-&gt;getAttribute($field);
+
+			if (!$attribute) {
+				continue;
+			}
+
+			$isArray = false;
+			$setValue = $value;
+
+
+			if ($attribute-&gt;getFrontendInput() == &#8216;multiselect&#8217;) {
+				$value = split(self::MULTI_DELIMITER, $value);
+				$isArray = true;
+				$setValue = array();
+			}
+
+			if ($value &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute-&gt;getBackendType() == &#8216;decimal&#8217;) {
+				$setValue = $this-&gt;getNumber($value);
+			}
+
+			/**CODE MODIFICATION STARTS HERE*/
+
+			$optionLabelArray=array();
+			if ($attribute-&gt;usesSource()) {
+			 $options = $attribute-&gt;getSource()-&gt;getAllOptions(false);
+
+			 /**
+			  * Update the Source of the attribute when source has no options.
+			  */
+			 if(count($options)&lt;1){
+			 	if($isArray){
+			 		foreach($value as $key=&gt;$subvalue){
+			 			if(!in_array($subvalue,$newOptionLabelArray)){
+			 				$setValue[]=$this-&gt;updateSourceAndReturnId($field,$subvalue);
+			 				array_push($newOptionLabelArray,$subvalue);
+			 			}
+			 		}
+			 	}
+			 	else{
+			 		if(!in_array($value,$newOptionLabelArray)){
+			 			$setValue=$this-&gt;updateSourceAndReturnId($field,$value);
+			 			array_push($newOptionLabelArray,$value);
+			 		}
+			 	}
+			 }
+
+			 /**
+			  * Work on the source when it has options
+			  */
+			 else{
+			 	/**
+			 	 * This is the case of Multi-Select
+			 	 */
+			 	if ($isArray) {
+			 		foreach ($options as $item) {
+			 			/** Setting the option&#8217;s ID if Label matches with the current value of XML column.*/
+			 			if (in_array($item[&#8216;label&#8217;], $value)) {
+			 				$setValue[] = trim($item[&#8216;value&#8217;]);
+			 				array_push($optionLabelArray,$item[&#8216;label&#8217;]); /**Adding Reference to worked attribute option**/
+			 			}
+			 		}
+
+			 		/**
+			 		 *  Checking in the current XML column value if all values were used in the above loop or not
+			 		 *  If not used then they are new options value, then new option is created and then assigned.
+			 		 **/
+
+			 		foreach($value as $key=&gt;$subvalue){
+			 			if(!in_array($subvalue,$optionLabelArray)){
+			 				$setValue[]=$this-&gt;updateSourceAndReturnId($field,$subvalue);
+			 			}
+			 		}
+
+			 	}
+			 	/**This is the case of single select**/
+
+			 	else {
+			 		$setValue = null;
+			 		$newOptionLabelArray=array();
+			 		foreach ($options as $item) {
+			 			if ($item[&#8216;label&#8217;] == $value) {
+			 				$setValue = $item[&#8216;value&#8217;];
+			 				array_push($optionLabelArray,$item[&#8216;label&#8217;]); /**Adding Reference to worked attribute option**/
+			 			}
+			 		}
+			 		/**
+			 		 *  Checking in the current XML column value if all values were used in the above loop or not
+			 		 *  If not used then they are new options value, then new option is created and then assigned.
+			 		 **/
+			 		if(!in_array($value,$optionLabelArray)){
+			 			$setValue=$this-&gt;updateSourceAndReturnId($field,$value);
+			 		}
+			 	}
+			 }
+			}
+
+			/**CODE MODIFICATION ENDS HERE*/
+
+			$product-&gt;setData($field, $setValue);
+		}
+
+		if (!$product-&gt;getVisibility()) {
+			$product-&gt;setVisibility(Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE);
+		}
+
+		$stockData = array();
+		$inventoryFields = isset($this-&gt;_inventoryFieldsProductTypes[$product-&gt;getTypeId()])
+		? $this-&gt;_inventoryFieldsProductTypes[$product-&gt;getTypeId()]
+		: array();
+		foreach ($inventoryFields as $field) {
+			if (isset($importData[$field])) {
+				if (in_array($field, $this-&gt;_toNumber)) {
+					$stockData[$field] = $this-&gt;getNumber($importData[$field]);
+				}
+				else {
+					$stockData[$field] = $importData[$field];
+				}
+			}
+		}
+		$product-&gt;setStockData($stockData);
+
+		$imageData = array();
+		foreach ($this-&gt;_imageFields as $field) {
+			if (!empty($importData[$field]) &amp;amp;amp;amp;&amp;amp;amp;amp; $importData[$field] != &#8216;no_selection&#8217;) {
+				if (!isset($imageData[$importData[$field]])) {
+					$imageData[$importData[$field]] = array();
+				}
+				$imageData[$importData[$field]][] = $field;
+			}
+		}
+
+		foreach ($imageData as $file =&gt; $fields) {
+			try {
+				$product-&gt;addImageToMediaGallery(Mage::getBaseDir(&#8216;media&#8217;) . DS . &#8216;import&#8217; . $file, $fields);
+			}
+			catch (Exception $e) {}
+		}
+
+		$product-&gt;setIsMassupdate(true);
+		$product-&gt;setExcludeUrlRewrite(true);
+		$product-&gt;save();
+
+		return true;
+	}
+
+	/**
+	 * Updates the source of the attribute by the current new value in the XML column, and returns
+	 * the id of the newly created option.
+	 *
+	 * @param string $attribute_code
+	 * @param string $newOption
+	 * @return int|string New Option Id
+	 */
+	public function updateSourceAndReturnId($attribute_code,$newOption){
+		$attribute_model        = Mage::getModel(&#8216;eav/entity_attribute&#8217;);
+		$attribute_options_model= Mage::getModel(&#8216;eav/entity_attribute_source_table&#8217;) ;
+
+		$attribute_code         = $attribute_model-&gt;getIdByCode(&#8216;catalog_product&#8217;, $attribute_code);
+		$attribute              = $attribute_model-&gt;load($attribute_code);
+		$attribute_table        = $attribute_options_model-&gt;setAttribute($attribute);
+		try{
+			$value[&#8216;option&#8217;] = array(trim($newOption),trim($newOption));
+			$result = array(&#8216;value&#8217; =&gt; $value);
+			$attribute-&gt;setData(&#8216;option&#8217;,$result);
+			$attribute-&gt;save();
+		}
+		catch(Exception $e){}
+		$options = $attribute_options_model-&gt;getAllOptions(false);
+		foreach($options as $option)
+		{
+			if ($option[&#8216;label&#8217;] == $newOption)
+			{
+				return $option[&#8216;value&#8217;];
+			}
+		}
+		return &quot;&quot;;
+	}
+
+
+
+}
+
+?&gt;
+
+[/source]
+
+
+Please note the /**CODE MODIFICATION ENDS HERE*/ block. Most of the description is on the code. I got it working, feel free to ask if you got any problem. I am also working on importing custom option. I&#8217;ll soon make a post in it as well.
+
+<a href="http://subeshexamples.googlecode.com/files/productimport.rar">Download Source[Updated]</a>
+
+Here&#8217;s the sample import sheet with request from the reader
+
+<a href="http://spreadsheets.google.com/ccc?key=0Aji4wlRfG_gjdFEzRF9nVWFvZTRlMEZ5WGcxUWV4ZGc&hl=en">Sample Sheet</a>
+
+<iframe width='500' height='300' frameborder='0' src='http://spreadsheets.google.com/pub?key=tQ3D_gUaoe4e0FyXg1Qexdg&single=true&gid=0&output=html&widget=true'></iframe>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/20/adding-related-product-and-other-links-to-product-in-magento/">Adding Related Product and Other Links to Product in Magento</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-20T00:00:00+05:45" pubdate data-updated="true">Nov 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Here is a simple way of adding product link such as Related, Upsell and Crosssell Link to a product in Magento. I just got the way of doing this and thought to share! So kind of me :)
+
+[source language=&#8221;php&#8221;]
+/**
+First Create Link Array of following type
+**/
+
+$linkArray=array(‘product_id’=>array(‘position’=>’’));
+
+/**
+Then set the Link Data
+**/
+
+/** For Upsell Link**/
+$product->setUpSellLinkData($linkArray);
+
+/** For Crosssell Link**/
+$product->setCrossSellLinkData($linkArray);
+
+/** For Crosssell Link**/
+$product->setRelatedLinkData($linkArray);
+
+$product->save();
+[/source]
+
+Hope this helps.
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/18/facebook-application-for-nepali-constitution/">Facebook Application for Nepali Constitution</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-18T00:00:00+05:45" pubdate data-updated="true">Nov 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I have always
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/7/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/5/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using Custom Table for Custom Module in Magento - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="If you want to create a custom module in Magento that has something to do with storing data into a custom table and using that later, then this is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/01/08/custom-table-custom-module-magento">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using Custom Table for Custom Module in Magento</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-08T00:00:00+05:45" pubdate data-updated="true">Jan 8<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">If you want to create a custom module in Magento that has something to do with storing data into a custom table and using that later, then this is just the right post you have bumped into! I will presume that you already know about Models in Magento, what are they and how you can create them. Also I will presume that you will also know the basic module structure in Magento.
+You will have to place this in your config.xml
+[source language=&#8221;xml&#8221;]
+&lt;global&gt;
+     &lt;ymodel&gt;
+            &lt;class&gt;YNamespace_YModule_Model&lt;/class&gt;
+	     &lt;resourceModel&gt;quotes_mysql4&lt;/resourceModel&gt;
+     &lt;/ymodel&gt;
+&lt;quotes_mysql4&gt;
+                &lt;class&gt;YNamespace_Ymodule_Model_Mymodel&lt;/class&gt;
+                &lt;entities&gt;
+			&lt;mymodel&gt;
+				&lt;table&gt;ymodel_ytable&lt;/table&gt;
+			&lt;/mymodel&gt;
+		&lt;/entities&gt;
+      &lt;/quotes_mysql4&gt;
+&lt;/global&gt;
+[/source]
+
+Then Create a Model
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+class YNamespace_Ymodule_Model_Mymodel extends Mage_Core_Model_Abstract
+{
+	public function _construct()
+	{
+		parent::_construct();
+		$this-&gt;_init(&#8216;ymodel/mymodel&#8217;);
+	}
+}
+[/source]
+As you can see in constructor of this class it inits the model (tag) defined in the config file. As model uses Resources, you now need to create a resource the module uses.
+[source language=&#8221;php&#8221;]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Ymodel extends Mage_Core_Model_Mysql4_Abstract
+{
+    public function _construct()
+    {
+        $this-&gt;_init(&#8216;ymodel/mymodel&#8217;, &#8216;id&#8217;);
+    }
+}
+
+[/source]
+So using this resource you now can access Table and add/alter. But you must not explicitly create a object of this class to do that. Creating a model of class above will make this resource usable.
+
+[source language=&#8221;php&#8221;]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokhrel&quot;)
+      -&gt;save();
+[/source]
+
+This will create a new row in table now given that name and lastname is the columns of the table. To edit row of a table do the following
+
+[source language=&#8221;php&#8221;]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;load($id)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokharel&quot;)
+      -&gt;save();
+[/source]
+
+Now to select, there is another procedure. Before that let me tell about collection. Think collections as the array of objects.When you Query in database you get result as collections in Magento and every row resulting from the query is a different Object.To create a collection
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Mymodel_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
+{
+    public function _construct()
+    {
+        parent::_construct();
+        $this-&gt;_init(&#8216;ymodel/mymodel&#8217;);
+    }
+}
+[/source]
+
+To Select All the row of Table
+
+[source language=&#8221;php&#8221;]
+$allCollection=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;getCollection();
+[/source]
+
+You can add filters in the above query as required.
+To get individual Row you can just loop through the collection :)
+
+[source language=&#8221;php&#8221;]
+foreach($allCollection as $objRow){
+	print_r($objRow);
+}
+
+[/source]
+
+Hope this helps if any one is in need&#8230; and @inchoo..please don&#8217;t twitt this as any other..link&#8230;you find in a weekend&#8230; :P.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-08T00:00:00+05:45" pubdate data-updated="true">Jan 8<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/01/08/custom-table-custom-module-magento/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/01/08/custom-table-custom-module-magento/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/" title="Previous Post: Moving Magento Shop from Development Enviornment to Production Enviornment or Production to Local">&laquo; Moving Magento Shop from Development Enviornment to Production Enviornment or Production to Local</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/" title="Next Post: Creating Custom Sourced Multiselect Product Attribute">Creating Custom Sourced Multiselect Product Attribute &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

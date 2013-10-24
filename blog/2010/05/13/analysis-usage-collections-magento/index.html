@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Analysis & Usage of Collections in Magento - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="As a Magento Programmer I am fascinated by the use &amp; simplicity of collection used in Magento. Simplicity, does not really mean being simple (it &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/05/13/analysis-usage-collections-magento">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Analysis & Usage of Collections in Magento</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-13T00:00:00+05:45" pubdate data-updated="true">May 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">As a Magento Programmer I am fascinated by the use &amp; simplicity of collection used in Magento. Simplicity, does not really mean being simple (it is rather complex structured) but easy to use. With the help of one of my colleague, I got down to understand how collection really represents the &#8220;collection&#8221; of data we are actually trying to get from database. Here is what I found drilling down into the Magento&#8217;s Core. I may be &#8220;not quite right&#8221; with the analysis, you can always comment.
+
+Almost all the collections found inside  <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model/Collection.php</strong> are the child of parent Class <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong>. Primary thing done in the class constructor is initializing its resource and Model. If you look into one of the Collection class you can see in its constructor.
+
+[source language=&#8221;php&#8221;]
+/**
+	 * @class Mage_Checkout_Model_Mysql4_Agreement_Collection
+     * Initialize resource
+     *
+     */
+    protected function _construct()
+    {
+        $this-&gt;_init(&#8216;checkout/agreement&#8217;);
+    }
+[/source]
+
+And this _init function has been implemented in its parent class as
+
+[source language=&#8221;php&#8221;]
+/**
+     * Standard resource collection initalization
+     *
+     * @param string $model
+     * @return Mage_Core_Model_Mysql4_Collection_Abstract
+     */
+    protected function _init($model, $resourceModel=null)
+    {
+        $this-&gt;setModel($model);
+        if (is_null($resourceModel)) {
+            $resourceModel = $model;
+        }
+        $this-&gt;setResourceModel($resourceModel);
+        return $this;
+    }
+[/source]
+
+The resource class can be found in <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model.php</strong>. And this resource class in turn initializes the database table to be used in the Module along with the table&#8217;s primary key.
+
+[source language=&#8221;php&#8221;]
+class Mage_Checkout_Model_Mysql4_Agreement extends Mage_Core_Model_Mysql4_Abstract
+	{
+
+	protected function _construct()
+    {
+        $this-&gt;_init(&#8216;checkout/agreement&#8217;, &#8216;agreement_id&#8217;);
+    }
+	&#8230;&#8230;
+	}
+[/source]
+
+It is this resource class that actually works out the database connections, read/write adapters and performs transactions. So this is the basic deduction about the link of collection with the database and its tables. But how are those collection formed still remains a mystery, not anymore! In this section of the post I will try to explain how are the collections really formed.
+
+If I can, &#8221;<strong>collection</strong>&#8221; can be defined as collection or array of its resource. And in Magento case, most of the resources are database&#8217;s query results. Simply you can visualize &#8221;<strong>collection</strong>&#8221; to be array of your model&#8217;s resource. If a &#8221;<strong>query</strong>&#8221; in Magento returns a collection of all the products then it would mean that the very collection is an array of all the individual product&#8217;s object. But one question still remains how will the database query&#8217;s result transform into a Magento &#8221;<strong>collection</strong>&#8221;. To understand that we need to understand the collection class and its parents.
+
+The class Structure for <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong> is like this.
+
+Mage_Core_Model_Mysql4_Collection_Abstract
+<p style="padding-left: 30px;">|__ Varien_Data_Collection_Db (C)</p>
+<p style="padding-left: 60px;">|__	Varien_Data_Collection (C)</p>
+<p style="padding-left: 90px;">|__ IteratorAggregate (I)</p>
+<p style="padding-left: 90px;">|__ Countable (I)</p>
+You can see that all collection implements two Interfaces <strong>IteratorAggregate </strong>&amp; <strong>Countable</strong>.
+
+<a href="http://goo.gl/MjAT" target="_blank">IteratorAggregate </a> is predefined in Standard PHP Library that extends Abstract Base Class <a href="http://goo.gl/rzXS" target="_blank">Traversable </a>. On using this Interface you can then <a href="http://goo.gl/hgtI" target="_blank">Iterate Through Object</a> using &#8221;<strong>foreach</strong>&#8221; construct. Countable returns the size of the Collection Object.
+
+Among the two Interfaces, <strong>IteratorAggregate </strong>is particularly important. As you can see in Class Hierarchy both the interfaces are implemented by<strong> Varien_Data_Collection</strong> concrete class. <strong>IteratorAggregate</strong> has abstract public method <strong>getIterator()</strong> which returns the Iterator interface and the concrete Class has to implement the method on its own. It is this Iterator that provides the real iteration functionality. You can get a detailed description about Iterator <a href="http://goo.gl/C9Nx" target="_blank">Here</a>.
+
+So if you look into the <strong>Varien_Data_Collection</strong> you will find the <strong>getIterator()</strong> implemented like this.
+
+[source language=&#8221;php&#8221;]
+/**
+	 * @class Varien_Data_Collection
+     * Implementation of IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        $this-&gt;load();
+        return new ArrayIterator($this-&gt;_items);
+    }
+[/source]
+
+As you can see that it first loads the &#8221;<strong>items</strong>&#8221; (I will get back to this Items) and instanciates the value to an internal Class <a href="http://goo.gl/8LAi" target="_blank">ArrayIterator </a>. And the Iterator returned by this function can then be iterated using <strong>foreach </strong>construct.
+
+Looks like it is going to be a looonnnnng post, let be summarize what I&#8217;ve tried to point out until now. I&#8217;ve tried to show the link between the collection class or rather object with the database table and explain the iteration behavior of the collection object. But one question still remains how will the database query&#8217;s result transform into a Magento&#8217;s &#8221;<strong>collection</strong>&#8221;. This is where the &#8221;<strong>items</strong>&#8221; explanation need to be done.
+
+&#8221;<strong>Items</strong>&#8221; are actually array if individual object (item) of the collection which represents the array of tuple of the database query result. As you see in the snippet above the <strong>ArrayIterator </strong>takes <strong>$this-&gt;_items</strong> are parameter. But <strong>$this-&gt;_items</strong> are not populated here on <strong>Varien_Data_Collection</strong> but rather on is child class <strong>Varien_Data_Collection_Db</strong>. Here&#8217;s the snippet from Varien_Data_Collection_Db.
+
+[source language=&#8221;php&#8221;]
+/**
+     * Load data
+     * @class Varien_Data_Collection_Db
+     * @return  Varien_Data_Collection_Db
+     */
+    public function load($printQuery = false, $logQuery = false)
+    {
+        if ($this-&gt;isLoaded()) {
+            return $this;
+        }
+
+        $this-&gt;_renderFilters()
+             -&gt;_renderOrders()
+             -&gt;_renderLimit();
+
+        $this-&gt;printLogQuery($printQuery, $logQuery);
+
+		// Getting Data from DB
+        $data = $this-&gt;getData();
+
+        $this-&gt;resetData();
+
+        if (is_array($data)) {
+
+		    // Looping on each result row
+            foreach ($data as $row) {
+			    // Creating Empty &quot;item&quot; Varien_Object&#8217;s object
+                $item = $this-&gt;getNewEmptyItem();
+
+                if ($this-&gt;getIdFieldName()) {
+                    $item-&gt;setIdFieldName($this-&gt;getIdFieldName());
+                }
+
+				// Setting Varien_Object&#8217;s values to that of the row
+                $item-&gt;addData($row);
+
+				/**
+				* Adding the &quot;item&quot; to the collection @class Varien_Data_Collection
+				* So while referring to $this-&gt;_items @class Varien_Data_Collection it will return array of this &quot;item&quot;
+				*/
+                $this-&gt;addItem($item);
+            }
+
+        }
+
+        $this-&gt;_setIsLoaded();
+        $this-&gt;_afterLoad();
+        return $this;
+    }
+
+    /**
+     * Get all data array for collection
+     * @class Varien_Data_Collection_Db
+     * @return array
+     */
+    public function getData()
+    {
+        if ($this-&gt;_data === null) {
+            $this-&gt;_renderFilters()
+                 -&gt;_renderOrders()
+                 -&gt;_renderLimit();
+
+			// Fetching all the row with the Select query set
+            $this-&gt;_data = $this-&gt;_fetchAll($this-&gt;_select);
+            $this-&gt;_afterLoadData();
+        }
+        return $this-&gt;_data;
+    }
+[/source]
+
+You can go through the inline comments I&#8217;ve added. This is it, I&#8217;ve finally worked out the explanation of structure &amp; creation of Magento&#8217;s Collection and its iterative behavior. I&#8217;ve tried to show pictorially (below) what I have just described. Confused! Plz comment and of course please do comment if I am wrong, because there are &#8220;times&#8221; when you try to understand things even though they actually aren&#8217;t just like you think. I&#8217;d like to quote <strong>Paulo </strong> :<strong><em>&#8220;I see the world in terms of what I would like to see happen, not what actually does&#8221;</em></strong>!
+
+<img class="alignnone size-full wp-image-249" title="hierarchy" src="http://subesh.com.np/wp-content/uploads/2010/05/hierarchy.jpg" alt="hierarchy" width="505" height="604" />
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-13T00:00:00+05:45" pubdate data-updated="true">May 13<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/05/13/analysis-usage-collections-magento/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/05/13/analysis-usage-collections-magento/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/05/06/re-post%3Amagento-ecommerce%3A-how-to-reset-all-test-order-information/" title="Previous Post: Re-Post:Magento eCommerce: How To Reset All Test Order Information">&laquo; Re-Post:Magento eCommerce: How To Reset All Test Order Information</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/06/09/magento-creating-ajax-updated-tabs-frontend-product-management-tabs-backend/" title="Next Post: Magento: Creating Ajax Updated Tabs In Frontend, Like Product Management Tabs of Backend">Magento: Creating Ajax Updated Tabs In Frontend, Like Product Management Tabs of Backend &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

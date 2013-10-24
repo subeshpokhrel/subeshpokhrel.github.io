@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Rescent Rating Summary of a product in Magento - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Magento has a default option to show the overall rating&#8217;s summary of the product, which is shown in the product view page. This summary is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2009/12/22/rescent-rating-summary-product-magento">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Rescent Rating Summary of a Product in Magento</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Magento has a default option to show the overall rating&#8217;s summary of the product, which is shown in the product view page. This summary is based on all the review posted and approved for the particular product. In the summary the stars are shown accordingly, by taking the sum of all reviews and calculating the average rating. But I had a case where I needed to show those star ratings, only based on the last approved user ratings. What I did was just a small tweak in the Magento&#8217;s default working!
+
+Magento gets all the reviews and processes it accordingly, so what I did was just added limit filter to get the rescent rating only, and left the Magento default working do the rest. Tricky! huh&#8230;.
+
+Here the block that can achieve the same.
+
+[source language=&#8221;php&#8221;]
+<?php
+class Namespace_Comment_Block_Comment extends Mage_Review_Block_Product_View
+{
+	/**
+	 * Get only Latest review.
+	 * Only adding PageSize filter to the collection sent by the parent::getReviewsCollection(), since parent already
+	 * sorts it by date.
+	 */
+	public function getRescentReview ()
+	{
+		$collection = $this->getReviewsCollection()->setPageSize(1);
+		return $collection;
+	}
+	/**
+	 * Getting Current Product&#8217;s name
+	 */
+	public function getProductName ()
+	{
+		return Mage::registry(&#8220;product&#8221;)->getName();
+	}
+	/**
+	 * Getting Rating summary only for the one Review (latest one)
+	 */
+	public function getRatingSummary ()
+	{
+		return Mage::getModel(&#8216;rating/rating&#8217;)->getReviewSummary($this->getReviewId());
+	}
+}
+[/source]
+
+And here is the phtml file.
+
+[source language=&#8221;html&#8221;]
+<?php
+// Retreiving rescent comment collection's Item
+$_items = $this->getRescentReview()->getItems();
+?>
+<?php if (count($_items)):
+// Loading review with the latest comment's id
+$_review=Mage::getModel("review/review")->load(array_keys($_items));
+$curRat=$_review->getData(&#8216;review_id&#8217;);
+
+// Setting the current Review Id to the block&#8217;s Object, used in Namespace_Comment_Block_Comment line #26
+$this->setReviewId($curRat);
+if($curRat!=1):
+?>
+<div >
+    <div>
+        <h2><?php echo $this->__(&#8216;Recente Reviews&#8217;) ?></h2>
+    </div>
+    <h3><?php echo $this->getProductName()?></h3>
+    <div class="rating-box">
+        <div class="rating" style="width:<?php echo ceil($this->getRatingSummary()->getSum() / ($this->getRatingSummary()->getCount())) ?>%;&#8221;></div>
+    </div>
+    <div>
+      <?php echo $_review->getDetail()?>
+    </div>
+</div>
+<?php
+endif;
+endif;
+?>
+[/source]
+
+You must call this in product detail page.
+
+[source language=&#8221;xml&#8221;]
+&#8211;
+<block type ="comment/comment" name="rescent.comment" template="comment/rescent.phtml"/>
+&#8211;
+[/source]
+
+By the end of this you will get the Rescent rating summary on your product detail page.
+
+Happy Coding in Magento!!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-22T00:00:00+05:45" pubdate data-updated="true">Dec 22<span>nd</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2009/12/22/rescent-rating-summary-product-magento/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2009/12/22/rescent-rating-summary-product-magento/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/12/22/products-price-current-currency-format-store/" title="Previous Post: Getting the Product's Price in current currency format of store">&laquo; Getting the Product's Price in current currency format of store</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/12/25/creating-block-code-magento/" title="Next Post: Creating Block From the Code in Magento">Creating Block From the Code in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

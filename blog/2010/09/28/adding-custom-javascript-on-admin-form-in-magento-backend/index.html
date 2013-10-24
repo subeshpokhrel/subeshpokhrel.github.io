@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Adding Custom Javascript on Admin form in Magento (Backend) - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Adding Custom Javascript on Admin Form in Magento (Backend)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-28T00:00:00+05:45" pubdate data-updated="true">Sep 28<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are extened from the Magento&#8217;s core form widget. So there is a less flexibiliy of adding a custom Javasccript code in such types of Admin forms. What to do if you really need to add some custom Javascripts to give user a better user experience? In this post I&#8217;d like to point two conditions how/where to add such custom Javascript codes in the Form class, so that you can give user an interactive Admin form.
+
+The two conditions are:
+<ol>
+	<li>If an element of the form already has a value, disable that form element.</li>
+	<li>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value.</li>
+</ol>
+
+<h2>If an element of the form already has a value, disable that form element</h2>
+
+Lets take an example of core&#8217;s customer creation Admin form. What we can see while creating a customer from Admin end, the field &#8220;Associate to Website&#8221; is available to change for the first time. But when you are editing a customer info the very field is disabled. Lets see how this can be acheivable. If you look into <strong>Mage_Adminhtml_Block_Customer_Edit_Tab_Account</strong> class you can see the following chunk of code.
+
+[source language=&#8221;php&#8221;]
+  if ($customer-&gt;getId()) {
+            $form-&gt;getElement(&#8216;website_id&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+            $form-&gt;getElement(&#8216;created_in&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+        }
+[/source]
+
+What this does is checks for the Id of the customer if it is present the form elements disabled attribute is set to disabled. So initially while creating a new customer this condition is not fulfilled while on edition of the customer data the condition is fulfilled and hence the form element <em>website_id</em> and the <em>created_in</em> are disabled. This was just an example, you can also write similar conditions for your custom form. Suppose your data for the current form is in <em>$formData</em> variable and then by checking certain field value you can add similar condition.
+
+[source language=&#8221;php&#8221;]
+$formData=Mage::registry(&#8216;current_custom_data&#8217;);
+
+if(!empty($formData-&gt;getMyField())){
+	$targetElement=$form-&gt;getElement(&quot;my_field&quot;);
+
+	//For Disabling the field (Value will not be posted on form submit)
+	$targetElement-&gt;setDisabled(&#8216;disabled&#8217;);
+
+	//Or for making the field readonly
+	$targetElement-&gt;setReadonly(true);
+
+}
+[/source]
+
+
+<h2>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value</h2>
+
+
+Lets take the same customer edition page, you can see a checkbox with label <strong>Send auto-generated password</strong>. If you check that checkbox then the <strong>New Password</strong> textfield above it gets disabled. To get the similar interactivity for custom form you will have to do as following.
+
+[source language=&#8221;php&#8221;]
+$eventElem=$fieldset-&gt;addField(&#8216;nocode&#8217;, &#8216;checkbox&#8217;, array(
+                &#8216;label&#8217; =&gt; Mage::helper(&#8216;customer&#8217;)-&gt;__(&#8216;Event Element&#8217;),
+                &#8216;name&#8217;  =&gt; &#8216;eventelem&#8217;,
+                &#8216;id&#8217;    =&gt; &#8216;eventelem&#8217;,
+				&#8216;value&#8217;=&gt;1,
+				&#8216;onclick&#8217;=&gt;&#8217;modifyTargetElement(this)&#8217;,
+            ));
+
+		$eventElem-&gt;setAfterElementHtml(&#8216;&lt;script&gt;
+			function modifyTargetElement(checkboxElem){
+				if(checkboxElem.checked){
+					$(&quot;target_element&quot;).disabled=true;
+				}
+				else{
+					$(&quot;target_element&quot;).disabled=false;
+				}
+			}
+		&lt;/script&gt;&#8217;);
+[/source]
+
+What you can see is after an element of a form is initiallized you can add HTML codes (which of course for us is only Javascript code) by calling a <strong>setAfterElementHtml</strong> method and write the implementation of the function called on the event of the Event element.
+I&#8217;ve tried to be more explanatory as possible, if you still have any confusion there is always a comment box below. Happy Coding!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-28T00:00:00+05:45" pubdate data-updated="true">Sep 28<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/23/adding-css-class-name-to-my-account-link-anchor-tag-in-magento-through-xml-layout/" title="Previous Post: Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML Layout">&laquo; Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML Layout</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/12/16/generating-invoiceorders-next-increment-id-in-magento/" title="Next Post: Generating Invoice/Order's Next Increment ID in Magento">Generating Invoice/Order's Next Increment ID in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

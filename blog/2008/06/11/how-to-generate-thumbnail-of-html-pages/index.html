@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How To Generate Thumbnail of HTML Pages - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I was just adding my site on Alexa and in some minutes Alexa generated a thumbnail of my html site. And again it was same with blog catelog. So I &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2008/06/11/how-to-generate-thumbnail-of-html-pages">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How to Generate Thumbnail of HTML Pages</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-11T00:00:00+05:45" pubdate data-updated="true">Jun 11<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">I was just adding my site on Alexa and in some minutes Alexa generated a thumbnail of my html site. And again it was same with blog catelog. So I thought is there any PHP code that crawled the site and generates its image thumb? After a lots of research I came out with these. Remember, this only works in windows server.
+There is one thing called IECapt.exe ( A Internet Explorer Web Page Rendering Capture Utility). This renders the page and generate thumbnail of it. You can download it from <a href="http://iecapt.sourceforge.net/">IECapt.exe</a>. And to run that through php here&#8217;s the code.
+
+This is the class file that generates thumb images from the output of IECapt.exe. Save it as image.class.php
+
+[sourcecode=&#8221;PHP&#8221;]
+<?php
+
+class Thumb {
+
+  var $save_to_file = true;
+  var $image_type = -1;
+  var $quality = 100;
+  var $max_x = 100;
+  var $max_y = 100;
+  var $cut_x = 0;
+  var $cut_y = 0;
+
+  function SaveImage($im, $filename) {
+
+    $res = null;
+
+    // ImageGIF is not included into some GD2 releases, so it might not work
+    // output png if gifs are not supported
+    if(($this->image_type == 1)  && !function_exists(&#8216;imagegif&#8217;)) $this->image_type = 3;
+
+    switch ($this->image_type) {
+      case 1:
+        if ($this->save_to_file) {
+          $res = ImageGIF($im,$filename);
+        }
+        else {
+          header(&#8220;Content-type: image/gif&#8221;);
+          $res = ImageGIF($im);
+        }
+        break;
+      case 2:
+        if ($this->save_to_file) {
+          $res = ImageJPEG($im,$filename,$this->quality);
+        }
+        else {
+          header(&#8220;Content-type: image/jpeg&#8221;);
+          $res = ImageJPEG($im,&#8221;,$this->quality);
+        }
+        break;
+      case 3:
+        if ($this->save_to_file) {
+          $res = ImagePNG($im,$filename);
+        }
+        else {
+          header(&#8220;Content-type: image/png&#8221;);
+          $res = ImagePNG($im,&#8221;,$this->quality);
+        }
+        break;
+    }
+
+    return $res;
+
+  }
+
+  function ImageCreateFromType($type,$filename) {
+   $im = null;
+   switch ($type) {
+     case 1:
+       $im = ImageCreateFromGif($filename);
+       break;
+     case 2:
+       $im = ImageCreateFromJpeg($filename);
+       break;
+     case 3:
+       $im = ImageCreateFromPNG($filename);
+       break;
+    }
+    return $im;
+  }
+
+  // generate thumb from image and save it
+  function GenerateThumbFile($from_name, $to_name) {
+
+    // get source image size (width/height/type)
+    // orig_img_type 1 = GIF, 2 = JPG, 3 = PNG
+    list($orig_x, $orig_y, $orig_img_type, $img_sizes) = GetImageSize($from_name);
+
+    // cut image if specified by user
+    if ($this->cut_x > 0) $orig_x = min($this->cut_x, $orig_x);
+    if ($this->cut_y > 0) $orig_y = min($this->cut_y, $orig_y);
+
+    // should we override thumb image type?
+    $this->image_type = ($this->image_type != -1 ? $this->image_type : $orig_img_type);
+
+    // check for allowed image types
+    if ($orig_img_type < 1 or $orig_img_type > 3) die(&#8220;Image type not supported&#8221;);
+
+    if ($orig_x > $this->max_x or $orig_y > $this->max_y) {
+
+      // resize
+      $per_x = $orig_x / $this->max_x;
+      $per_y = $orig_y / $this->max_y;
+      if ($per_y > $per_x) {
+        $this->max_x = $orig_x / $per_y;
+      }
+      else {
+        $this->max_y = $orig_y / $per_x;
+      }
+
+    }
+    else {
+      // keep original sizes, i.e. just copy
+      if ($this->save_to_file) {
+        @copy($from_name, $to_name);
+      }
+      else {
+        switch ($this->image_type) {
+          case 1:
+              header(&#8220;Content-type: image/gif&#8221;);
+              include($from_name);
+            break;
+          case 2:
+              header(&#8220;Content-type: image/jpeg&#8221;);
+              include($from_name);
+            break;
+          case 3:
+              header(&#8220;Content-type: image/png&#8221;);
+              include($from_name);
+            break;
+        }
+      }
+      return;
+    }
+
+    if ($this->image_type == 1) {
+      // should use this function for gifs (gifs are palette images)
+      $ni = imagecreate($this->max_x, $this->max_y);
+    }
+    else {
+      // Create a new true color image
+      $ni = ImageCreateTrueColor($this->max_x,$this->max_y);
+    }
+
+    // Fill image with white background (255,255,255)
+    $white = imagecolorallocate($ni, 255, 255, 255);
+    imagefilledrectangle( $ni, 0, 0, $this->max_x, $this->max_y, $white);
+    // Create a new image from source file
+    $im = $this->ImageCreateFromType($orig_img_type,$from_name);
+    // Copy the palette from one image to another
+    imagepalettecopy($ni,$im);
+    // Copy and resize part of an image with resampling
+    imagecopyresampled(
+      $ni, $im,             // destination, source
+      0, 0, 0, 0,           // dstX, dstY, srcX, srcY
+      $this->max_x, $this->max_y,       // dstW, dstH
+      $orig_x, $orig_y);    // srcW, srcH
+
+    // save thumb file
+    $this->SaveImage($ni, $to_name);
+  }
+
+}
+
+?>
+[/sourcecode]
+
+Here&#8217;s the code to run it. Save this as webthumb.php.
+
+[sourcecode=&#8221;php&#8221;]
+<?php
+###############################################################
+# Website Thumbnail Image Generator
+###############################################################
+# Subesh Pokhrel. Visit  http://www.subesh.com.np
+###############################################################
+#
+# REQUIREMENTS:
+# PHP 4.0.6 and GD 2.0.1 or later
+# May not work with GIFs if GD2 library installed on your server
+# does not support GIF functions in full
+#
+# Parameters that can be passed via url (if not passed will be used values which are set below):
+# url - url of the target website
+# x - max width
+# y - max height
+# q - quality (applicable only to JPG, 1 to 100, 100 - best)
+#
+# Sample usage:
+# 1. webthumb.php?url=http://www.microsoft.com
+# 2. Set maximum thumbnail size to 150
+#    webthumb.php?url=http://www.thumbnails.com&x=150&y=150
+###############################################################
+
+// Folder to save all thumbnails.
+// Must end with slash!!!
+$thumbnails_folder = 'C:/xampp/htdocs/thumbdirectory';
+
+// thumbnails expiration time in minutes
+$cache_expire_time = 60;
+
+// quality (for jpeg only)
+$image_quality = 100;
+
+// resulting image type (1 = GIF, 2 = JPG, 3 = PNG)
+$image_type = 3;
+
+// maximum thumb side size
+$max_x = 100;
+$max_y = 100;
+
+// If not equal 0 then cut original image size before resizing (in pixels).
+// Long page will have bad thumbnail, its better to cut page length first.
+$cut_x = 0;
+$cut_y = 1024;
+
+###############################################################################
+# END OF SETTINGS. DO NOT EDIT BELOW
+###############################################################################
+
+if (isset($_REQUEST['url'])) {
+  $website_url = $_REQUEST['url'];
+}
+else {
+  die("Site URL must be specified.");
+}
+
+if ($image_type == 1) $output_format = 'gif';
+if ($image_type == 2) $output_format = 'jpg';
+if ($image_type == 3) $output_format = 'png';
+
+$website_url_md5 = md5($website_url);
+
+$cached_filename = $thumbnails_folder . $website_url_md5 . '.' . $output_format;
+
+// See if we have cached website screenshot image (to minimize server load)
+if (!file_exists($cached_filename)
+|| filemtime ($cached_filename) + $cache_expire_time * 60 < time() ) {
+
+  // Get website image and save it on the server.
+  @exec('IECapt.exe ' . escapeshellarg($website_url) . ' ' . escapeshellarg($cached_filename));
+
+} // if (!file_exists
+
+if (!file_exists($cached_filename)) {
+  die("Thumbnail Generation Error. Thumbnail not created.");
+}
+
+// create class instance
+include("image.class.php");
+$img = new Thumb;
+
+// get parameters
+$img->image_type   = $image_type;
+$img->quality      = isset($_REQUEST[&#8216;q&#8217;]) ? intval($_REQUEST[&#8216;q&#8217;]) : $image_quality;
+$img->max_x        = isset($_REQUEST[&#8216;x&#8217;]) ? intval($_REQUEST[&#8216;x&#8217;]) : $max_x;
+$img->max_y        = isset($_REQUEST[&#8216;y&#8217;]) ? intval($_REQUEST[&#8216;y&#8217;]) : $max_y;
+$img->save_to_file = false;
+$img->cut_x        = $cut_x;
+$img->cut_y        = $cut_y;
+
+// generate thumbnail and show it
+$img->GenerateThumbFile($cached_filename, &#8221;);
+
+?>
+[/sourcecode]
+
+The codes are self explanatory. Just be sure you have placed all the three one one folder or managed the path accordingly.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-11T00:00:00+05:45" pubdate data-updated="true">Jun 11<span>th</span>, 2008</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2008/06/11/how-to-generate-thumbnail-of-html-pages/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2008/06/11/how-to-generate-thumbnail-of-html-pages/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2008/06/08/my-sites-alexa-ranking-took-24-million-giant-leap/" title="Previous Post: My site's Alexa ranking took 24 million giant leap">&laquo; My site's Alexa ranking took 24 million giant leap</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2008/06/17/checking-if-the-domain-is-registered-or-not/" title="Next Post: Checking if the domain is registered or not ?">Checking if the domain is registered or not ? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

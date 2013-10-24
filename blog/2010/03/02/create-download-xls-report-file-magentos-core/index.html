@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Create and Download XLS Report file using Magento's Core - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Reporting can be a very important part of the Module you might be developing for Mageneto. If you are showing your data in Grid that&#8217;s good, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/03/02/create-download-xls-report-file-magentos-core">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Create and Download XLS Report File Using Magento's Core</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-02T00:00:00+05:45" pubdate data-updated="true">Mar 2<span>nd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Reporting can be a very important part of the Module you might be developing for Mageneto. If you are showing your data in Grid that&#8217;s good, but it will be better if you add XLS file generation action on that grid, so that the site administrator can see the report in paper. And if you have in paper you can visualize more clearly than on screen.
+
+I came this condition recently, and found out that Magento has functions to chanage your Grid (in Admin) to XLS files and if you dig more than you can change your data Array to XLS file using Magento&#8217;s function.
+
+First let me say you about exporing data from the Admin Grid you have already populated. You need do the following in your grid Block&#8217;s _prepareColumn function.
+
+[source language=&#8221;php&#8221;]
+$this-&gt;addExportType(&#8216;router/controller/action&#8217;, Mage::helper(&#8216;reports&#8217;)-&gt;__(&#8216;Excel&#8217;));
+[/source]
+
+And in your controller you will have to do this.
+
+[source language=&#8221;php&#8221;]
+/**
+     * Export grid to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+        $fileName   = &#8216;grid.xls&#8217;;
+
+		/**
+		* This is the part where Grid Columns and Data are created as Excel XML and returned as stream.
+		* The implementation of this code is done in the parent class of Grid Mynamespace_Mymodule_Block_Adminhtml_Grid
+		* And that class should be Mage_Adminhtml_Block_Widget_Grid
+		*/
+
+        $content    = $this-&gt;getLayout()-&gt;createBlock(&#8216;mymodule_adminhtml/mygrid_grid&#8217;)
+            -&gt;getExcel($fileName);
+
+    /**
+	* This is for Force Download implemented below
+	*/
+	$this-&gt;_prepareDownloadResponse($fileName, $content);
+    }
+
+	/**
+	 * Force Download Code block in your controller
+     * Declare headers and content file in responce for file download
+     *
+     * @param string $fileName
+     * @param string $content set to null to avoid starting output, $contentLength should be set explicitly in that case
+     * @param string $contentType
+     * @param int $contentLength explicit content length, if strlen($content) isn&#8217;t applicable
+     * @return Mage_Adminhtml_Controller_Action
+     */
+    protected function _prepareDownloadResponse($fileName, $content, $contentType = &#8216;application/octet-stream&#8217;, $contentLength = null)
+    {
+        $session = Mage::getSingleton(&#8216;admin/session&#8217;);
+        if ($session-&gt;isFirstPageAfterLogin()) {
+            $this-&gt;_redirect($session-&gt;getUser()-&gt;getStartupPageUrl());
+            return $this;
+        }
+        $this-&gt;getResponse()
+            -&gt;setHttpResponseCode(200)
+            -&gt;setHeader(&#8216;Pragma&#8217;, &#8216;public&#8217;, true)
+            -&gt;setHeader(&#8216;Cache-Control&#8217;, &#8216;must-revalidate, post-check=0, pre-check=0&#8217;, true)
+            -&gt;setHeader(&#8216;Content-type&#8217;, $contentType, true)
+            -&gt;setHeader(&#8216;Content-Length&#8217;, is_null($contentLength) ? strlen($content) : $contentLength)
+            -&gt;setHeader(&#8216;Content-Disposition&#8217;, &#8216;attachment; filename=&#8217; . $fileName)
+            -&gt;setHeader(&#8216;Last-Modified&#8217;, date(&#8216;r&#8217;));
+        if (!is_null($content)) {
+            $this-&gt;getResponse()-&gt;setBody($content);
+        }
+        return $this;
+    }
+[/source]
+
+Now you can export your Grid data to XLS sheet. But what about your array you are not displaying in the grid? This should be fun too.. for you now.. because it was not fun for me to find out in the first hand :P.
+
+Lets take the same controller now.
+
+[source language=&#8221;php&#8221;]
+ /**
+     * Export Array to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+		$filename   = &#8216;array.xls&#8217;;
+		$exportData=Mage::getSingleton(&quot;adminhtml/session&quot;)-&gt;getMyData();
+
+		/**
+		* Example Data Format
+		* $data[0][&#8216;product_id&#8217;]=10
+		* $data[0][&#8216;product_name&#8217;]=HTC Diamond
+		* $data[0][&#8216;vendor_name&#8217;]=HTC JMKYZY
+		* $data[1][&#8216;product_id&#8217;]=11
+		* $data[1][&#8216;product_name&#8217;]=HTC Ruby
+		* $data[1][&#8216;vendor_name&#8217;]=HTC JMKYZY
+		*
+		*/
+
+		// Setting headers columns
+			$data[0]=array($this-&gt;__(&quot;Product ID&quot;),$this-&gt;__(&quot;Product Name&quot;),$this-&gt;__(&quot;Vendors&quot;));
+
+		// Setting Column Data
+			$i=1;
+			foreach($exportData as $key=&gt;$value){
+				$data[$i]=array($value[&#8216;product_id&#8217;],$value[&#8216;product_name&#8217;],$value[&#8216;vendor_name&#8217;]);
+				$i++;
+			}
+
+		// Unparsing in Excel Format
+			$xmlObj = new Varien_Convert_Parser_Xml_Excel();
+			$xmlObj-&gt;setVar(&#8216;single_sheet&#8217;, $filename);
+			$xmlObj-&gt;setData($data);
+			$xmlObj-&gt;unparse();
+			$content=$xmlObj-&gt;getData();
+
+			// Force Download
+			$this-&gt;_prepareDownloadResponse($filename,$content);
+	}
+[/source]
+
+So by comparing the two export controller methods, you can see that the Admin Grid&#8217;s Parent already has the functionality to get data from Grid and set that data to Varien_Convert_Parser_Xml_Excel Object and unparse its. As I said we need to dig further to know what going on inside Magento.
+
+Happy Coding.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-02T00:00:00+05:45" pubdate data-updated="true">Mar 2<span>nd</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/03/02/create-download-xls-report-file-magentos-core/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/03/02/create-download-xls-report-file-magentos-core/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/" title="Previous Post: Debugging Magento Using Eclipse PDT & Zend Debugger">&laquo; Debugging Magento Using Eclipse PDT & Zend Debugger</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/03/10/ordered-items-detail-order-id-magento/" title="Next Post: Getting Ordered Items and their Detail from Order ID in Magento">Getting Ordered Items and their Detail from Order ID in Magento &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

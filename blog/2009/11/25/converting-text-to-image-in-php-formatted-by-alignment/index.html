@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Converting Text to Image in PHP formatted by alignment - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="During one of my project works I came across a situation like changing the input of TINYMCE editor to image. Can you believe what can be the user&# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2009/11/25/converting-text-to-image-in-php-formatted-by-alignment">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Converting Text to Image in PHP Formatted by Alignment</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-25T00:00:00+05:45" pubdate data-updated="true">Nov 25<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">During one of my project works I came across a situation like changing the input of TINYMCE editor to image. Can you believe what can be the user&#8217;s requirement? :P Basically what the client needed was to change the text to image and text should be in American Typewriter Font with the option of showing text as image formatted by alignment. i.e Left Alignment, Center Alignment or Right Alignment in a white background image. Then I did some research, this is another way of saying I Googled a lot! lol. I came across two scripts, one which converted text to image and another a function to set alignment. So I thought that why not combine both the codes and publish for others, who may need it as well.
+
+<strong>The compiled code</strong>
+
+[source language=&#8221;php&#8221;]
+<?php
+/**
+ * Class for converting Text to Image.
+ * Font type can be specified
+ * The alignment where the text will echo can also be set.
+ *
+ * @compiled Subesh Pokhrel from PHP.net and PHPclasses.org
+ *
+ */
+define("ALIGN_LEFT", "left");
+define("ALIGN_CENTER", "center");
+define("ALIGN_RIGHT", "right");
+
+class TextToImage {
+
+	private $im;
+
+	/**
+	 * @name 				   : makeImageF
+	 *
+	 * Function for create image from text with selected font.
+	 *
+	 * @param String $text     : String to convert into the Image.
+	 * @param String $font     : Font name of the text.
+	 * @param int    $W        : Width of the Image.
+	 * @param int    $H        : Hight of the Image.
+	 * @param int	 $X        : x-coordinate of the text into the image.
+	 * @param int    $Y        : y-coordinate of the text into the image.
+	 * @param int    $fsize    : Font size of text.
+	 * @param array  $color	   : RGB color array for text color.
+	 * @param array  $bgcolor  : RGB color array for background.
+	 *
+	 */
+	public function makeImageF($text, $font="CENTURY.TTF", $W=800, $H=200, $X=0, $Y=0, $fsize=18, $color=array(0x0,0x0,0x0), $bgcolor=array(0xFF,0xFF,0xFF)){
+
+		$this->im = @imagecreate($W, $H)
+		or die(&#8220;Cannot Initialize new GD image stream&#8221;);
+
+		$background_color = imagecolorallocate($this->im, $bgcolor[0], $bgcolor[1], $bgcolor[2]);		//RGB color background.
+		$text_color = imagecolorallocate($this->im, $color[0], $color[1], $color[2]);			//RGB color text.
+
+		$this->imagettftextbox($this->im, $fsize,0, $X,$Y, $text_color, $font, $text,800);
+	}
+
+	/**
+	* This function works to set alignment in image and write image.
+	*/
+	public function imagettftextbox(&$image, $size, $angle, $left, $top, $color, $font, $text, $max_width)
+	{
+		$text_lines = explode(&#8220;\n&#8221;, $text); // Supports manual line breaks!
+
+		$lines = array();
+		$line_widths = array();
+
+		$largest_line_height = 0;
+
+		foreach($text_lines as $block)
+		{
+			$current_line = &#8221;; // Reset current line
+			$align=ALIGN_CENTER; // Setting Alignment
+			$words = explode(&#8217; &#8216;, $block); // Split the text into an array of single words
+
+			$first_word = TRUE;
+
+			$last_width = 0;
+
+			for($i = 0; $i < count($words); $i++)
+			{
+				$item = $words[$i];
+				$dimensions = imagettfbbox($size, $angle, $font, $current_line . ($first_word ? '' : ' ') . $item);
+				$line_width = $dimensions[2] - $dimensions[0];
+				$line_height = $dimensions[1] - $dimensions[7];
+
+				if($line_height > $largest_line_height) $largest_line_height = $line_height;
+
+				if($line_width > $max_width && !$first_word)
+				{
+					$lines[] = $current_line;
+
+					$line_widths[] = $last_width ? $last_width : $line_width;
+
+					/*if($i == count($words))
+					 {
+					 continue;
+					 }*/
+
+					$current_line = $item;
+				}
+				else
+				{
+					$current_line .= ($first_word ? &#8221; : &#8217; &#8216;) . $item;
+				}
+
+				if($i == count($words) - 1)
+				{
+					$lines[] = $current_line;
+
+					$line_widths[] = $line_width;
+				}
+
+				$last_width = $line_width;
+
+				$first_word = FALSE;
+			}
+
+			if($current_line)
+			{
+				$current_line = $item;
+			}
+		}
+
+		$i = 0;
+		foreach($lines as $line)
+		{
+			if($align == ALIGN_CENTER)
+			{
+				$left_offset = ($max_width - $line_widths[$i]) / 2;
+			}
+			elseif($align == ALIGN_RIGHT)
+			{
+				$left_offset = ($max_width - $line_widths[$i]);
+			}
+			imagettftext($image, $size, $angle, $left + $left_offset, $top + $largest_line_height + ($largest_line_height * $i), $color, $font, $line);
+			$i++;
+		}
+
+		return $largest_line_height * count($lines);
+	}
+
+	/**
+	 * @name showAsPng
+	 *
+	 * Function to show text as Png image.
+	 *
+	 */
+	public function showAsPng(){
+
+		header(&#8220;Content-type: image/png&#8221;);
+		return imagepng($this->im);
+	}
+
+}
+?>
+[/source]
+
+Save this file as <strong>TextToImage.class.php</strong>.
+
+And then use this code to call the classes instance.
+
+[source language=&#8221;php&#8221;]
+<?php
+/** Downloaded from PHP classes
+* Please note that KORONG.TTF font file should be present to run the code.
+*/
+
+ini_set("display_errors",1);
+require_once('TextToImage.class.php');
+$_im = new TextToImage();
+$_im->makeImageF(&#8220;Thank you ! Subesh Pokhrel \n subesh.com.np&#8221;,&#8221;KORONG.TTF&#8221;);
+$_im->showAsPng();
+?>
+[/source]
+
+Cheers!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-25T00:00:00+05:45" pubdate data-updated="true">Nov 25<span>th</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2009/11/25/converting-text-to-image-in-php-formatted-by-alignment/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2009/11/25/converting-text-to-image-in-php-formatted-by-alignment/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/11/24/image-resize-magento-cache-resized-image/" title="Previous Post: Image Resize In Magento & cache the resized image">&laquo; Image Resize In Magento & cache the resized image</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/12/04/general-workflow-of-magentos-importexport-dataflow/" title="Next Post: General Workflow of Magento's Import/Export - Dataflow">General Workflow of Magento's Import/Export - Dataflow &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

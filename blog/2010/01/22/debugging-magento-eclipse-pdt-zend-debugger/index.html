@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Debugging Magento Using Eclipse PDT & Zend Debugger - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Latest Post on Debugging Magento: Debugging Magento Using Eclipse on Ubuntu I had always thought of using Eclipse to debug Magento&#8217;s complex &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Debugging Magento Using Eclipse PDT & Zend Debugger</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-22T00:00:00+05:45" pubdate data-updated="true">Jan 22<span>nd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><strong>Latest Post on Debugging Magento: <a href="http://subesh.com.np/2012/01/debugging-magento-using-eclipse-on-ubuntu/" title="Debugging Magento On Ubuntu">Debugging Magento Using Eclipse on Ubuntu</a></strong>
+
+I had always thought of using Eclipse to debug Magento&#8217;s complex code flow, and tried number of times before. But without any success I had to abandon it, and thought was not applicable for Magento, remember the fox and the sour grapes :D I also tried using Trial Version of Zend Studio, but with no sucess.
+
+But today I was looking at fontis&#8217;s blog <a href="http://www.fontis.com.au/blog/magento/debugging-with-xdebug">http://www.fontis.com.au/blog/magento/debugging-with-xdebug</a> and they had indeed used XDebugger and are debugging Magento through command line. So, I thought why not give it a try once again! And as you have already expected i was successfull today!! Wasn&#8217;t easy though :P
+
+Here&#8217;s what I&#8217;ve done to get it working on WAMP. Before getting this done I assume you have created a new PHP Project and imported all files, beforehand in Eclipse.
+
+<strong>Step 1</strong>. A very good explanation of downloading Eclipse PDT with Zend Debugger can be found here <a href="http://www.thierryb.net/pdtwiki/index.php?title=Using_PDT_:_Installation_:_Installing_the_Zend_Debugger">Installing_the_Zend_Debugger</a>
+
+<strong>Step 2</strong>. Configuring the Zend Debugger can also be found on same location but I would like to emphasize on its setting here, coz I missed myself on first run :D
+
+Use these settings for For Zend debugger in <strong>php.ini</strong>
+
+[Zend]
+zend_extension_ts=D:/wamp/bin/php/php5.2.5/ext/ZendDebugger.dll
+zend_debugger.allow_hosts=127.0.0.1
+zend_debugger.expose_remotely=always
+
+You should not forget to enable <strong>Zend Debugger</strong> extension on WAMP. Now restart Wamp. You are now well set with Eclipse PDT and Zend Debugger. Next thing you need to do is make debugging settings in your Eclipse.
+
+<strong>Step 3</strong>. In you Eclipse Go to <strong>Windows&#8211;&gt;Preference&#8211;&gt;Debug</strong> and set as follows
+
+<img class="alignnone size-full wp-image-194" title="debugsettings" src="http://subesh.com.np/wp-content/uploads/2010/01/debugsettings.jpg" alt="debugsettings" width="500" height="497" />
+
+<strong>Step 4</strong>. Then <strong>Windows&#8211;&gt;Preference&#8211;&gt;Server</strong> and set as follows
+
+<img class="alignnone size-full wp-image-198" title="Debug Server" src="http://subesh.com.np/wp-content/uploads/2010/01/debugserver.jpg" alt="Debug Server" width="500" height="497" />
+
+While setting Server configuration you will be prompt to add server path in path mapping, place that relative to your www root Example: <strong>/mysite</strong> (which will open as localhost/mysite) and select the files in your workspace.
+
+<strong>Step 5</strong>. Now all your settings are done. Now let me tell you about debugging a Block Class of Magento, say <strong>Mage_Catalog_Block_Product_List</strong>. Go to the class file and add a breakpoint anywhere inside <strong>_getProductCollection </strong> function.
+
+<strong>Step 6</strong>. Go to <strong>Run&#8211;&gt;Open Run Dialog</strong> and configure as following
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" target="_blank"><img class="alignnone size-full wp-image-200" title="Run Profile1" src="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" alt="Run Profile1" width="500" height="369" /></a>
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" target="_blank"><img class="alignnone size-full wp-image-202" title="Profile 2" src="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" alt="Profile 2" width="502" height="367" /></a>
+
+<strong>Step 7</strong>. All set to go now, Run profile as web page Run&#8211;&gt;Debug As&#8211;&gt;PHP Webpage.
+
+You can now see PHP Debug perspective, and use Step Over or Step Into to debug your values. Here is what I got.
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" target="_blank"><img class="alignnone size-full wp-image-204" title="debugging" src="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" alt="debugging" width="501" height="263" /></a>
+
+Hope this might be a life changer.. at least it is for me!
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-22T00:00:00+05:45" pubdate data-updated="true">Jan 22<span>nd</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/01/18/customers-info-single-query-including-billing-shipping-addresses/" title="Previous Post: Getting Customer's Info Using Single Query Including Billing and Shipping Addresses">&laquo; Getting Customer's Info Using Single Query Including Billing and Shipping Addresses</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/03/02/create-download-xls-report-file-magentos-core/" title="Next Post: Create and Download XLS Report file using Magento's Core">Create and Download XLS Report file using Magento's Core &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

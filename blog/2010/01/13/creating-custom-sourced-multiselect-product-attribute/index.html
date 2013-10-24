@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Creating Custom Sourced Multiselect Product Attribute - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Creating Multiselect type of product attribute whose source will be the Magento&#8217;s core tables is pretty simple. Just go to Manage Attributes &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:subeshpokhrel.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Creating Custom Sourced Multiselect Product Attribute</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-13T00:00:00+05:45" pubdate data-updated="true">Jan 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Creating Multiselect type of product attribute whose source will be the Magento&#8217;s core tables is pretty simple. Just go to Manage Attributes and create a new one. But if you want the attribute&#8217;s source table be a custom table, then you need to think. Some times a case pops up that the store admin wants to save custom type of data for attribute&#8217;s option and you need to manage an image according to the attribute&#8217;s option. So for each option of the multiselect attribute option there is an image associated with it. In this case one of the method to sort out the things is to create a module that gives you an GUI to save option&#8217;s data in custom table and give option to upload the image along with it. Later, use this tables data as source of the attribute for product. The first part, saving the data in custom option is not our concern. You can go through <a href="http://subesh.com.np/2010/01/custom-table-custom-module-magento/">this</a> for doing those. But the main point of this article is to use the custom source as source of the muliselect attributes.
+
+Assumming that first part, i.e. the saving of options are already done, you will now need to create a product attributes through SQL Setup
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+$installer = $this;
+$setup = new Mage_Eav_Model_Entity_Setup(&#8216;core_setup&#8217;);
+$installer-&gt;startSetup();
+$setup-&gt;addAttribute(&#8216;catalog_product&#8217;, &#8216;my_attribute&#8217;, array(
+    &#8216;input&#8217;         =&gt; &#8216;multiselect&#8217;,
+	&#8216;required&#8217;		=&gt; false,
+    &#8216;type&#8217;          =&gt; &#8216;text&#8217;,
+    &#8216;label&#8217;         =&gt; &#8216;My Attribute Label&#8217;,
+    &#8216;source&#8217;        =&gt; &#8216;mymodule/source_option&#8217;,
+    &#8216;backend&#8217;       =&gt; &#8216;mymodule/backend_option&#8217;,
+    &#8216;global&#8217;        =&gt; Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    &#8216;visible&#8217;       =&gt; 1,
+));
+$installer-&gt;startSetup();
+$installer-&gt;endSetup();
+[/source]
+
+The source of the attribute is set to some Model, Ynamespace_Mymodule_Model_Source_Option. This file should look like this.
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Module_Model_Source_Option
+extends Mage_Eav_Model_Entity_Attribute_Source_Table
+{
+	public function getAllOptions()
+	{
+		return $this-&gt;getOptionFromTable();
+	}
+
+	private function getOptionFromTable(){
+		$return=array();
+		$col=Mage::getModel(&quot;modules/model&quot;)-&gt;getCollection();
+		/**
+		* Given that table has column as id,title,image_name
+		*
+		*/
+		foreach($col as $row){
+			array_push($return,array(&#8216;label&#8217;=&gt;$row-&gt;getTitle(),&#8217;value&#8217;=&gt;$row-&gt;getId()));
+		}
+		return $return;
+
+	}
+
+	public function getOptionText($value)
+	{
+		$options = $this-&gt;getAllOptions();
+		foreach ($options as $option) {
+			if(is_array($value)){
+				if (in_array($option[&#8216;value&#8217;],$value)) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+			else{
+				if ($option[&#8216;value&#8217;]==$value) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+
+		}
+		return false;
+	}
+}
+[/source]
+
+As you can see that the option are retrieved from the custom table in label and value pair. Remember that  getAllOptions is called during product export/import as well.
+
+Next important thing you must know is the backend model. Backend model comes into play when you save and load the product. Let me explain. Let us consider a case when you are saving product. The option of this multiselect attribute is sent in post variables as array, but the values cannot be saved as array, either you have to serialize it or implode it into string to save. So to do this change, backend model is there. Similarly, on load you need to explode or unserialize the data from the database to array. So the major functions of backend model are beforeSave() and afterLoad(), which are triggerd as product is saved or loaded. The backend model should look like this:
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Modules_Model_Backend_Option
+    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
+{
+    /**
+     * Before Attribute Save Process
+     *
+     * @param Varien_Object $object
+     * @return Mage_Catalog_Model_Category_Attribute_Backend_Sortby
+     */
+    public function beforeSave($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if (!is_array($data)) {
+                $data = array();
+            }
+            $object-&gt;setData($attributeCode, join(&#8216;,&#8217;, $data));
+        }
+        return $this;
+    }
+
+    public function afterLoad($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if ($data) {
+                $object-&gt;setData($attributeCode, split(&#8216;,&#8217;, $data));
+            }
+        }
+        return $this;
+    }
+}
+[/source]
+
+Now you are all set, you should have the values of the multiselect attribute saved in database joined by comma seperated values and while on load those values will be exploded as array. Last thing you can do is export the product data using default profile and check if the error shows up or not regarding this attributes. Must not! I think I&#8217;ve checked its integrity with import and export as well. If it shows any, feel free to contact me.
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-13T00:00:00+05:45" pubdate data-updated="true">Jan 13<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://subeshpokhrel.github.io/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/" data-via="" data-counturl="http://subeshpokhrel.github.io/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/01/08/custom-table-custom-module-magento/" title="Previous Post: Using Custom Table for Custom Module in Magento">&laquo; Using Custom Table for Custom Module in Magento</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/01/14/configurable-attributes-super-attributes-configurable-product/" title="Next Post: Getting Configurable Attributes (Super Attributes) of a Configurable Product">Getting Configurable Attributes (Super Attributes) of a Configurable Product &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/12/magenote-select-first-options-of-the-configurable-product-options-on-load/">MageNote - Select First Options of the Configurable Product Options on Load</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/07/the-most-popular-programming-jokes-quora/">The Most Popular Programming Jokes - Quora</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
