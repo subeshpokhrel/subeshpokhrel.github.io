@@ -1,0 +1,87 @@
+---
+layout: post
+title: ! 'Ajaxify v1.0.0 : Extension to Help in working with Ajax in Magento Released
+  on Magento Connect.'
+tags:
+- Ajax
+- Free Extensions
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+  custom_meta_video: <img alt="Ajaxify" src="http://www.magentocommerce.com/magento-connect/media/catalog/product/cache/9/image/468x300/9df78eab33525d08d6e5fb8d27136e95/m/a/magdoc_copy_1.jpg"
+    title="Ajaxify" class="alignnone" width="468" height="300" />
+---
+<h6>Get Extension from Magento Connect</h6>
+<a href="http://www.magentocommerce.com/magento-connect/ajaxify-8411.html" title="Ajaxify" target="_blank"><img src="http://www.magentocommerce.com/magento-connect/skin/frontend/enterprise/connect/images/logo-appstore.png"/></a>
+
+I have few blog posts regarding working with Ajax on Magento. <a href="http://subesh.com.np/category/ajax/">http://subesh.com.np/category/ajax/</a>. And I see many people visiting those pages to get the information on working with Ajax in Magento. Sensing the need of developer I came up with an idea of making the whole process into a module in an effort to give back to the Magento community. I've tried to make the module simple for now, which of course can be extended a lot to incorporate all kinds of needs. But for now, if I may say, there are roughly these two things you might want to do (Purely in Magento terms).
+
+<ol>
+	<li>Request to a controller with params, do some changes in the model, set error/success message and show those message to the user.</li>
+	<li>Next, perform all the actions as #1 and in addition to that refresh the content of certain HTML elements.</li>
+</ol>
+
+This module has been devised just to meet these two actions. In addition, the module is loader ready and has by default a floating message block. 
+Followings are the ways you can perform those two actions using this module.
+
+<strong>Overview</strong>
+The core functionality implemenation is done in js/ajaxify/ajaxify.js file. If you look into that file, you will find a JS Class. The constructor for the class are:
+<ol>
+	<li>URL of the request controller.</li>
+	<li>Parameters (JSON object) to be sent as request params to the controller.</li>
+</ol>
+
+For request and show message just call <em>request()</em> method, while if you want an HTML element to be updated then call <em>requestUpdate('elementID')</em>, with element ID in the parameter.
+
+
+
+<strong>Request to a controller with params, do some changes in the model, set error/success message and show those message to the user.</strong>
+
+This is how you initillize the JS Object.
+[source lang="javascript"]
+&lt;script type=&quot;text/javascript&quot;&gt;
+	var ajxObj =  new SpAjaxify('&lt;?php echo $this-&gt;getUrl('ajaxify/index/test') ?&gt;', {id: '12', value: '23'});
+	ajxObj.request(); // Request
+&lt;/script&gt;
+[/source]
+To set the message error/success you have to use ajaxify/session model, because it is from this model the messages are shown.
+
+[source lang="php"]
+/**
+     * Always use this session to set your error or success message
+     *
+     * @return Sp_Ajaxify_Model_Session
+     * 
+     * PLEASE DO NOT EDIT THIS
+     */
+    protected function _getSession()
+    {
+    	return Mage::getSingleton('ajaxify/session');
+    }
+
+	// Set Error message .
+   	$this-&gt;_getSession()-&gt;addError('Item was not added to the shopping cart.');
+    	
+    	// Set Success message
+    	$this-&gt;_getSession()-&gt;addSuccess('Item was successfully added to the shopping cart.');
+[/source]
+
+
+
+<strong>In addition to the above refresh the content of certain HTML elements.</strong>
+
+[source lang="javascript"]
+&lt;script type=&quot;text/javascript&quot;&gt;
+	var ajxObj =  new SpAjaxify('&lt;?php echo $this-&gt;getUrl('ajaxify/index/test') ?&gt;', {id: '12', value: '23'});
+
+	ajxObj.requestUpdate('sidebar_cart'); // Ajax request with parameter to update the HTML element.
+&lt;/script&gt;
+[/source]
+
+The source also contains description of the hidden logic to manage templates/layouts required.
+
+<a href="https://github.com/subeshpokhrel/ajaxify"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>

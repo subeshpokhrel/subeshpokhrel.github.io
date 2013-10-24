@@ -1,0 +1,374 @@
+---
+layout: post
+title: Product Import In Magento Alongwith Updating The Attribute's Options
+tags:
+- Dataflow
+- Export
+- Import
+- Import/Export
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+As you may know or not ! Magento is the fastest growing eCommerce plateform, nowonder because Magento has a lots of flexibility in it. You can feel that too if you are a just a user and as for me as Programmer I just Love it. One of the salient feature that makes Magento a leader in eCommerce software is its ability to Import and Export data to an from the system.
+
+Magento gives you a default interface to import or export data, but you will need the specific format of your data.It is easy to customize that as well, but today lets be interested in standard import, but with one small (Yet important) modification. The important modification in the standard code is this code will be able to options to the attribute of <strong>Select/Multiselect/Radio/Checkbox</strong> input type, while the product is being imported.
+
+By default Magento only imports the values of the option, of any attribute, which are already avaliable. But this code can be used to create option at run time if it does not exits and assign to the product, during import. For doing this we need to first set up an Advanced Profile of Export/Import. Go to <strong>System-->Import/Export-->Advanced Profile</strong> and create new Profile. Then in the Action XML paste this.
+
+[source language="XML"]
+
+&lt;!--
+Path=Path of the file relative to ROOT
+filename= File name of the XML(MS EXCEL 2003) where import data is saved in Magento's Format
+format	= XML
+You can use CSV as well.
+--&gt;
+&lt;action type=&quot;dataflow/convert_adapter_io&quot; method=&quot;load&quot;&gt;
+    &lt;var name=&quot;type&quot;&gt;file&lt;/var&gt;
+    &lt;var name=&quot;path&quot;&gt;var/import&lt;/var&gt;
+    &lt;var name=&quot;filename&quot;&gt;&lt;![CDATA[products.xml]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;format&quot;&gt;&lt;![CDATA[xml]]&gt;&lt;/var&gt;
+&lt;/action&gt;
+
+&lt;!--
+adapter= Your Model path
+--&gt;
+&lt;action type=&quot;dataflow/convert_parser_xml_excel&quot; method=&quot;parse&quot;&gt;
+    &lt;var name=&quot;single_sheet&quot;&gt;&lt;![CDATA[]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;fieldnames&quot;&gt;true&lt;/var&gt;
+    &lt;var name=&quot;store&quot;&gt;&lt;![CDATA[0]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;number_of_records&quot;&gt;1&lt;/var&gt;
+    &lt;var name=&quot;decimal_separator&quot;&gt;&lt;![CDATA[.]]&gt;&lt;/var&gt;
+    &lt;var name=&quot;adapter&quot;&gt;yourmodel/import&lt;/var&gt;
+    &lt;var name=&quot;method&quot;&gt;save&lt;/var&gt;
+&lt;/action&gt;
+[/source]
+
+The Model defined in the adapter should be like this. You can create a new module for this.
+
+[source language="php"]
+
+&lt;?php
+class Namespace_Module_Model_Import extends Mage_Catalog_Model_Convert_Adapter_Product {
+
+	/**
+	 * Save product (import)
+	 * @param array $importData
+	 * @throws Mage_Core_Exception
+	 * @return bool
+	 */
+	public function saveRow(array $importData)
+	{
+		$product = $this-&gt;getProductModel()
+		-&gt;reset();
+
+		if (empty($importData['store'])) {
+			if (!is_null($this-&gt;getBatchParams('store'))) {
+				$store = $this-&gt;getStoreById($this-&gt;getBatchParams('store'));
+			} else {
+				$message = Mage::helper('catalog')-&gt;__('Skip import row, required field &quot;%s&quot; not defined', 'store');
+				Mage::throwException($message);
+			}
+		}
+		else {
+			$store = $this-&gt;getStoreByCode($importData['store']);
+		}
+
+		if ($store === false) {
+			$message = Mage::helper('catalog')-&gt;__('Skip import row, store &quot;%s&quot; field not exists', $importData['store']);
+			Mage::throwException($message);
+		}
+
+		if (empty($importData['sku'])) {
+			$message = Mage::helper('catalog')-&gt;__('Skip import row, required field &quot;%s&quot; not defined', 'sku');
+			Mage::throwException($message);
+		}
+		$product-&gt;setStoreId($store-&gt;getId());
+		$productId = $product-&gt;getIdBySku($importData['sku']);
+
+		if ($productId) {
+			$product-&gt;load($productId);
+		}
+		else {
+			$productTypes = $this-&gt;getProductTypes();
+			$productAttributeSets = $this-&gt;getProductAttributeSets();
+
+			/**
+			 * Check product define type
+			 */
+			if (empty($importData['type']) || !isset($productTypes[strtolower($importData['type'])])) {
+				$value = isset($importData['type']) ? $importData['type'] : '';
+				$message = Mage::helper('catalog')-&gt;__('Skip import row, is not valid value &quot;%s&quot; for field &quot;%s&quot;', $value, 'type');
+				Mage::throwException($message);
+			}
+			$product-&gt;setTypeId($productTypes[strtolower($importData['type'])]);
+			/**
+			 * Check product define attribute set
+			 */
+			if (empty($importData['attribute_set']) || !isset($productAttributeSets[$importData['attribute_set']])) {
+				$value = isset($importData['attribute_set']) ? $importData['attribute_set'] : '';
+				$message = Mage::helper('catalog')-&gt;__('Skip import row, is not valid value &quot;%s&quot; for field &quot;%s&quot;', $value, 'attribute_set');
+				Mage::throwException($message);
+			}
+			$product-&gt;setAttributeSetId($productAttributeSets[$importData['attribute_set']]);
+
+			foreach ($this-&gt;_requiredFields as $field) {
+				$attribute = $this-&gt;getAttribute($field);
+				if (!isset($importData[$field]) &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute-&gt;getIsRequired()) {
+					$message = Mage::helper('catalog')-&gt;__('Skip import row, required field &quot;%s&quot; for new products not defined', $field);
+					Mage::throwException($message);
+				}
+			}
+		}
+
+		$this-&gt;setProductTypeInstance($product);
+
+		if (isset($importData['category_ids'])) {
+			$product-&gt;setCategoryIds($importData['category_ids']);
+		}
+
+		foreach ($this-&gt;_ignoreFields as $field) {
+			if (isset($importData[$field])) {
+				unset($importData[$field]);
+			}
+		}
+
+		if ($store-&gt;getId() != 0) {
+			$websiteIds = $product-&gt;getWebsiteIds();
+			if (!is_array($websiteIds)) {
+				$websiteIds = array();
+			}
+			if (!in_array($store-&gt;getWebsiteId(), $websiteIds)) {
+				$websiteIds[] = $store-&gt;getWebsiteId();
+			}
+			$product-&gt;setWebsiteIds($websiteIds);
+		}
+
+		if (isset($importData['websites'])) {
+			$websiteIds = $product-&gt;getWebsiteIds();
+			if (!is_array($websiteIds)) {
+				$websiteIds = array();
+			}
+			$websiteCodes = split(',', $importData['websites']);
+			foreach ($websiteCodes as $websiteCode) {
+				try {
+					$website = Mage::app()-&gt;getWebsite(trim($websiteCode));
+					if (!in_array($website-&gt;getId(), $websiteIds)) {
+						$websiteIds[] = $website-&gt;getId();
+					}
+				}
+				catch (Exception $e) {}
+			}
+			$product-&gt;setWebsiteIds($websiteIds);
+			unset($websiteIds);
+		}
+
+		foreach ($importData as $field =&gt; $value) {
+			if (in_array($field, $this-&gt;_inventoryFields)) {
+				continue;
+			}
+			if (in_array($field, $this-&gt;_imageFields)) {
+				continue;
+			}
+
+			$attribute = $this-&gt;getAttribute($field);
+
+			if (!$attribute) {
+				continue;
+			}
+
+			$isArray = false;
+			$setValue = $value;
+
+
+			if ($attribute-&gt;getFrontendInput() == 'multiselect') {
+				$value = split(self::MULTI_DELIMITER, $value);
+				$isArray = true;
+				$setValue = array();
+			}
+
+			if ($value &amp;amp;amp;amp;&amp;amp;amp;amp; $attribute-&gt;getBackendType() == 'decimal') {
+				$setValue = $this-&gt;getNumber($value);
+			}
+
+			/**CODE MODIFICATION STARTS HERE*/
+
+			$optionLabelArray=array();
+			if ($attribute-&gt;usesSource()) {
+			 $options = $attribute-&gt;getSource()-&gt;getAllOptions(false);
+
+			 /**
+			  * Update the Source of the attribute when source has no options.
+			  */
+			 if(count($options)&lt;1){
+			 	if($isArray){
+			 		foreach($value as $key=&gt;$subvalue){
+			 			if(!in_array($subvalue,$newOptionLabelArray)){
+			 				$setValue[]=$this-&gt;updateSourceAndReturnId($field,$subvalue);
+			 				array_push($newOptionLabelArray,$subvalue);
+			 			}
+			 		}
+			 	}
+			 	else{
+			 		if(!in_array($value,$newOptionLabelArray)){
+			 			$setValue=$this-&gt;updateSourceAndReturnId($field,$value);
+			 			array_push($newOptionLabelArray,$value);
+			 		}
+			 	}
+			 }
+
+			 /**
+			  * Work on the source when it has options
+			  */
+			 else{
+			 	/**
+			 	 * This is the case of Multi-Select
+			 	 */
+			 	if ($isArray) {
+			 		foreach ($options as $item) {
+			 			/** Setting the option's ID if Label matches with the current value of XML column.*/
+			 			if (in_array($item['label'], $value)) {
+			 				$setValue[] = trim($item['value']);
+			 				array_push($optionLabelArray,$item['label']); /**Adding Reference to worked attribute option**/
+			 			}
+			 		}
+
+			 		/**
+			 		 *  Checking in the current XML column value if all values were used in the above loop or not
+			 		 *  If not used then they are new options value, then new option is created and then assigned.
+			 		 **/
+
+			 		foreach($value as $key=&gt;$subvalue){
+			 			if(!in_array($subvalue,$optionLabelArray)){
+			 				$setValue[]=$this-&gt;updateSourceAndReturnId($field,$subvalue);
+			 			}
+			 		}
+
+			 	}
+			 	/**This is the case of single select**/
+
+			 	else {
+			 		$setValue = null;
+			 		$newOptionLabelArray=array();
+			 		foreach ($options as $item) {
+			 			if ($item['label'] == $value) {
+			 				$setValue = $item['value'];
+			 				array_push($optionLabelArray,$item['label']); /**Adding Reference to worked attribute option**/
+			 			}
+			 		}
+			 		/**
+			 		 *  Checking in the current XML column value if all values were used in the above loop or not
+			 		 *  If not used then they are new options value, then new option is created and then assigned.
+			 		 **/
+			 		if(!in_array($value,$optionLabelArray)){
+			 			$setValue=$this-&gt;updateSourceAndReturnId($field,$value);
+			 		}
+			 	}
+			 }
+			}
+
+			/**CODE MODIFICATION ENDS HERE*/
+
+			$product-&gt;setData($field, $setValue);
+		}
+
+		if (!$product-&gt;getVisibility()) {
+			$product-&gt;setVisibility(Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE);
+		}
+
+		$stockData = array();
+		$inventoryFields = isset($this-&gt;_inventoryFieldsProductTypes[$product-&gt;getTypeId()])
+		? $this-&gt;_inventoryFieldsProductTypes[$product-&gt;getTypeId()]
+		: array();
+		foreach ($inventoryFields as $field) {
+			if (isset($importData[$field])) {
+				if (in_array($field, $this-&gt;_toNumber)) {
+					$stockData[$field] = $this-&gt;getNumber($importData[$field]);
+				}
+				else {
+					$stockData[$field] = $importData[$field];
+				}
+			}
+		}
+		$product-&gt;setStockData($stockData);
+
+		$imageData = array();
+		foreach ($this-&gt;_imageFields as $field) {
+			if (!empty($importData[$field]) &amp;amp;amp;amp;&amp;amp;amp;amp; $importData[$field] != 'no_selection') {
+				if (!isset($imageData[$importData[$field]])) {
+					$imageData[$importData[$field]] = array();
+				}
+				$imageData[$importData[$field]][] = $field;
+			}
+		}
+
+		foreach ($imageData as $file =&gt; $fields) {
+			try {
+				$product-&gt;addImageToMediaGallery(Mage::getBaseDir('media') . DS . 'import' . $file, $fields);
+			}
+			catch (Exception $e) {}
+		}
+
+		$product-&gt;setIsMassupdate(true);
+		$product-&gt;setExcludeUrlRewrite(true);
+		$product-&gt;save();
+
+		return true;
+	}
+
+	/**
+	 * Updates the source of the attribute by the current new value in the XML column, and returns
+	 * the id of the newly created option.
+	 *
+	 * @param string $attribute_code
+	 * @param string $newOption
+	 * @return int|string New Option Id
+	 */
+	public function updateSourceAndReturnId($attribute_code,$newOption){
+		$attribute_model        = Mage::getModel('eav/entity_attribute');
+		$attribute_options_model= Mage::getModel('eav/entity_attribute_source_table') ;
+
+		$attribute_code         = $attribute_model-&gt;getIdByCode('catalog_product', $attribute_code);
+		$attribute              = $attribute_model-&gt;load($attribute_code);
+		$attribute_table        = $attribute_options_model-&gt;setAttribute($attribute);
+		try{
+			$value['option'] = array(trim($newOption),trim($newOption));
+			$result = array('value' =&gt; $value);
+			$attribute-&gt;setData('option',$result);
+			$attribute-&gt;save();
+		}
+		catch(Exception $e){}
+		$options = $attribute_options_model-&gt;getAllOptions(false);
+		foreach($options as $option)
+		{
+			if ($option['label'] == $newOption)
+			{
+				return $option['value'];
+			}
+		}
+		return &quot;&quot;;
+	}
+
+
+
+}
+
+?&gt;
+
+[/source]
+
+
+Please note the /**CODE MODIFICATION ENDS HERE*/ block. Most of the description is on the code. I got it working, feel free to ask if you got any problem. I am also working on importing custom option. I'll soon make a post in it as well.
+
+<a href="http://subeshexamples.googlecode.com/files/productimport.rar">Download Source[Updated]</a>
+
+Here's the sample import sheet with request from the reader
+
+<a href="http://spreadsheets.google.com/ccc?key=0Aji4wlRfG_gjdFEzRF9nVWFvZTRlMEZ5WGcxUWV4ZGc&hl=en">Sample Sheet</a>
+
+<iframe width='500' height='300' frameborder='0' src='http://spreadsheets.google.com/pub?key=tQ3D_gUaoe4e0FyXg1Qexdg&single=true&gid=0&output=html&widget=true'></iframe>

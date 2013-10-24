@@ -1,0 +1,31 @@
+---
+layout: post
+title: Getting the Product's Price in current currency format of store
+tags:
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+---
+Magento gives an option to have different currency defined for each store. To get the product's price based on the current store you can use the following code. It uses the default Magento's helper class to do.
+
+[source language="php"]
+<?php
+
+     /* @Class: Mage_Core_Helper_Data
+     * The params for the currency function
+     * @param   float $value
+     * @param   bool $format
+     * @param   bool $includeContainer
+     */
+echo Mage::helper('core')->currency($product->getFinalPrice(),true,false);
+
+ ?>
+[/source]
+
+In the code above $product is the product, whose price you will want to format.

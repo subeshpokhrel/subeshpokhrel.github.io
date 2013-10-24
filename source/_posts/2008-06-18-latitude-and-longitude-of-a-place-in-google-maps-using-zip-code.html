@@ -1,0 +1,84 @@
+---
+layout: post
+title: Latitude and Longitude Of a Place in Google Maps Using Zip Code
+tags:
+- Google Maps
+- latitude
+- longitude
+- zip code
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+  related_posts: ''
+---
+I have already posted similar post for finding out the latitude and longitude of a place using Google maps, but when I studied the traffic details and found out that when people visit that post, they sometime come with keywords like <strong>zipcode+latitude and longitudes</strong>, so I thought it would be better to them to post another article, giving them what they exactly want.
+
+Before I write down the codes there is something we should know. Google provides a service of returning <strong>CSV</strong> (Comma Seperated Values) when requested to <em><strong>http://maps.google.com/maps/geo?q=$query&output=csv&key=$key</strong></em>. The <strong>$query</strong> may contain <strong>address, zip code, city and country</strong>. The service also outputs in other formats. But we have choosed CSV format because it would be easy for us to explode the values separated by commas. The output type is defined by the <strong><em>output</em> </strong>parameter in the URL. The output or response we then receive are in the format of <strong><em>geocode, accuracy, latitude, longitude</em></strong>.  <strong>$key</strong> is the  Google maps API key.
+
+[sourcecode="php"]
+
+<?php
+class googleRequest {
+
+  var $gKey;
+  var $code;
+  var $Accuracy;
+  var $latitude;
+  var $longitude;
+  var $address;
+  var $city;
+  var $country;
+  var $error;
+
+  function GetRequest() {
+
+
+    if (strlen($this->gKey) > 1) {
+      $q = str_replace(' ', '_', $this->address.','.$this->zip.'+'.$this->city.','.$this->country);
+      if ($d = @fopen("http://maps.google.com/maps/geo?q=$q&output=csv&key=".$this->gKey, "r")) {
+        $gcsv = @fread($d, 30000);
+        @fclose($d);
+
+       $output=array();
+       $tmp = explode(",", $gcsv);
+
+       // $this->code      = $tmp[0];
+       // $this->Accuracy  = $tmp[1];
+        $output[0]=$this->latitude  = $tmp[2];
+        $output[1]=$this->longitude = $tmp[3];
+        return $output;
+
+      } else {
+        $error = "NO_CONNECTION" ;
+      }
+    } else {
+      $error = "No Google Maps Api Key" ;
+    }
+  }
+
+}
+
+?>
+[/sourcecode]
+
+The above class can be implemented as following.
+[sourcecode="php"]
+$obj_google=new googleRequest;
+$obj_google->zip=35005;
+
+/* alternate uses
+$obj_google->country="Country Name Here";
+$obj_google->city="City Name Here";
+$obj_google->address="address";
+*/
+$obj_google->gKey="ABQIAAAAPHLcOOGHX2-uLk3K8q1nMRTkUAbhgKwL1jWWfpv-KGJeCrct7hTsLLnZdnZjzehmRIkaePagQvKNbw";
+$latlng=$obj_google->GetRequest();
+var_dump($latlng);
+
+[/sourcecode]
+
+
+The above returns latitude and longitude of place with zip code<strong> 35005</strong> as <strong>array(2) { [0]=>  string(9) "33.592857" [1]=>  string(10) "-86.994015" }</strong>

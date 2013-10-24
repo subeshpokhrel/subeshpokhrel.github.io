@@ -1,0 +1,110 @@
+---
+layout: post
+title: Using Custom Table for Custom Module in Magento
+tags:
+- how-to
+- Magento
+- Model
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+If you want to create a custom module in Magento that has something to do with storing data into a custom table and using that later, then this is just the right post you have bumped into! I will presume that you already know about Models in Magento, what are they and how you can create them. Also I will presume that you will also know the basic module structure in Magento.
+You will have to place this in your config.xml
+[source language="xml"]
+&lt;global&gt;
+     &lt;ymodel&gt;
+            &lt;class&gt;YNamespace_YModule_Model&lt;/class&gt;
+	     &lt;resourceModel&gt;quotes_mysql4&lt;/resourceModel&gt;
+     &lt;/ymodel&gt;
+&lt;quotes_mysql4&gt;
+                &lt;class&gt;YNamespace_Ymodule_Model_Mymodel&lt;/class&gt;
+                &lt;entities&gt;
+			&lt;mymodel&gt;
+				&lt;table&gt;ymodel_ytable&lt;/table&gt;
+			&lt;/mymodel&gt;
+		&lt;/entities&gt;
+      &lt;/quotes_mysql4&gt;
+&lt;/global&gt;
+[/source]
+
+Then Create a Model
+
+[source language="php"]
+&lt;?php
+class YNamespace_Ymodule_Model_Mymodel extends Mage_Core_Model_Abstract
+{
+	public function _construct()
+	{
+		parent::_construct();
+		$this-&gt;_init('ymodel/mymodel');
+	}
+}
+[/source]
+As you can see in constructor of this class it inits the model (tag) defined in the config file. As model uses Resources, you now need to create a resource the module uses.
+[source language="php"]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Ymodel extends Mage_Core_Model_Mysql4_Abstract
+{
+    public function _construct()
+    {
+        $this-&gt;_init('ymodel/mymodel', 'id');
+    }
+}
+
+[/source]
+So using this resource you now can access Table and add/alter. But you must not explicitly create a object of this class to do that. Creating a model of class above will make this resource usable.
+
+[source language="php"]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokhrel&quot;)
+      -&gt;save();
+[/source]
+
+This will create a new row in table now given that name and lastname is the columns of the table. To edit row of a table do the following
+
+[source language="php"]
+$model=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;load($id)
+	-&gt;setName(&quot;Subesh&quot;)
+	-&gt;setLastname(&quot;Pokharel&quot;)
+      -&gt;save();
+[/source]
+
+Now to select, there is another procedure. Before that let me tell about collection. Think collections as the array of objects.When you Query in database you get result as collections in Magento and every row resulting from the query is a different Object.To create a collection
+
+[source language="php"]
+&lt;?php
+
+class Ynamespace_Ymodel_Model_Mysql4_Mymodel_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
+{
+    public function _construct()
+    {
+        parent::_construct();
+        $this-&gt;_init('ymodel/mymodel');
+    }
+}
+[/source]
+
+To Select All the row of Table
+
+[source language="php"]
+$allCollection=Mage::getModel(&quot;ymodel/mymodel&quot;)-&gt;getCollection();
+[/source]
+
+You can add filters in the above query as required.
+To get individual Row you can just loop through the collection :)
+
+[source language="php"]
+foreach($allCollection as $objRow){
+	print_r($objRow);
+}
+
+[/source]
+
+Hope this helps if any one is in need... and @inchoo..please don't twitt this as any other..link...you find in a weekend... :P.

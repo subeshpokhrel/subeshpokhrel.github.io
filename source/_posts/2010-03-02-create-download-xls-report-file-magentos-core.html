@@ -1,0 +1,135 @@
+---
+layout: post
+title: Create and Download XLS Report file using Magento's Core
+tags:
+- Custom Module
+- Excel
+- how-to
+- Magento
+- PHP
+- Reports
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Reporting can be a very important part of the Module you might be developing for Mageneto. If you are showing your data in Grid that's good, but it will be better if you add XLS file generation action on that grid, so that the site administrator can see the report in paper. And if you have in paper you can visualize more clearly than on screen.
+
+I came this condition recently, and found out that Magento has functions to chanage your Grid (in Admin) to XLS files and if you dig more than you can change your data Array to XLS file using Magento's function.
+
+First let me say you about exporing data from the Admin Grid you have already populated. You need do the following in your grid Block's _prepareColumn function.
+
+[source language="php"]
+$this-&gt;addExportType('router/controller/action', Mage::helper('reports')-&gt;__('Excel'));
+[/source]
+
+And in your controller you will have to do this.
+
+[source language="php"]
+/**
+     * Export grid to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+        $fileName   = 'grid.xls';
+
+		/**
+		* This is the part where Grid Columns and Data are created as Excel XML and returned as stream.
+		* The implementation of this code is done in the parent class of Grid Mynamespace_Mymodule_Block_Adminhtml_Grid
+		* And that class should be Mage_Adminhtml_Block_Widget_Grid
+		*/
+
+        $content    = $this-&gt;getLayout()-&gt;createBlock('mymodule_adminhtml/mygrid_grid')
+            -&gt;getExcel($fileName);
+
+    /**
+	* This is for Force Download implemented below
+	*/
+	$this-&gt;_prepareDownloadResponse($fileName, $content);
+    }
+
+	/**
+	 * Force Download Code block in your controller
+     * Declare headers and content file in responce for file download
+     *
+     * @param string $fileName
+     * @param string $content set to null to avoid starting output, $contentLength should be set explicitly in that case
+     * @param string $contentType
+     * @param int $contentLength explicit content length, if strlen($content) isn't applicable
+     * @return Mage_Adminhtml_Controller_Action
+     */
+    protected function _prepareDownloadResponse($fileName, $content, $contentType = 'application/octet-stream', $contentLength = null)
+    {
+        $session = Mage::getSingleton('admin/session');
+        if ($session-&gt;isFirstPageAfterLogin()) {
+            $this-&gt;_redirect($session-&gt;getUser()-&gt;getStartupPageUrl());
+            return $this;
+        }
+        $this-&gt;getResponse()
+            -&gt;setHttpResponseCode(200)
+            -&gt;setHeader('Pragma', 'public', true)
+            -&gt;setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true)
+            -&gt;setHeader('Content-type', $contentType, true)
+            -&gt;setHeader('Content-Length', is_null($contentLength) ? strlen($content) : $contentLength)
+            -&gt;setHeader('Content-Disposition', 'attachment; filename=' . $fileName)
+            -&gt;setHeader('Last-Modified', date('r'));
+        if (!is_null($content)) {
+            $this-&gt;getResponse()-&gt;setBody($content);
+        }
+        return $this;
+    }
+[/source]
+
+Now you can export your Grid data to XLS sheet. But what about your array you are not displaying in the grid? This should be fun too.. for you now.. because it was not fun for me to find out in the first hand :P.
+
+Lets take the same controller now.
+
+[source language="php"]
+ /**
+     * Export Array to Excel XML format in Controller
+	 * @class Mynamespace_Mymodule_Adminhtml_controllerController
+     */
+    public function actionAction()
+    {
+		$filename   = 'array.xls';
+		$exportData=Mage::getSingleton(&quot;adminhtml/session&quot;)-&gt;getMyData();
+
+		/**
+		* Example Data Format
+		* $data[0]['product_id']=10
+		* $data[0]['product_name']=HTC Diamond
+		* $data[0]['vendor_name']=HTC JMKYZY
+		* $data[1]['product_id']=11
+		* $data[1]['product_name']=HTC Ruby
+		* $data[1]['vendor_name']=HTC JMKYZY
+		*
+		*/
+
+		// Setting headers columns
+			$data[0]=array($this-&gt;__(&quot;Product ID&quot;),$this-&gt;__(&quot;Product Name&quot;),$this-&gt;__(&quot;Vendors&quot;));
+
+		// Setting Column Data
+			$i=1;
+			foreach($exportData as $key=&gt;$value){
+				$data[$i]=array($value['product_id'],$value['product_name'],$value['vendor_name']);
+				$i++;
+			}
+
+		// Unparsing in Excel Format
+			$xmlObj = new Varien_Convert_Parser_Xml_Excel();
+			$xmlObj-&gt;setVar('single_sheet', $filename);
+			$xmlObj-&gt;setData($data);
+			$xmlObj-&gt;unparse();
+			$content=$xmlObj-&gt;getData();
+
+			// Force Download
+			$this-&gt;_prepareDownloadResponse($filename,$content);
+	}
+[/source]
+
+So by comparing the two export controller methods, you can see that the Admin Grid's Parent already has the functionality to get data from Grid and set that data to Varien_Convert_Parser_Xml_Excel Object and unparse its. As I said we need to dig further to know what going on inside Magento.
+
+Happy Coding.

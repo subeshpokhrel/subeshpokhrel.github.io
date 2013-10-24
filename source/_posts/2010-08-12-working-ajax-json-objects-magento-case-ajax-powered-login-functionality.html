@@ -1,0 +1,198 @@
+---
+layout: post
+title: ! 'Working with Ajax and JSON Objects in Magento [Case: Ajax Powered Login
+  Functionality]'
+tags:
+- Ajax
+- Block
+- javascript
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+Previously I have written about <a href="http://subesh.com.np/2009/11/working-with-ajax-in-magento/">Working With Ajax in Magento</a>. And after a huge response I received from that post I was compelled to write more on implementing Ajax in Magento. And this time I want to say additionally about handling JSON (<strong>JavaScript Object Notation</strong>) along with Ajax, within the Magento enviornment. JSON Objects and Ajax can be very helpful technique to get the work done. You can learn about JSON from <a href="http://www.json.org/">Here</a>.
+
+I will try to describe this issue by taking a case of changing the Magento's login functionality to a Ajax powered login functionality. So after this you will be able to implement a login function in a pop-up div in any page, unlike the default Magento's seperate login page. I will leave the pop-up div part to you and get started with the real business (AJAX and JSON).
+
+Presuming that you will use <strong>Mini-Login</strong> form. Here is how you proceed.
+<ol>
+	<li>Change Submit type button to Button type button.</li>
+	<li>Register OnClick Javascript event of that button and its Handler</li>
+	<li>In the Handler function call Ajax Request for login</li>
+	<li>Show Error Message or redirect to customer Dashboard</li>
+</ol>
+Your mini.login.phtml should be like this
+
+[source language="html"]
+&lt;form action=&quot;&lt;?php //echo $this-&gt;getPostActionUrl() ?&gt;&quot; id=&quot;mini-login-form&quot; method=&quot;post&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__('Email') ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[username]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label&gt;&lt;?php echo $this-&gt;__('Password') ?&gt;:&lt;/label&gt; &lt;input name=&quot;login[password]&quot; class=&quot;input-text&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;input type=&quot;button&quot; onClick=&quot;handlerFunction()&quot; value=&quot;&lt;?php echo $this-&gt;__('Login') ?&gt;&quot; /&gt;&lt;/p&gt;
+    &lt;/fieldset&gt;
+&lt;/form&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;!--
+function handlerFunction(){
+
+// Write These codes only after form Validation
+
+// Making Ajax Request
+		var request = new Ajax.Request(
+			//Defining Ajax Request URL, We are calling custom Controller Ns_Mylogin_AccountController Class (Defined Below)
+        	'&lt;?php echo $this-&gt;getUrl(&quot;mylogin/account/loginPost&quot;) ?&gt;',
+           	{
+            	method: 'post',
+                onComplete: function(transport){ // Defining Complete Callback Function
+
+                	// Getting Ajax Response Text Which is JSON Object
+                	var jsonResponse=transport.responseText;
+                	//Checking JSON Objects property and performing related action
+                	// You will understand the response Text format after going through the controller description (Below)
+                	if(jsonResponse.error){
+                		alert(&quot;Error Occured&quot;);
+						return false;
+                	}
+                	else{
+                		window.location.href=jsonResponse.url;
+                	}
+                },
+                parameters: Form.serialize($(&quot;mini-login-form&quot;))	// Seriallizing the form input values
+        	}
+        );
+}
+//--&gt;
+&lt;/script&gt;
+[/source]
+
+Please see inline comments for better understanding. Now our next set should be setting up our custom controller. I'll not get into details of setting up modules and all but directly to our controller class <strong>Ns_Mylogin_AccountController</strong>. What I've done is just taken the core's  <strong>loginPostAction </strong>function of <strong>Mage_Customer_AccountController</strong> and added some codes there. Please see there is a comment on each line added apart from the default Magento's core code.
+
+[source language="php"]
+&lt;?php
+require_once(&quot;Mage/Customer/controllers/AccountController.php&quot;);
+class Ns_Mylogin_AccountController extends Mage_Customer_AccountController{
+	/**
+	 * Login post action
+	 * @return JSON Object
+	 */
+	public function loginPostAction()
+	{
+		// Added Line #1
+		$result[&quot;error&quot;]=0;
+
+		$session = $this-&gt;_getSession();
+
+		if ($this-&gt;getRequest()-&gt;isPost()) {
+			$login = $this-&gt;getRequest()-&gt;getPost('login');
+			if (!empty($login['username']) &amp;amp;&amp;amp; !empty($login['password'])) {
+				try {
+					$session-&gt;login($login['username'], $login['password']);
+					if ($session-&gt;getCustomer()-&gt;getIsJustConfirmed()) {
+						$this-&gt;_welcomeCustomer($session-&gt;getCustomer(), true);
+					}
+				} catch (Mage_Core_Exception $e) {
+					switch ($e-&gt;getCode()) {
+						case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
+							//Added Line #2
+							$result[&quot;error&quot;]=1;
+							$message = Mage::helper('customer')-&gt;__('This account is not confirmed. &lt;a href=&quot;%s&quot;&gt;Click here&lt;/a&gt; to resend confirmation email.', 						Mage::helper('customer')-&gt;getEmailConfirmationUrl($login['username']));
+							break;
+						case Mage_Customer_Model_Customer::EXCEPTION_INVALID_EMAIL_OR_PASSWORD:
+							//Added Line #3
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+							break;
+						default:
+							//Added Line #4
+							$result[&quot;error&quot;]=1;
+							$message = $e-&gt;getMessage();
+					}
+					$session-&gt;addError($message);
+					$session-&gt;setUsername($login['username']);
+				} catch (Exception $e) {
+					// Mage::logException($e); // PA DSS violation: this exception log can disclose customer password
+				}
+			} else {
+				//Added Line #5
+				$result[&quot;error&quot;]=1;
+				$session-&gt;addError($this-&gt;__('Login and password are required'));
+				//Added Line #6
+				$this-&gt;getResponse()-&gt;setBody(Mage::helper('core')-&gt;jsonEncode($result));
+			}
+		}
+		//Added Line #7
+		$result[&quot;url&quot;]=$this-&gt;_loginPostRedirect();
+		//Added Line #8
+		$this-&gt;getResponse()-&gt;setBody(Mage::helper('core')-&gt;jsonEncode($result));
+	}
+[/source]
+
+What I've done is added an array <strong>$result</strong> that will hold value if there is error or not while processing the user's request. If there is error that array will hold $result['error']=1 else it will be as initiallized in <em>Added Line #1</em>. From <em>Added Line #2</em> through <em>Added Line #5</em>, we have various condition to check for error and set our <strong>$result</strong> variable.
+
+On <em>Added Line #7</em> we have called another function (which we we rewrite as well) that will give us the url location identifying which location should be redirect after successful login. The implementation of function is given below. Finally in <em>Added Line #8</em> and <em>Line #6</em> we have encoded our $result array into <strong>JSON</strong> format and send as the response.
+
+For visuallization our $result array will be one of the following.
+<ol>
+	<li> Case (No Error) : $result["error"]=0; $result["url"]="SOME Redirect URL"</li>
+	<li> Case (Error) 	 :	$result["error"]=1;</li>
+</ol>
+This JSON encoded response will be then used by the ajax call back function defined and perform related action.
+
+Here's the <strong>_loginPostRedirect()</strong> function which I mentioned (Added Line #7).
+
+[source language="php"]
+/**
+	 * Define target URL and redirect customer after logging in
+	 */
+	protected function _loginPostRedirect()
+	{
+		$session = $this-&gt;_getSession();
+
+		if (!$session-&gt;getBeforeAuthUrl() || $session-&gt;getBeforeAuthUrl() == Mage::getBaseUrl() ) {
+
+			// Set default URL to redirect customer to
+			$session-&gt;setBeforeAuthUrl(Mage::helper('customer')-&gt;getAccountUrl());
+
+			// Redirect customer to the last page visited after logging in
+			if ($session-&gt;isLoggedIn())
+			{
+				if (!Mage::getStoreConfigFlag('customer/startup/redirect_dashboard')) {
+					if ($referer = $this-&gt;getRequest()-&gt;getParam(Mage_Customer_Helper_Data::REFERER_QUERY_PARAM_NAME)) {
+						$referer = Mage::helper('core')-&gt;urlDecode($referer);
+						if ($this-&gt;_isUrlInternal($referer)) {
+							$session-&gt;setBeforeAuthUrl($referer);
+						}
+					}
+				}
+				else if ($session-&gt;getAfterAuthUrl()) {
+					$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+				}
+			} else {
+				$session-&gt;setBeforeAuthUrl(Mage::helper('customer')-&gt;getLoginUrl());
+			}
+		} else if ($session-&gt;getBeforeAuthUrl() == Mage::helper('customer')-&gt;getLogoutUrl()) {
+			$session-&gt;setBeforeAuthUrl(Mage::helper('customer')-&gt;getDashboardUrl());
+		}
+		else {
+			if (!$session-&gt;getAfterAuthUrl()) {
+				$session-&gt;setAfterAuthUrl($session-&gt;getBeforeAuthUrl());
+			}
+			if ($session-&gt;isLoggedIn()) {
+				$session-&gt;setBeforeAuthUrl($session-&gt;getAfterAuthUrl(true));
+			}
+		}
+		// Changed Here
+		return $session-&gt;getBeforeAuthUrl(true);
+	}
+[/source]
+
+You can download the code From <a href="http://code.google.com/p/subeshexamples/downloads/detail?name=Ajax_Json_Magento_subesh.com.np.zip#makechanges">Here</a>.
+
+Hope it helps! Happy Coding.

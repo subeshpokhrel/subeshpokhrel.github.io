@@ -1,0 +1,40 @@
+---
+layout: post
+title: MagNote Series - Magento Log
+tags:
+- Magento
+- Magento Notes
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '1'
+---
+<blockquote>In this blog I have always shared about what I've learned on Magento, which I felt is taken me one step closer to understanding Magento and Magento development. But during the course of time, I bump on some elementary things which are absolutely required. So just for those elementary things I've decided to create a series (MagNotes Series) , for myself as a reference or for whoever think this is helpful.</blockquote>
+One of the most useful method of tracking how your code is working is by writing a log of things happening between your lines of codes. Magento by default has provided a very helpful static function for this purpose in final class <strong>Mage</strong>.
+
+<strong><em>public static function log($message, $level = null, $file = '', $forceLog = false)</em></strong>
+
+<strong>$message</strong>
+Data you want to log. Can be string, array, object anything.
+<strong>$level</strong>
+Log message level. The detailed list of type of message level can be found on Zend_Log. Here are the list which you can use.
+[source lang="php"]
+    const EMERG   = 0;  // Emergency: system is unusable
+    const ALERT   = 1;  // Alert: action must be taken immediately
+    const CRIT    = 2;  // Critical: critical conditions
+    const ERR     = 3;  // Error: error conditions
+    const WARN    = 4;  // Warning: warning conditions
+    const NOTICE  = 5;  // Notice: normal but significant condition
+    const INFO    = 6;  // Informational: informational messages
+    const DEBUG   = 7;  // Debug: debug messages
+[/source]
+By default the function uses <strong>Zend_Log::DEBUG</strong>.
+
+<strong>$file</strong>
+Log file name relative to var/log, if you do not provide a file name then the default value for logfile name in settings will be used. If you haven't changed then it would be <em>system.log</em>.
+<strong>$forceLog</strong>
+This parameter defines if you want to override the log settings of the backend. So if you absolutely want to log your data whatever the condtion then this value should be set to true.
+
+

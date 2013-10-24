@@ -1,0 +1,84 @@
+---
+layout: post
+title: General Workflow of Magento's Import/Export - Dataflow
+tags:
+- Dataflow
+- Export
+- Import
+- Import/Export
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_title: ''
+---
+<strong>Magento's Dataflow (Inport/Export)</strong> is one of distinguishing feature that makes Magento the leader in eCommerce Software. But for a programmer to understand how it workes in Magento can be quite nasty. I tried to understand how it workes and came up with following understanding.
+<h2><strong>General Work Flow (Profile)</strong></h2>
+During Import/Export there are normally two "<strong>Actors</strong>" involved. Actors may be the data source (<strong>Actor: Source</strong>) and the final destination of the data (<strong>Actor:Destination</strong>). While you are importing data into your Magento Sytem, the Source is the CSV or XML file while exporting it is the other way round. In any case (Import or Export) you need to first fetch the data from the source and process it and then save to its destination.
+
+So Basically there are three stages in product import. But the processing part has been split into two. Processing part has been divided into two processes namely Mapper and Parser. I'll come to the detailed description later. So along with the extended processes, lets call there are four "Actions" occuring during Import or Export.For every "Action" to run there are seperate individual Models. And the defination of all these individual Models for each Action during the Import/Export Process (Dataflow) is called "<strong>Profile</strong>".
+
+Here's the basic workflow for Dataflow.
+
+[caption id="attachment_124" align="aligncenter" width="473" caption="General Workflow"]<img class="size-full wp-image-124" title="General Workflow" src="http://subesh.com.np/wp-content/uploads/2009/12/workflow.png" alt="General Workflow" width="473" height="355" />[/caption]
+
+That was the laymen description of Dataflow, lets see what are the Jargons used in Magento to call all the Models used in Dataflow. The Models used for all actions are listed below according to how the Dataflow works.
+<ol>
+	<li> Adapter</li>
+	<li> Parser</li>
+	<li> Mapper</li>
+	<li> Adapter (Yes twice)</li>
+	<li> Validator (Not Implemented yet in Magento, left for future implemention)</li>
+</ol>
+<h2><strong>Adapter</strong></h2>
+To understand what is Adapter, lets see Magento as a System and all the resources it uses during Import/Export as external source. So external source in Most of the cases can be either File or your Database (DB). Other external source include Webservice. I'ven't came across other yet. :D So what Adapter does is it provides the channel through which the data actually flows in/out of the Magento System. As you can see in the images below is that there is always two Adapter involved. One that reads data from the file external resource and another that saves the data into the DB external resource. Now you should be clear why I wrote Adapter twice. If you are still wondering..then you can comment below.
+
+[caption id="attachment_114" align="aligncenter" width="474" caption="Case: Export"]<img class="size-full wp-image-114" title="Case: Export" src="http://subesh.com.np/wp-content/uploads/2009/12/adapter1.png" alt="Adapter: Export" width="474" height="358" />[/caption]
+
+[caption id="attachment_121" align="aligncenter" width="479" caption="Case: Import"]<img class="size-full wp-image-121" title="Import" src="http://subesh.com.np/wp-content/uploads/2009/12/adapter2.png" alt="Case: Import" width="479" height="357" />[/caption]
+
+Magento has provides us some Default Adapter to read/write from/to external resources. Here are the Adapters listed.
+
+<strong>Adapter For Files 			: 	Mage_Dataflow_Model_Convert_Adapter_Io</strong>
+
+<strong> Adapter For Customer(DB)	: 	Mage_Customer_Model_Convert_Adapter_Customer</strong>
+
+<strong> Adapter For Product (DB)	:	Mage_Catalog_Model_Convert_Adapter_Product </strong>
+
+Since the work of Adapter is to just Read or Write it has basically two Methods load() and save().
+<h2><strong>Parser</strong></h2>
+What parser does is that it just converts the raw data (Human Readable) from the source into Magento's Format (Arrays and Setting Values of Magento's Model) or from Magento's Format into Human readable Format. Just to understand you can think of the CSV files seperated by comma changed into Arrays. After conversion is over it then saves the data to the Batch.Batch, what is Batch? if this is what you are thinking, here is your answer. Every row in CSV,XML or Row of the DB during the dataflow are saved as different rows in a table dataflow_batch_import or dataflow_batch_export. So if there are 100 rows in your CSV file you are importing into Magento, the batch will have 100 rows of parsed data in the table dataflow_batch_import. During the final stage of the Dataflow's run this data is referred.
+
+Magento provides some default Parses as well.
+
+<strong>Parser for CSV files	:	Mage_Dataflow_Model_Convert_Parser_Csv</strong>
+
+<strong> Parser for XML files	: 	Mage_Dataflow_Model_Convert_Parser_Xml_Excel</strong>
+
+<strong> Parser for Product		:	Mage_Catalog_Model_Convert_Parser_Product</strong>
+
+<strong> Parser for Customer		:	Mage_Customer_Model_Convert_Parser_Customer</strong>
+<pre><strong>
+</strong></pre>
+In all these classes there are two main Methods which deservers to be stated here. parse() and unparse(). If you are Importing then parse() should be defined in your profile, because you are parsing the data that is required by the System. In case of Exporting, you already have the parsed data of the system as source, you will then need to unparse() the data into Human readable format. You can refer to images above to understand more clearly.
+
+So by the end of this during the profile run you will have Parsed/Unparsed data saved in the batch table, in you hand.
+<h2><strong>Mapper</strong></h2>
+Magento's Dataflow is so flexible that you can set the header of the CSV or XML files that can mapped to the Magento's default attributes. Let's take an example if you want to export the product's name into CSV with the CSV header as "Product Name", you can specify that mapping in your profile where the Mapper will act. And in this the Magento's attribute code "name" will be mapped to your specified "Product Name". To do all this mapping rules, Mapper is there.
+
+It retrives the Parsed/Unparsed Data from the batch table, we got at the end of Parser's work, Maps to the rule we defined and then again saves back to the same table. Easy!
+
+There is one default Mapper for all
+
+<strong>Mapper	: Mage_Dataflow_Model_Convert_Mapper_Column </strong>
+
+With one obvious method map().
+
+At the end of this stage you will have your Parsed/Unparsed - Mapped Data in your dataflow table.
+<h2><strong>Adapter (Again)</strong></h2>
+At last the Adapter will use the dataflow's batch data to save(). And after all the rows of the batch table for one batch is acted upon the profile is complete.
+
+I guess this is the general way of explaining it, please comment if I am mistake, coz I am also new to this! LOL.

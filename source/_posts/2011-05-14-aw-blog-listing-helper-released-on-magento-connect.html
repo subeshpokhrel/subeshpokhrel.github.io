@@ -1,0 +1,33 @@
+---
+layout: post
+title: AW Blog Listing Helper Released on Magento Connect
+tags:
+- Free Extension
+- Free Extensions
+- Magento Connect
+- News
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+---
+The Three Tree yet again comes up with a new module in Magento Connect. The basic function of the Module is to list the post made via AW Blog  extension, categorized by category identifier of the post, using Layout. Yes, only through layout you can list the post anywhere you want. Not only that you can also restrict the size of the list through layout as well.
+
+You must set your layout as follows.
+
+[source language="xml"]
+&lt;reference name=&quot;right&quot;&gt;
+	&lt;block type=&quot;tbloghelper/helper&quot; name=&quot;news.list&quot;&gt;
+		&lt;action method=&quot;addCategoryIdentifier&quot;&gt;
+			&lt;identifier&gt;news&lt;/identifier&gt;
+		&lt;/action&gt;
+		&lt;action method=&quot;addListSize&quot;&gt;
+			&lt;size&gt;5&lt;/size&gt;
+		&lt;/action&gt;
+	&lt;/block&gt;
+&lt;/reference&gt;
+[/source]
+
+You can now set the identifier and size parameters as required and the posts will be listed by this module. Simple yet very good and helpful module. As always we are looking forward to your feedbacks.

@@ -1,0 +1,80 @@
+---
+layout: post
+title: Adding Custom Javascript on Admin form in Magento (Backend)
+tags:
+- Custom Module
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are extened from the Magento's core form widget. So there is a less flexibiliy of adding a custom Javasccript code in such types of Admin forms. What to do if you really need to add some custom Javascripts to give user a better user experience? In this post I'd like to point two conditions how/where to add such custom Javascript codes in the Form class, so that you can give user an interactive Admin form.
+
+The two conditions are:
+<ol>
+	<li>If an element of the form already has a value, disable that form element.</li>
+	<li>On triggering an event by acting on some form element to change other form's element's attribute value.</li>
+</ol>
+
+<h2>If an element of the form already has a value, disable that form element</h2>
+
+Lets take an example of core's customer creation Admin form. What we can see while creating a customer from Admin end, the field "Associate to Website" is available to change for the first time. But when you are editing a customer info the very field is disabled. Lets see how this can be acheivable. If you look into <strong>Mage_Adminhtml_Block_Customer_Edit_Tab_Account</strong> class you can see the following chunk of code.
+
+[source language="php"]
+  if ($customer-&gt;getId()) {
+            $form-&gt;getElement('website_id')-&gt;setDisabled('disabled');
+            $form-&gt;getElement('created_in')-&gt;setDisabled('disabled');
+        }
+[/source]
+
+What this does is checks for the Id of the customer if it is present the form elements disabled attribute is set to disabled. So initially while creating a new customer this condition is not fulfilled while on edition of the customer data the condition is fulfilled and hence the form element <em>website_id</em> and the <em>created_in</em> are disabled. This was just an example, you can also write similar conditions for your custom form. Suppose your data for the current form is in <em>$formData</em> variable and then by checking certain field value you can add similar condition.
+
+[source language="php"]
+$formData=Mage::registry('current_custom_data');
+
+if(!empty($formData-&gt;getMyField())){
+	$targetElement=$form-&gt;getElement(&quot;my_field&quot;);
+
+	//For Disabling the field (Value will not be posted on form submit)
+	$targetElement-&gt;setDisabled('disabled');
+
+	//Or for making the field readonly
+	$targetElement-&gt;setReadonly(true);
+
+}
+[/source]
+
+
+<h2>On triggering an event by acting on some form element to change other form's element's attribute value</h2>
+
+
+Lets take the same customer edition page, you can see a checkbox with label <strong>Send auto-generated password</strong>. If you check that checkbox then the <strong>New Password</strong> textfield above it gets disabled. To get the similar interactivity for custom form you will have to do as following.
+
+[source language="php"]
+$eventElem=$fieldset-&gt;addField('nocode', 'checkbox', array(
+                'label' =&gt; Mage::helper('customer')-&gt;__('Event Element'),
+                'name'  =&gt; 'eventelem',
+                'id'    =&gt; 'eventelem',
+				'value'=&gt;1,
+				'onclick'=&gt;'modifyTargetElement(this)',
+            ));
+
+		$eventElem-&gt;setAfterElementHtml('&lt;script&gt;
+			function modifyTargetElement(checkboxElem){
+				if(checkboxElem.checked){
+					$(&quot;target_element&quot;).disabled=true;
+				}
+				else{
+					$(&quot;target_element&quot;).disabled=false;
+				}
+			}
+		&lt;/script&gt;');
+[/source]
+
+What you can see is after an element of a form is initiallized you can add HTML codes (which of course for us is only Javascript code) by calling a <strong>setAfterElementHtml</strong> method and write the implementation of the function called on the event of the Event element.
+I've tried to be more explanatory as possible, if you still have any confusion there is always a comment box below. Happy Coding!

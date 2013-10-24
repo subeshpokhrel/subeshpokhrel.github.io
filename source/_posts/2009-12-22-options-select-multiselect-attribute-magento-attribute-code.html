@@ -1,0 +1,33 @@
+---
+layout: post
+title: Get all options of select or multiselect attribute in Magento by attribute
+  code
+tags:
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+---
+One of the things that a Magento developer deal, time and again is finding out all the options of color or manufacturer or size attribute. You may also need to find out what are the options available for color attribute before you add new option programmatically. Or you may need to add assign the option's ID to a product. Here's what you need to do, just load the attribute by attribute code, then load all its options. Easy, isn't it! Code is below.
+
+[source language="php"]
+
+// Add the attribute code here.
+$attribute=$product->getResource()->getAttribute("color");
+
+// Checking if the attribute is either select or multiselect type.
+if($attribute->usesSource()){
+
+	// Getting all the sources (options) and print as label-value pair
+	$options = $attribute->getSource()->getAllOptions(false);
+
+	echo "<pre>";
+	print_r($options);
+}
+
+[/source] 

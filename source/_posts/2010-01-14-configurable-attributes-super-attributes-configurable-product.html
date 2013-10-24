@@ -1,0 +1,41 @@
+---
+layout: post
+title: Getting Configurable Attributes (Super Attributes) of a Configurable Product
+tags:
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+In one of those time when you need to know what attributes of a product is used to make the current configurable product "configurable", then here it goes :D Those configurable attributes are called as "Super Attributes". Looking into the lower level at the Database level the attributes id are saved in the table "catalog_product_super_attribute". In this configurable product's Id and the attribute are saved. To get the attribute's id you can directly write a custom query and fetch it. But to get its attribute code, attribute level you will then have to create an object attribute using the fetched id. But there is one shot option as well to do the same, in a managed Magento Way!
+
+Here is the way. The code comments are self explanatory I guess!!
+
+[source language="php"]
+/**
+	 * Load Product you want to get Super attributes of
+	 */
+	$product=Mage::getModel(&quot;catalog/product&quot;)-&gt;load(52520);
+
+	/**
+	 * Get Configurable Type Product Instace and get Configurable attributes collection
+	 */
+	$configurableAttributeCollection=$product-&gt;getTypeInstance()-&gt;getConfigurableAttributes();
+
+	/**
+	 * Use the collection to get the desired values of attribute
+	 */
+	foreach($configurableAttributeCollection as $attribute){
+		echo &quot;Attr-Code:&quot;.$attribute-&gt;getProductAttribute()-&gt;getAttributeCode().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Label:&quot;.$attribute-&gt;getProductAttribute()-&gt;getFrontend()-&gt;getLabel().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Id:&quot;.$attribute-&gt;getProductAttribute()-&gt;getId().&quot;&lt;br/&gt;&quot;;
+	}
+[/source]
+
+Happy Codding!

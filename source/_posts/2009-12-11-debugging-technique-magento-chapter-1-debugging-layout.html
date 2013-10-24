@@ -1,0 +1,32 @@
+---
+layout: post
+title: ! 'Debugging Technique in Magento - Chapter 1 :: Debugging Layout'
+tags:
+- Block
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_title: ''
+---
+I've been working in Magento, for 1 year now! During this whole year I have learnt a lot, and have been sharing my learnings through this Blog. One of the thing that strikes me a lot is the debugging technique. My collegue ask me a lot regarding Debugging Modules Functionalities, Debugging Module's Layout and its template not showing in frontend and backend, Some products and category attribute not showing in the frontend, Installation of Magento Custom Module and its setup not working and many more. And guess what in most of the cases I've developed a procedure or debugging steps, which I follow time and again, to get to the core of the situation. Actually now, I thought of writting down these debugging technique's procedure , so that I can tell, please do the following, before you call for my help!
+
+This is the first part of series of post. I'll discuss here how to debug layout errors. I'll come across other technique as well, later on.
+
+<strong>Case: If you have just added your Layout/Template and wondering why it is not working ?</strong>
+
+First and foremost, If you have installed a new Module or Changed Layout and is not working where/how it is supposed to work, clear the cache from Admin, even if you say i have disabled the cache.
+
+To test if your layout file say, example.xml, is actually being looked up while the page loads, first open your example.xml file and make some error on that file. The error may be invalid tag closing of XML. And then refresh your page. If XML load error is displayed then you are sure that your layout file is being referred.
+
+If not then first see what package/theme you are using in Design and confirm if the layout is uploaded or placed in correct path.
+
+After you are sure that layout is placed okai, then its now time to see whether your layout file is registed in config.xml of your Custom Module or not. Your layout file's name should be set in config.xml of any module inside <frontend>. Please check if your tags are correct and under correct parents. Normally layout are inside Frontend-->Layout-->Updates.
+
+If you are through to this point, then your problem may lie in the Block defined. But before that see if you have defined correct reference name.
+
+Later on debugging Block. The post may be listed below. Stay tuned.

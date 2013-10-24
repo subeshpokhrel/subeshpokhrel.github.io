@@ -1,0 +1,61 @@
+---
+layout: post
+title: Calculating the difference between timestamps in PHP
+tags:
+- PHP
+- time function
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+  related_posts: ''
+---
+Most of us, programmer have conditions of calculating the difference between timestamps, i.e the difference between now and the timestamp from mysql result. The logic for this is pretty simple. Just convert the two timestamps to Unix time format and take the difference between the two. Next convert the difference into corresponding days,hour,minutes or in any unit you want to.
+
+Here's the source code for finding out the difference between two timestamps.
+
+[sourcecode lang="PHP"]
+<?php
+function expiredTime($expdate){
+       $temp1=explode(" ",$expdate);
+       $temp=explode("-",$temp1[0]);
+       $year = $temp[0];
+       $month= $temp[1];
+       $day = $temp[2];
+       $hour = '00';
+       $minute = '00';
+       $second = '00';
+       list($dl,$hl,$ml,$sl) = countdown($year, $month, $day, $hour,$minute, $second);
+       return $dl."days ". $hl."hr ".$ml."min ".$sl."sec";
+}
+?>
+[/sourcecode]
+
+[sourcecode lang="PHP"]
+<?php
+ function countdown($year, $month, $day, $hour, $minute, $second)
+               {
+                 global $return;
+                 global $countdown_date;
+                 $countdown_date = mktime($hour, $minute, $second, $month, $day, $year);
+                 $today = time();
+                $diff = $countdown_date - $today;
+                 if ($diff < 0)$diff = 0;
+                 $dl = floor($diff/60/60/24);
+                 $hl = floor(($diff - $dl*60*60*24)/60/60);
+                 $ml = floor(($diff - $dl*60*60*24 - $hl*60*60)/60);
+                 $sl = floor(($diff - $dl*60*60*24 - $hl*60*60 - $ml*60));
+               // OUTPUT
+               $return = array($dl, $hl, $ml, $sl);
+               return $return;
+               }
+
+
+?>
+[/sourcecode]
+
+There are two functions here expiredTime ( ) and countdown ( ). The input for the expiredTime is the timestamp from the mysql result. This function evaluates the value of year,month,hour,minutes and seconds of the input parameter and then calls the next function countdown ( ), with those evaluated values as inputs.
+
+The countdown function then calculates the time now and the difference <strong>code block 2 #08</strong>. Then the difference is divided accordingly, with appropriate denominators to find out the days,hour,minutes,seconds passed the input time, untill now. <strong>Code block 2 #10-13</strong> is simple mathematics. This function then returns the difference value in days,hour,minutes and seconds.

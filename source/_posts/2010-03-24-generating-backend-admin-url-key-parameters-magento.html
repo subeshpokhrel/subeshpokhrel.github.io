@@ -1,0 +1,33 @@
+---
+layout: post
+title: Generating Backend-Admin URL with Key and Parameters in Magento
+tags:
+- Custom Module
+- how-to
+- Magento
+- PHP
+- url
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+When you log into adminstrator part of the Magento webshop, and look into the url you may see something like this.
+[caption id="attachment_230" align="alignnone" width="419" caption="Admin URL with Keys and Parameters"]<img src="http://subesh.com.np/wp-content/uploads/2010/03/adminurl.png" alt="Admin URL with Keys and Parameters" title="Admin URL with Keys and Parameters" width="419" height="42" class="size-full wp-image-230" />[/caption]
+
+<p>The part in "RED" are module controller(router)/action. And the part in "GREEN" is what we call as "<strong>Paramerters</strong>" and the "BLUE" part is the "<strong>Key</strong>". The Key (which is also a URL parameter) in the URL has been added for security reasons and is checked against the session's values for every action. If store owner does not want to use the key in admin url, then it can be set off from administrator settings.</p>
+<p>My point in this post is, if you are a developer and creating a module that has Admin controller and you are simply calling some action of your controller lets say,<strong> <em>mymodule/adminhtml_mycontroller/myaction/param1/1/param2/2</em> </strong>the it does not redirect you to your intended page, but will redirect to dashboard, IF key is enabled. You will have to add the key parameter to the URL to go to your page. So here is a simple snippet of code that will help you to build your URL with valid keys.</p>
+
+[source language="php"]
+echo Mage::helper(&quot;adminhtml&quot;)-&gt;getUrl(&quot;mymodule/adminhtml_mycontroller/myaction/&quot;,array(&quot;param1&quot;=&gt;1,&quot;param2&quot;=&gt;2));
+[/source]
+
+<p>The "adminhtml" helper will automatically create url with keys attached to the URL.</p>
+<p>Next thing, if you see the key of various pages in admin you will see that those keys are not same, there is a different logic behind creating those key values. The keys generated depends upon the controller and action you are about to execute. Keys can be seperatly generated as follows.</p>
+
+[source language="php"]
+Mage::getSingleton('adminhtml/url')-&gt;getSecretKey(&quot;adminhtml_mycontroller&quot;,&quot;myaction&quot;);
+[/source]
+<p>Hope this helps, and this can be particularly helpful when you are using templates in admin modules and adding buttons to redirect to some other location. At least that was my case!</p>

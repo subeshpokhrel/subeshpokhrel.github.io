@@ -1,0 +1,23 @@
+---
+layout: post
+title: ! 'MagNote Series : Magento Get Default Store'
+tags:
+- Magento
+- Magento Notes
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '1'
+---
+
+
+<blockquote><em>In this blog I have always shared about what I’ve learned on Magento, which I felt is taken me one step closer to understanding Magento and Magento development. But during the course of time, I bump on some elementary things which are absolutely required. So just for those elementary things I’ve decided to create a series (MagNotes Series) , for myself as a reference or for whoever think this is helpful.</em></blockquote>
+
+
+[source lang="php"]
+Mage::app()-&gt;getStore(Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID);
+[/source]
+
+

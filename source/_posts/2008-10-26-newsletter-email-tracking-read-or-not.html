@@ -1,0 +1,30 @@
+---
+layout: post
+title: ! 'Newsletter Email Tracking: Read or Not?'
+tags:
+- email track
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  related_posts: ''
+  _su_title: ''
+---
+I have completed first phase of a simple, yet useful Newsletter System. When I demonstrated to the clients, they came up with a question if the newsletter being send was opened or not by the newsletter subscribers ? I then thought.. let see how its done. Then I came with this simple tracking trick, most of the <strong>spammers </strong>used to verify if the email address was valid or not.
+The first thing I did was adding 1px by 1px image on the footer of the newsletter, whose source was set something like this <em>http://subesh.com.np/newsletter/track.php?identitycode=CLIENTID_SENDEMAILID</em>. Here CLIENTID = Your Clients ID and SENDEMAILID = Id of the Newsletter sent. Now, when the image is loaded while viewing the newsletter on the mail or say when the client reads the newsletter email. The track.php page is requested with identitycode as the GET parameter. And when you get the request from the mail to your server's page, you can do anything you want. What I did was setting the mail_read column of the database field as 1. And echoed the source of the image file on the last line.
+The code below is for the track.php.
+
+[source="php"]
+<?php
+$get=explode("_",$_GET['identitycode']);
+$sendid=$get['0'];
+$recid=$get['1'];
+$query="INSERT INTO tbl_track SET mail_read='1' WHERE send_id='$sendid' and user_id='$recid'";
+mysql_query($query);
+echo "http://subesh.com.np/newsletter/images/transparent_1px.gif";
+?>
+[/source]
+Isn't this the easiest idea anyone could ever come up with. Yeha! Thumbs up to me!!

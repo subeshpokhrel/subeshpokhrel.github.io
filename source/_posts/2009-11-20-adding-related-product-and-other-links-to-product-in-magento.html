@@ -1,0 +1,40 @@
+---
+layout: post
+title: Adding Related Product and other links to Product in Magento
+tags:
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  gallery: http://subesh.com.np/images/magento.jpg
+  _su_title: ''
+---
+Here is a simple way of adding product link such as Related, Upsell and Crosssell Link to a product in Magento. I just got the way of doing this and thought to share! So kind of me :)
+
+[source language="php"]
+/**
+First Create Link Array of following type
+**/
+
+$linkArray=array(‘product_id’=>array(‘position’=>’’));
+
+/**
+Then set the Link Data
+**/
+
+/** For Upsell Link**/
+$product->setUpSellLinkData($linkArray);
+
+/** For Crosssell Link**/
+$product->setCrossSellLinkData($linkArray);
+
+/** For Crosssell Link**/
+$product->setRelatedLinkData($linkArray);
+
+$product->save();
+[/source]
+
+Hope this helps.

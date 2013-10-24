@@ -1,0 +1,19 @@
+---
+layout: post
+title: Magento Block Caching Not Working - Try using Magento protected constructor
+tags:
+- Block
+- Cache
+- how-to
+- Magento
+- Magento Notes
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+You have tried a lot to use Magento block caching, described in <a href="http://www.magentocommerce.com/wiki/5_-_modules_and_development/block_cache_and_html_ouput" title="http://www.magentocommerce.com/wiki/5_-_modules_and_development/block_cache_and_html_ouput" target="_blank"> here </a> but still your block is not being cache. Here's a solution do not use the public constructor to write your block cache data, just use the protected constructor to add the data. Then you will see your block will be cached.
+
+In fact I think we should always used protected constructor to initialize anything on Magento. Am I right or what do folks has to say about this?
+

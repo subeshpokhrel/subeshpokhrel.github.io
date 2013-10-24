@@ -1,0 +1,95 @@
+---
+layout: post
+title: Working with AJAX in Magento
+tags:
+- Ajax
+- Block
+- Controllers
+- Layout
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  gallery: http://subesh.com.np/images/magento.jpg
+  _su_title: ''
+  _syntaxhighlighter_encoded: '1'
+---
+Ajax in Magento can be pretty troublesome.Because you will need to take controllers and layout into account.And I almost used up a whole day trying to make ajax work. Here are some of the steps I'd like to share so that you will not waste lots of your time, before making this work :D.
+
+<strong>[UPDATE]</strong>
+<h6>Get Ajaxify Extension from Magento Connect to work with AJAX on Magento</h6>
+<a href="http://www.magentocommerce.com/magento-connect/ajaxify-8411.html" title="Ajaxify" target="_blank"><img src="http://www.magentocommerce.com/magento-connect/skin/frontend/enterprise/connect/images/logo-appstore.png"/></a>
+
+Let's first know in Magento terms what we need.
+
+<strong>Controller:</strong> The url on which Ajax will work on, or the request URL. You will have to set up the controller with its frontend router set in config.xml and its corresponding controller class.
+<strong>Layout:</strong> Layout to handle the requested URL and return HTML if required.
+<strong>Block:</strong> The block to call through layout for the above controller.
+
+Now lets be descriptive.
+
+If you want to show a loader while request is being processed just add the following whereever you like in the phtml page.First fetch the Javascript.
+
+[source language="javascript"]
+&lt;script src=&quot;&lt;?php echo $this-&gt;getJsUrl() ?&gt;mage/adminhtml/loader.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+[/source]
+
+Then echo the loader which pops up. This loader will be similar to that of the admin.
+[source language="html"]
+&lt;div id=&quot;loadingmask&quot; style=&quot;display: none;&quot;&gt;
+&lt;div class=&quot;loader&quot; id=&quot;loading-mask-loader&quot;&gt;&lt;img src=&quot;&lt;?php echo str_replace(&quot;index.php/&quot;,&quot;&quot;,$this-&gt;getUrl()) ?&gt;skin/adminhtml/default/default/images/ajax-loader-tr.gif&quot; alt=&quot;&lt;?php echo $this-&gt;__('Loading...') ?&gt;&quot;/&gt;&lt;?php echo $this-&gt;__('Loading...') ?&gt;&lt;/div&gt;
+&lt;div id=&quot;loading-mask&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+[/source]
+
+Now to Call Ajax, use the following lines
+
+[source language="javascript"]
+
+/*Please note that the URL is created in reloadurl. Also see that the response text will be echoed in div with id=output-div*/
+
+var reloadurl = '&lt;?php echo $this-&gt;getUrl('router/controller/action') ?&gt;';
+Element.show('loadingmask');
+new Ajax.Request(reloadurl, {
+method: 'post',
+parameters: &quot;Params_Here&quot;,
+onComplete: function(transport) {
+Element.hide('loadingmask');
+$('output-div').innerHTML = &quot;&quot;;
+$('output-div').innerHTML = transport.responseText;
+
+}
+});
+
+[/source]
+
+After the Ajax Request is made it goes to your controller's action, which in turn sees to your layout as follows:
+
+[source language="php"]
+class Namespace_module_frontendController extends Mage_Core_Controller_Front_Action
+{
+public function actionAction(){
+$this-&gt;loadLayout()-&gt;renderLayout();
+}
+}
+[/source]
+
+And here is the main part in layout where I spent most of my time in. Since in layout we will have to define reference where the html will echo (Most of the times), i got stuck here, because i need to echo the output on the div with id output-div not in any reference.And the trick is to name the layout as root and output as html. Like the following:
+
+[source language="XML"]
+
+&lt;module_controller_action&gt;
+&lt;block type=&quot;module/block&quot;  name=&quot;root&quot; output=&quot;toHtml&quot;  template=&quot;module/template.phtml&quot;/&gt;
+&lt;/module_controller_action&gt;
+[/source]
+
+You are done now! What ever you write or echo in phtml file you will see populated in the DIV. Now you can treat block as normally as you do before.
+
+Happy Coding!!
+
+<strong>[UPDATE]</strong>
+<h6>Get Ajaxify Extension from Magento Connect to work with AJAX on Magento</h6>
+<a href="http://www.magentocommerce.com/magento-connect/ajaxify-8411.html" title="Ajaxify" target="_blank"><img src="http://www.magentocommerce.com/magento-connect/skin/frontend/enterprise/connect/images/logo-appstore.png"/></a>

@@ -1,0 +1,34 @@
+---
+layout: post
+title: Generating Invoice/Order's Next Increment ID in Magento
+tags:
+- database
+- Magento
+- Model
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _wp_old_slug: ''
+  _syntaxhighlighter_encoded: '1'
+---
+Magento has its own way of generating increment ID for new invoices and new orders after they are saved. But how about knowing them before hand, i.e before the invoice or the order is created! Lets first understand the working of those increment ID generation before jumping to the code. As all of us must have known there are "Entity Types" in Magento. And those "Entity Types" are stored in table named <strong><em>eav_entity_type</em></strong>. If you look into that table for <strong>entity_type_code = order or invoice</strong>, in <strong>increment_model</strong> column you can see the Model alias used to generate new increment ID code. Lets take the case of invoice..so the increment model is <strong><em>eav/entity_increment_numeric</em></strong> and additionally this increment is store dependent as for this row <strong><em>increment_per_store</em></strong> is set to 1.
+
+Next place to look into will be .. Yes! the model <strong><em>eav/entity_increment_numeric</em></strong>. And if you see the model class <strong>Mage_Eav_Model_Entity_Increment_Numeric</strong> there is only one Method in this class the <em>public function getNextId()</em> which is responsible to the the Next increment ID, needless to say its parent has other methods as well since you might have already understood. So if some how you can trigger the right Increment Model for any entity type and the call this method, you must get the next increment ID of order/invoice/shippment.
+
+That was the "prose" part now lets get down to the "code poetry". Here's how you first find the appropriate increment ID and then fetch the new Increment ID.
+
+[source language="php"]
+            //Get the Entity Type Increment Model you want, our case invoice
+            // @var $entity_type_model Mage_Eav_Model_Entity_Type
+            $entity_type_model=Mage::getSingleton('eav/config')-&gt;getEntityType('invoice');
+
+            //Triggering the getNextId() of the Increment Model
+            //@var $invoiceNew Mage_Sales_Model_Order_Invoice
+            $new_incr_id = $entity_type_model-&gt;fetchNewIncrementId($invoiceNew-&gt;getOrder()-&gt;getStoreId());
+[/source]
+
+Now, you have the generated Invoice Increment ID. This can be helpful in cases when you want to do something else before Invoice is created but you want to now the Increment Id before hand. Hope this helps.

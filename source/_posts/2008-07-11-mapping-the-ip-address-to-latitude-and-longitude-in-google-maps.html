@@ -1,0 +1,108 @@
+---
+layout: post
+title: Mapping The IP Address to Latitude and Longitude In Google Maps
+tags:
+- Google Maps
+- ip
+- latitude
+- longitude
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  related_posts: ''
+  _su_title: ''
+---
+At last I found <strong>hostip.info</strong> provides a service for getting the latitude and longitude of a place on the basis of the user's ip address. Its light weight and free, rather than downloading bulky database and getting paid services, for getting <strong>latitude and longitude</strong> on the basis of IP.
+Here is the simplest way to do it. Requested to<strong> http://api.hostip.info/?ip=$ip&position=true</strong> it responds XML formatted output. So we need to parse XML code using DOM class of PHP.<strong>(#19-#23)</strong>. Remember, the <strong>position=true</strong> should be set to get the latitude and longitude otherwise it will not show on default.
+<!--readmore-->
+Here is the code and I will soon upload the working demo.
+[sourcecode="php"]
+<?php
+/*
+Subesh Pokhrel
+subesh.com.np
+Get the code for Real IP of the site from roshanbh.com.np
+Mapping The IP Address to Latitude and Longitude.
+*/
+function IPtoLatLng($ip)
+{
+	$latlngValue=array();
+	$dom = new DOMDocument();
+	$ipcheck = ip2long($ip);
+
+    if($ipcheck == -1 || $ipcheck === false){
+		echo "ERROR: INVALID IP";
+		exit;
+	}
+	else
+		$uri = "http://api.hostip.info/?ip=$ip&position=true";
+ 	$dom->load($uri);
+	$name=$dom->getElementsByTagNameNS('http://www.opengis.net/gml','name')->item(1)->nodeValue;
+	$coordinates=$dom->getElementsByTagNameNS('http://www.opengis.net/gml','coordinates')->item(0)->nodeValue;
+	$temp=explode(",",$coordinates);
+	$latlngValue['LNG']=$temp[0];
+	$latlngValue['LAT']=$temp[1];
+	$latlngValue['NAME']=$name;
+	return $latlngValue;
+
+}
+//calling the functions and setting on array $latlng
+$IP=getRealIpAddr(); //from roshanbh.com.np
+$latlng=IPtoLatLng($IP);
+?>
+[/sourcecode]
+<strong>[UPDATE] <a href="http://subeshexamples.googlecode.com/files/ip.php">[DOWNLOAD]</a></strong>
+Due to high request of the visitors I have posted the whole source code here.. just copy the PHP part above anywhere the script part and get the IP code from http://roshanbh.com.np/2007/12/getting-real-ip-address-in-php.html and run. Remember you need PHP5, because the DOM used is of PHP5.
+
+[sourcecode="html"]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Google Maps Plotting  User By Refrence Of IP Address | Subesh.com.np</title>
+
+ <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAPHLcOOGHX2-uLk3K8q1nMRSFS3Iba-Yq79Uuy07kI14Q-o9MOhQTADZYj-oIAYvmRBVx8i9NqeBSjg"
+      type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+
+    var iconBlue = new GIcon();
+    iconBlue.image = 'http://labs.google.com/ridefinder/images/mm_20_blue.png';
+    iconBlue.shadow = 'http://labs.google.com/ridefinder/images/mm_20_shadow.png';
+    iconBlue.iconSize = new GSize(12, 20);
+    iconBlue.shadowSize = new GSize(22, 20);
+    iconBlue.iconAnchor = new GPoint(6, 20);
+    iconBlue.infoWindowAnchor = new GPoint(5, 1);
+
+	var point = new GLatLng(parseFloat('<?=$latlng['LAT']?>'),parseFloat('<?=$latlng['LNG']?>'));
+
+		function load() {
+		  if (GBrowserIsCompatible()) {
+			var map = new GMap2(document.getElementById("map"));
+			map.setCenter(new GLatLng(parseFloat('<?=$latlng['LAT']?>'),parseFloat('<?=$latlng['LNG']?>')),3);
+			var marker = createMarker(point);
+            map.addOverlay(marker);
+		}
+	}
+
+	 function createMarker(point) {
+      var marker = new GMarker(point, iconBlue);
+      var html = "<h1>Gothcha! HA HA </h1> <br />You Are Here !<br /><b><?=$latlng['NAME']?></b> ";
+      GEvent.addListener(marker, 'mouseover', function() {
+        marker.openInfoWindowHtml(html);
+      });
+      return marker;
+    }
+ //
+
+  
+ 
+  
+  Subesh.com.np: Maps Example
+   
+
+
+[/sourcecode] ]]>

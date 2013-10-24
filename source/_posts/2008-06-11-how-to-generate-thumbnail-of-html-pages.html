@@ -1,0 +1,278 @@
+---
+layout: post
+title: How To Generate Thumbnail of HTML Pages
+tags:
+- how-to
+- PHP
+- thumb
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  related_posts: ''
+  _edit_last: '2'
+---
+I was just adding my site on Alexa and in some minutes Alexa generated a thumbnail of my html site. And again it was same with blog catelog. So I thought is there any PHP code that crawled the site and generates its image thumb? After a lots of research I came out with these. Remember, this only works in windows server.
+There is one thing called IECapt.exe ( A Internet Explorer Web Page Rendering Capture Utility). This renders the page and generate thumbnail of it. You can download it from <a href="http://iecapt.sourceforge.net/">IECapt.exe</a>. And to run that through php here's the code.
+
+This is the class file that generates thumb images from the output of IECapt.exe. Save it as image.class.php
+
+[sourcecode="PHP"]
+<?php
+
+class Thumb {
+
+  var $save_to_file = true;
+  var $image_type = -1;
+  var $quality = 100;
+  var $max_x = 100;
+  var $max_y = 100;
+  var $cut_x = 0;
+  var $cut_y = 0;
+
+  function SaveImage($im, $filename) {
+
+    $res = null;
+
+    // ImageGIF is not included into some GD2 releases, so it might not work
+    // output png if gifs are not supported
+    if(($this->image_type == 1)  && !function_exists('imagegif')) $this->image_type = 3;
+
+    switch ($this->image_type) {
+      case 1:
+        if ($this->save_to_file) {
+          $res = ImageGIF($im,$filename);
+        }
+        else {
+          header("Content-type: image/gif");
+          $res = ImageGIF($im);
+        }
+        break;
+      case 2:
+        if ($this->save_to_file) {
+          $res = ImageJPEG($im,$filename,$this->quality);
+        }
+        else {
+          header("Content-type: image/jpeg");
+          $res = ImageJPEG($im,'',$this->quality);
+        }
+        break;
+      case 3:
+        if ($this->save_to_file) {
+          $res = ImagePNG($im,$filename);
+        }
+        else {
+          header("Content-type: image/png");
+          $res = ImagePNG($im,'',$this->quality);
+        }
+        break;
+    }
+
+    return $res;
+
+  }
+
+  function ImageCreateFromType($type,$filename) {
+   $im = null;
+   switch ($type) {
+     case 1:
+       $im = ImageCreateFromGif($filename);
+       break;
+     case 2:
+       $im = ImageCreateFromJpeg($filename);
+       break;
+     case 3:
+       $im = ImageCreateFromPNG($filename);
+       break;
+    }
+    return $im;
+  }
+
+  // generate thumb from image and save it
+  function GenerateThumbFile($from_name, $to_name) {
+
+    // get source image size (width/height/type)
+    // orig_img_type 1 = GIF, 2 = JPG, 3 = PNG
+    list($orig_x, $orig_y, $orig_img_type, $img_sizes) = GetImageSize($from_name);
+
+    // cut image if specified by user
+    if ($this->cut_x > 0) $orig_x = min($this->cut_x, $orig_x);
+    if ($this->cut_y > 0) $orig_y = min($this->cut_y, $orig_y);
+
+    // should we override thumb image type?
+    $this->image_type = ($this->image_type != -1 ? $this->image_type : $orig_img_type);
+
+    // check for allowed image types
+    if ($orig_img_type < 1 or $orig_img_type > 3) die("Image type not supported");
+
+    if ($orig_x > $this->max_x or $orig_y > $this->max_y) {
+
+      // resize
+      $per_x = $orig_x / $this->max_x;
+      $per_y = $orig_y / $this->max_y;
+      if ($per_y > $per_x) {
+        $this->max_x = $orig_x / $per_y;
+      }
+      else {
+        $this->max_y = $orig_y / $per_x;
+      }
+
+    }
+    else {
+      // keep original sizes, i.e. just copy
+      if ($this->save_to_file) {
+        @copy($from_name, $to_name);
+      }
+      else {
+        switch ($this->image_type) {
+          case 1:
+              header("Content-type: image/gif");
+              include($from_name);
+            break;
+          case 2:
+              header("Content-type: image/jpeg");
+              include($from_name);
+            break;
+          case 3:
+              header("Content-type: image/png");
+              include($from_name);
+            break;
+        }
+      }
+      return;
+    }
+
+    if ($this->image_type == 1) {
+      // should use this function for gifs (gifs are palette images)
+      $ni = imagecreate($this->max_x, $this->max_y);
+    }
+    else {
+      // Create a new true color image
+      $ni = ImageCreateTrueColor($this->max_x,$this->max_y);
+    }
+
+    // Fill image with white background (255,255,255)
+    $white = imagecolorallocate($ni, 255, 255, 255);
+    imagefilledrectangle( $ni, 0, 0, $this->max_x, $this->max_y, $white);
+    // Create a new image from source file
+    $im = $this->ImageCreateFromType($orig_img_type,$from_name);
+    // Copy the palette from one image to another
+    imagepalettecopy($ni,$im);
+    // Copy and resize part of an image with resampling
+    imagecopyresampled(
+      $ni, $im,             // destination, source
+      0, 0, 0, 0,           // dstX, dstY, srcX, srcY
+      $this->max_x, $this->max_y,       // dstW, dstH
+      $orig_x, $orig_y);    // srcW, srcH
+
+    // save thumb file
+    $this->SaveImage($ni, $to_name);
+  }
+
+}
+
+?>
+[/sourcecode]
+
+Here's the code to run it. Save this as webthumb.php.
+
+[sourcecode="php"]
+<?php
+###############################################################
+# Website Thumbnail Image Generator
+###############################################################
+# Subesh Pokhrel. Visit  http://www.subesh.com.np
+###############################################################
+#
+# REQUIREMENTS:
+# PHP 4.0.6 and GD 2.0.1 or later
+# May not work with GIFs if GD2 library installed on your server
+# does not support GIF functions in full
+#
+# Parameters that can be passed via url (if not passed will be used values which are set below):
+# url - url of the target website
+# x - max width
+# y - max height
+# q - quality (applicable only to JPG, 1 to 100, 100 - best)
+#
+# Sample usage:
+# 1. webthumb.php?url=http://www.microsoft.com
+# 2. Set maximum thumbnail size to 150
+#    webthumb.php?url=http://www.thumbnails.com&x=150&y=150
+###############################################################
+
+// Folder to save all thumbnails.
+// Must end with slash!!!
+$thumbnails_folder = 'C:/xampp/htdocs/thumbdirectory';
+
+// thumbnails expiration time in minutes
+$cache_expire_time = 60;
+
+// quality (for jpeg only)
+$image_quality = 100;
+
+// resulting image type (1 = GIF, 2 = JPG, 3 = PNG)
+$image_type = 3;
+
+// maximum thumb side size
+$max_x = 100;
+$max_y = 100;
+
+// If not equal 0 then cut original image size before resizing (in pixels).
+// Long page will have bad thumbnail, its better to cut page length first.
+$cut_x = 0;
+$cut_y = 1024;
+
+###############################################################################
+# END OF SETTINGS. DO NOT EDIT BELOW
+###############################################################################
+
+if (isset($_REQUEST['url'])) {
+  $website_url = $_REQUEST['url'];
+}
+else {
+  die("Site URL must be specified.");
+}
+
+if ($image_type == 1) $output_format = 'gif';
+if ($image_type == 2) $output_format = 'jpg';
+if ($image_type == 3) $output_format = 'png';
+
+$website_url_md5 = md5($website_url);
+
+$cached_filename = $thumbnails_folder . $website_url_md5 . '.' . $output_format;
+
+// See if we have cached website screenshot image (to minimize server load)
+if (!file_exists($cached_filename)
+|| filemtime ($cached_filename) + $cache_expire_time * 60 < time() ) {
+
+  // Get website image and save it on the server.
+  @exec('IECapt.exe ' . escapeshellarg($website_url) . ' ' . escapeshellarg($cached_filename));
+
+} // if (!file_exists
+
+if (!file_exists($cached_filename)) {
+  die("Thumbnail Generation Error. Thumbnail not created.");
+}
+
+// create class instance
+include("image.class.php");
+$img = new Thumb;
+
+// get parameters
+$img->image_type   = $image_type;
+$img->quality      = isset($_REQUEST['q']) ? intval($_REQUEST['q']) : $image_quality;
+$img->max_x        = isset($_REQUEST['x']) ? intval($_REQUEST['x']) : $max_x;
+$img->max_y        = isset($_REQUEST['y']) ? intval($_REQUEST['y']) : $max_y;
+$img->save_to_file = false;
+$img->cut_x        = $cut_x;
+$img->cut_y        = $cut_y;
+
+// generate thumbnail and show it
+$img->GenerateThumbFile($cached_filename, '');
+
+?>
+[/sourcecode]
+
+The codes are self explanatory. Just be sure you have placed all the three one one folder or managed the path accordingly.

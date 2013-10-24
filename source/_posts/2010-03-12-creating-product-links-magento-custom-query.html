@@ -1,0 +1,55 @@
+---
+layout: post
+title: Creating Product Links in Magento Using Custom Query
+tags:
+- Custom Module
+- how-to
+- Import
+- Import/Export
+- Magento
+- PHP
+- Query
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+I've already made a post in this blog about <a href="http://subesh.com.np/2009/11/adding-related-product-and-other-links-to-product-in-magento/">Adding Related Product and other links to Product in Magento </a>. But when I used the method to creating links among product's, while importing very large number of products and creating large number of product links, it took a lot of time and resource. So I thought why not give it a try by direclty creating a link using SQL? And YES! it worked.
+
+Below is the code how I created those links using Custom SQL. But I have to tell you that the former methods looks organized, this is just a work around to a situation. You might know what I am trying to say!
+
+[source language="php"]
+$resource 	= Mage :: getSingleton( 'core/resource' );
+$read= $resource -&gt; getConnection( 'core_read' );
+$write= $resource-&gt;getConnection('core_write');
+$linkTable=$resource-&gt;getTableName('catalog/product_link');
+
+// Creating Upsell Product link
+
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id='&quot;.$productId.&quot;',
+							linked_product_id='&quot;.$linkProduct.&quot;',
+							link_type_id='&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_UPSELL.&quot;'
+			&quot;);
+
+// Creating Related Product link
+
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id='&quot;.$productId.&quot;',
+							linked_product_id='&quot;.$linkProduct.&quot;',
+							link_type_id='&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_RELATED.&quot;'
+			&quot;);
+
+// Creating Crosssell Product Link
+$write-&gt;query(&quot;INSERT into $linkTable SET
+							product_id='&quot;.$productId.&quot;',
+							linked_product_id='&quot;.$linkProduct.&quot;',
+							link_type_id='&quot;.Mage_Catalog_Model_Product_Link::LINK_TYPE_CROSSSELL.&quot;'
+			&quot;);
+[/source]
+
+
+Happy Coding!

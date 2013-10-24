@@ -1,0 +1,60 @@
+---
+layout: post
+title: Redirect to some other location from Model or Observer in Magento
+tags:
+- Controllers
+- how-to
+- Magento
+- PHP
+- Query
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+Redirection in Magento's controller is simple. You just need to call a <strong>_redirect() </strong>or <strong>_forward() </strong>function and provide appropriate router/controller/action parameter. But if you want to redirect to some other page from Model or from Observer, then this can be tricky. Lets take an example, for explaining what I am referring to, Suppose you are building a module that will only allow user of certain group to view a product in frontend. Then, you will have options like:
+
+<ul>
+<ol>
+Rewrite you catalog/product/view controller and add that logic.
+</ol>
+<ol>
+Rewrite Block of that page and show error message accordingly.
+</ol>
+<ol>
+Any other..?
+</ol>
+</ul>
+
+Yeha, I do have another option as well. The Event-Observer Method. You can observe an event <strong>controller_action_predispatch_catalog_product_view</strong> and set up an observer where you can write your own logic there and redirect accordingly.
+
+You can observe that event by setting up your config something like this.
+
+[source language="xml"]
+&lt;controller_action_predispatch_catalog_product_view&gt;
+	&lt;observers&gt;
+		&lt;mymodel&gt;
+			&lt;type&gt;singleton&lt;/type&gt;
+			&lt;class&gt;mymodel/controller_observer&lt;/class&gt;
+			&lt;method&gt;controller_action_predispatch_catalog_product_view&lt;/method&gt;
+		&lt;/mymodel&gt;
+	&lt;/observers&gt;
+&lt;/controller_action_predispatch_catalog_product_view&gt;
+[/source]
+
+And on the observer's <strong>controller_action_predispatch_catalog_product_view</strong> method, you can check your logic for visibiliy of that product to the logged in user group and redirect if not visible.
+
+Here's the main point of this post (Did I take a lot of your time ?), in that same method you can directly redirect using the following snippet of code.
+
+[source language="php"]
+
+Mage::app()-&gt;getResponse()-&gt;setRedirect(Mage::getUrl(&quot;myrouter/mycontroller/noview&quot;));
+
+[/source]
+
+Adding an error message to the session would be a good idea, for user to understand what is happening. Else you can directly call a template in the redirected controller's action with appropriate message.
+
+I think this sums up the post for now..and as always hoping it helps somebody and waiting for the response.

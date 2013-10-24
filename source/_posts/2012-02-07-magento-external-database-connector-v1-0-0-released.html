@@ -1,0 +1,117 @@
+---
+layout: post
+title: Magento External Database Connector Released
+tags:
+- database
+- Extensions
+- Free Extensions
+- how-to
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+  custom_meta_video: <img alt="External Database connector" src="http://www.magentocommerce.com/magento-connect/media/catalog/product/cache/9/image/468x300/9df78eab33525d08d6e5fb8d27136e95/e/x/external_database_1.jpg"
+    title="External Database connector" class="alignnone" width="468" height="300"
+    />
+---
+<blockquote>Formarly Known as The Three Tree External Database Connector</blockquote>
+
+
+Magento External Database Connector module will be helpful for the "Developers" who want to connect to the external Database server (other than the database used by Magento). This module will help the developer to set up a connection object (Read &amp; Write) with the configuration configured in Admin Settings and use that connection to do database transactions on external database.
+<blockquote>All you have to do is set the settings of your external database connection in your Magento Settings and extend your model/collection class with the class of this module and use other codes as you have been using in Magento to select/update/delete records.</blockquote>
+<blockquote>It will be as simple as Mage::getModel('mymodule/mymodel')-&gt;setData('name','The Next Tree')-&gt;save()</blockquote>
+Here is the explanation of how you can use the External Database Connector module's classes to define your
+<ol>
+	<li>Model</li>
+	<li>Resource Model</li>
+	<li>Collection</li>
+</ol>
+
+Lets take a simple example. Say you have a table (of course in an external database) named tbl_magician, which has two just two columns id and name. First thing set up an entity definition in the config.xml file of your module or you can add in this module's config as well.
+
+[source language="xml"]
+ &lt;entities&gt;
+      &lt;!-- Add As many tables config here --&gt;
+            &lt;magician&gt; &lt;!-- Table alias --&gt;
+                   &lt;table&gt;tbl_magician&lt;/table&gt; &lt;!-- Actual Table Name --&gt;
+             &lt;/magician&gt;
+      &lt;!-- Add As many tables config here --&gt;
+&lt;/entities&gt;
+[/source]
+
+<h3>Model Defination</h3>
+All of your Model that uses the external source has to be extended by Sp_Edb_Model_Abstract. If you see on this class you can find that the connection has been established based on the settings you do on Magento backend. An example for your model class will be something like this.
+[source language="php"]
+&lt;?php
+class Sp_Edb_Model_Magician extends Sp_Edb_Model_Abstract
+{
+	 /**
+     * Initialize resources
+     */
+    public function __construct()
+    {
+		parent::__construct();
+		$this-&gt;_init('edb/magician);  
+     }
+
+
+}
+[/source]
+<a href="http://www.thethreetree.com/wp-content/uploads/2011/04/settings.png"><img src="http://www.thethreetree.com/wp-content/uploads/2011/04/settings-300x140.png" alt="" title="EDB Settings" width="300" height="140" class="alignleft size-medium wp-image-24" /></a>
+If you are wondering where to set up your connection settings go to System-->Configuration-->SP EDB and add your settings there. 
+<br/><br/><br/>
+
+<h3>Resource Model</h3>
+Similary your resource model should extend one another class of the module as shown below.
+[source language="php"]
+&lt;?php
+class Sp_Edb_Model_Mysql4_Magician extends Sp_Edb_Model_Mysql4_Abstract
+{
+
+	protected function _construct()
+    {
+        $this-&gt;_init('edb/magician', 'id');
+    }
+
+}
+[/source]
+
+<h3>Collection</h3>
+As you might have already guessed yes..! collection also needs to be extended by one another class of the module as below
+[source language="php"]
+&lt;?php
+class Sp_Edb_Model_Mysql4_Magician_Collection extends Sp_Edb_Model_Mysql4_Collection_Abstract
+{
+	 /**
+     * Local constructor
+     *
+     */
+    protected function _construct()
+    {
+        $this-&gt;_init('edb/magician');
+    }
+}
+[/source]
+
+<blockquote>
+All those parent classes used are themselves extended from the classes which Magento uses for Model or Resource or Collection. So there is no any functionality missing and you can use the same old methods for insert/update or select.
+</blockquote>
+
+After setting up all these classes you can now just freely use these functions without keeping external connection in mind.
+[source language="php"]
+$model = Mage::getModel('edb/magician');
+// To save
+$model-&gt;setName('The three Tree')-&gt;save();
+$model-&gt;setName('TTT')-&gt;save();
+
+// Get Collection
+$collection = $model-&gt;getCollection();
+$collection-&gt;getSelect()-&gt;where('main_table.id = ?', 1);
+[/source]
+
+If you have any confusion we would be happy to address that.The module is now available on <a target="_blank" href="http://www.magentocommerce.com/magento-connect/sp-edb-4574.html"> Magento Connect</a>.
+
+<a href="http://subesh.com.np/2012/02/ttt-edb-faqs/" title="EDB FAQs" target="_blank">FAQ's</a>

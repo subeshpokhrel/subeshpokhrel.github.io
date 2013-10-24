@@ -1,0 +1,41 @@
+---
+layout: post
+title: Using Custom Query in Magento
+tags:
+- Magento
+- PHP
+- Query
+- String
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_title: ''
+---
+Magento has given us very good features to manage Models and Collection for interacting with Database tables. Nowonder, they are very helpful in most of the cases. Yet, we may need to write custom query in some cases (if you need it quick or if you are new to Models &amp; Collection in Magento). But by Magento's standard this is not recommended. If you are a starter you may find this quering to database very helpful. Here is how you can do this.
+
+The idea is simply to get the core connection object and use its functions to run your query.
+
+[source language='PHP']
+<?php
+// For Read
+
+// fetch read database connection that is used in Mage_Core module
+$read= Mage::getSingleton('core/resource')->getConnection('core_read');
+$value=$read->query("SE...");
+$row = $value->fetch();
+
+print_r($row); // As Array
+
+// For Write
+
+// fetch write database connection that is used in Mage_Core module
+$write = Mage::getSingleton('core/resource')->getConnection('core_write');
+
+// now $write is an instance of Zend_Db_Adapter_Abstract
+$write->query("insert into tablename values ('aaa','bbb','ccc')");
+
+?>
+
+[/source] 

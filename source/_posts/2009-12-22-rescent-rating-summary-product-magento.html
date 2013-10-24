@@ -1,0 +1,97 @@
+---
+layout: post
+title: Getting Rescent Rating Summary of a product in Magento
+tags:
+- Block
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+---
+Magento has a default option to show the overall rating's summary of the product, which is shown in the product view page. This summary is based on all the review posted and approved for the particular product. In the summary the stars are shown accordingly, by taking the sum of all reviews and calculating the average rating. But I had a case where I needed to show those star ratings, only based on the last approved user ratings. What I did was just a small tweak in the Magento's default working!
+
+Magento gets all the reviews and processes it accordingly, so what I did was just added limit filter to get the rescent rating only, and left the Magento default working do the rest. Tricky! huh....
+
+Here the block that can achieve the same.
+
+[source language="php"]
+<?php
+class Namespace_Comment_Block_Comment extends Mage_Review_Block_Product_View
+{
+	/**
+	 * Get only Latest review.
+	 * Only adding PageSize filter to the collection sent by the parent::getReviewsCollection(), since parent already
+	 * sorts it by date.
+	 */
+	public function getRescentReview ()
+	{
+		$collection = $this->getReviewsCollection()->setPageSize(1);
+		return $collection;
+	}
+	/**
+	 * Getting Current Product's name
+	 */
+	public function getProductName ()
+	{
+		return Mage::registry("product")->getName();
+	}
+	/**
+	 * Getting Rating summary only for the one Review (latest one)
+	 */
+	public function getRatingSummary ()
+	{
+		return Mage::getModel('rating/rating')->getReviewSummary($this->getReviewId());
+	}
+}
+[/source]
+
+And here is the phtml file.
+
+[source language="html"]
+<?php
+// Retreiving rescent comment collection's Item
+$_items = $this->getRescentReview()->getItems();
+?>
+<?php if (count($_items)):
+// Loading review with the latest comment's id
+$_review=Mage::getModel("review/review")->load(array_keys($_items));
+$curRat=$_review->getData('review_id');
+
+// Setting the current Review Id to the block's Object, used in Namespace_Comment_Block_Comment line #26
+$this->setReviewId($curRat);
+if($curRat!=1):
+?>
+<div >
+    <div>
+        <h2><?php echo $this->__('Recente Reviews') ?></h2>
+    </div>
+    <h3><?php echo $this->getProductName()?></h3>
+    <div class="rating-box">
+        <div class="rating" style="width:<?php echo ceil($this->getRatingSummary()->getSum() / ($this->getRatingSummary()->getCount())) ?>%;"></div>
+    </div>
+    <div>
+      <?php echo $_review->getDetail()?>
+    </div>
+</div>
+<?php
+endif;
+endif;
+?>
+[/source]
+
+You must call this in product detail page.
+
+[source language="xml"]
+--
+<block type ="comment/comment" name="rescent.comment" template="comment/rescent.phtml"/>
+--
+[/source]
+
+By the end of this you will get the Rescent rating summary on your product detail page.
+
+Happy Coding in Magento!!

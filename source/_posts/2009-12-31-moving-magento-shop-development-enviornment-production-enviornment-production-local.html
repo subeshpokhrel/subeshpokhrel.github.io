@@ -1,0 +1,62 @@
+---
+layout: post
+title: Moving Magento Shop from Development Enviornment to Production Enviornment
+  or Production to Local
+tags:
+- custom options
+- database
+- domain
+- dump
+- Export
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+---
+Today, I had really a good chance to move Magento Shop from Development Enviournment to Product Enviornment. On that course I faced some big difficulty in moving the database. I already had the files and DB of the development enviornment, imporing DB was a PIA. I uploaded all the files, which was easy. And next thing I did was uploaded DB dumpped files to root of Magento. Then I logged into SSH and logged into MYSQL. Then Used the following commands to import the dumpped DB files. But first made the database say "magento".
+
+[source language='sql']
+/**Using the Previously created DB**/
+mysql> use magento
+
+/**Import the Dumpped SQL**/
+mysql>source pathToMagentoRoot/mySql.sql
+
+[/source]
+
+
+So after the command is executed I had the whole DB on production enviornment. Similarly we can also import dumpped data of Production on Local database running on WAMP server.
+To import Dumpped SQL data on WAMP, first create a database, say magento and then use the following commands
+
+[source language='sql']
+/**
+	Using the Previously created DB.
+	-p password part is optional if you have not configured password for MYSQL locally
+	-u Username (root by default)
+**/
+
+mysql> C:\wamp\bin\mysql\mysql5.0.51b\bin>mysql.exe -use magento -u root -p password
+
+/**Import the Dumpped SQL**/
+mysql>source pathToSQLSource/mySql.sql
+
+[/source]
+
+By Now we have the database synced between Local and Production. Next is configuring the database name used by Magento. Browse to app/etc/local.xml and change in the following part.
+
+[source language="xml"]
+    <connection>
+                    <host><![CDATA[localhost
+                    username_here
+                    password_here
+                    databasename_here
+                    1
+    
+[/source]
+
+Finally, browsed through table core_config_data and find value of path: web/unsecure/base_url and path: web/secure/base_url and change their values accordingly.
+
+Now I had my Shop enviorment switched. Most work for you as well. LOL.]]>
