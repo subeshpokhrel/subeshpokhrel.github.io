@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
+  <title>Subesh Pokhrel</title>
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="I recently got to a situation where I needed to add a new frontend template for some module and after some action show the error or success message. &hellip;">
+  <meta name="description" content="When you log into adminstrator part of the Magento webshop, and look into the url you may see something like this.
+[caption id=&#8221;attachment_230 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,14 +19,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/4">
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/4/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Subesh Pokhrel" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -36,10 +37,17 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Subesh Pokhrel</a></h1>
   
-    <h2>A blogging framework for hackers.</h2>
+    <h2>Magento Developers Blog</h2>
   
+  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -71,144 +79,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/05/04/solution-error-message-showing-frontends-magento/">Solution: Error Message Not Showing Up in Frontend in Magento</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-05-04T00:00:00+05:45" pubdate data-updated="true">May 4<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">I recently got to a situation where I needed to add a new frontend template for some module and after some action show the error or success message. Not the first time though :P. Interesting thing was even if I added this code in the PHTML file.
-
-[source language=&#8221;php&#8221;]
-
-&lt;?php echo $this-&gt;getMessagesBlock()-&gt;getGroupedHtml() ?&gt;
-
-[/source]
-
-It did not work. Yes, after adding this block it had worked before. In my case, the probable case might be that I had called the module&#8217;s template from CMS page. In other case it should work. So, I looked for work around and the following did the trick.
-
-[source language=&#8221;php&#8221;]
-// Getting Messages from Session
-$messages=Mage::getSingleton(&quot;customer/session&quot;)-&gt;getMessages();
-
-// Creating Block Mage_Core_Block_Messages
-// Setting Message
-// echoing the Message&#8217;s HTML
-echo $this-&gt;getLayout()-&gt;createBlock(&quot;core/messages&quot;)-&gt;setMessages($messages)-&gt;getGroupedHtml();
-
-[/source]
-
-The Error/Success or Notice messages are set on session. So what I did was take those message/s from the session and create a new block, same as what <strong>$this->getMessagesBlock()</strong> might have called, and set those message to the created block and echoed its HTML.
-
-Clever? or not?
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/24/generating-backend-admin-url-key-parameters-magento/">Generating Backend-Admin URL With Key and Parameters in Magento</a></h1>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/03/30/redirect-location-model-observer-magento/">Redirect to Some Other Location From Model or Observer in Magento</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-03-30T00:00:00+05:45" pubdate data-updated="true">Mar 30<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">Redirection in Magento&#8217;s controller is simple. You just need to call a <strong>_redirect() </strong>or <strong>_forward() </strong>function and provide appropriate router/controller/action parameter. But if you want to redirect to some other page from Model or from Observer, then this can be tricky. Lets take an example, for explaining what I am referring to, Suppose you are building a module that will only allow user of certain group to view a product in frontend. Then, you will have options like:
-
-<ul>
-<ol>
-Rewrite you catalog/product/view controller and add that logic.
-</ol>
-<ol>
-Rewrite Block of that page and show error message accordingly.
-</ol>
-<ol>
-Any other..?
-</ol>
-</ul>
-
-Yeha, I do have another option as well. The Event-Observer Method. You can observe an event <strong>controller_action_predispatch_catalog_product_view</strong> and set up an observer where you can write your own logic there and redirect accordingly.
-
-You can observe that event by setting up your config something like this.
-
-[source language=&#8221;xml&#8221;]
-&lt;controller_action_predispatch_catalog_product_view&gt;
-	&lt;observers&gt;
-		&lt;mymodel&gt;
-			&lt;type&gt;singleton&lt;/type&gt;
-			&lt;class&gt;mymodel/controller_observer&lt;/class&gt;
-			&lt;method&gt;controller_action_predispatch_catalog_product_view&lt;/method&gt;
-		&lt;/mymodel&gt;
-	&lt;/observers&gt;
-&lt;/controller_action_predispatch_catalog_product_view&gt;
-[/source]
-
-And on the observer&#8217;s <strong>controller_action_predispatch_catalog_product_view</strong> method, you can check your logic for visibiliy of that product to the logged in user group and redirect if not visible.
-
-Here&#8217;s the main point of this post (Did I take a lot of your time ?), in that same method you can directly redirect using the following snippet of code.
-
-[source language=&#8221;php&#8221;]
-
-Mage::app()-&gt;getResponse()-&gt;setRedirect(Mage::getUrl(&quot;myrouter/mycontroller/noview&quot;));
-
-[/source]
-
-Adding an error message to the session would be a good idea, for user to understand what is happening. Else you can directly call a template in the redirected controller&#8217;s action with appropriate message.
-
-I think this sums up the post for now..and as always hoping it helps somebody and waiting for the response.
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/03/24/generating-backend-admin-url-key-parameters-magento/">Generating Backend-Admin URL With Key and Parameters in Magento</a></h1>
     
     
       <p class="meta">
@@ -260,7 +133,9 @@ Mage::getSingleton(&#8216;adminhtml/url&#8217;)-&gt;getSecretKey(&quot;adminhtml
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier/">Magento Module Release: Uses Layout to List Post, Made by AW Blog, on the Basis of Category Identifier</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/16/magento-module-release-layout-list-post-aw-blog-basis-category-identifier/">Magento Module Release: Uses Layout to List Post, Made by AW Blog, on the Basis of Category Identifier</a></h1>
+      
     
     
       <p class="meta">
@@ -315,7 +190,9 @@ Simple isn&#8217;t it? You can place similar kind of code in layout out to list 
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/03/12/creating-product-links-magento-custom-query/">Creating Product Links in Magento Using Custom Query</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/12/creating-product-links-magento-custom-query/">Creating Product Links in Magento Using Custom Query</a></h1>
+      
     
     
       <p class="meta">
@@ -386,7 +263,9 @@ Happy Coding!
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/03/11/creating-collection-objects-magento-magical-classvarien_data_collection/">Creating Collection of Objects in Magento Using a &#8220;Magical Class&#8221;:Varien_Data_Collection</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/11/creating-collection-objects-magento-magical-classvarien_data_collection/">Creating Collection of Objects in Magento Using a &#8220;Magical Class&#8221;:Varien_Data_Collection</a></h1>
+      
     
     
       <p class="meta">
@@ -431,7 +310,9 @@ There are various other functions in this class you might need to &#8220;work ar
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/03/10/ordered-items-detail-order-id-magento/">Getting Ordered Items and Their Detail From Order ID in Magento</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/10/ordered-items-detail-order-id-magento/">Getting Ordered Items and Their Detail From Order ID in Magento</a></h1>
+      
     
     
       <p class="meta">
@@ -488,7 +369,9 @@ Hope this might &#8220;just&#8221; help somebody in need.
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/03/02/create-download-xls-report-file-magentos-core/">Create and Download XLS Report File Using Magento&#8217;s Core</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/03/02/create-download-xls-report-file-magentos-core/">Create and Download XLS Report File Using Magento&#8217;s Core</a></h1>
+      
     
     
       <p class="meta">
@@ -641,7 +524,9 @@ Happy Coding.
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/">Debugging Magento Using Eclipse PDT & Zend Debugger</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/01/22/debugging-magento-eclipse-pdt-zend-debugger/">Debugging Magento Using Eclipse PDT & Zend Debugger</a></h1>
+      
     
     
       <p class="meta">
@@ -722,7 +607,9 @@ Hope this might be a life changer.. at least it is for me!
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/01/18/customers-info-single-query-including-billing-shipping-addresses/">Getting Customer&#8217;s Info Using Single Query Including Billing and Shipping Addresses</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/01/18/customers-info-single-query-including-billing-shipping-addresses/">Getting Customer&#8217;s Info Using Single Query Including Billing and Shipping Addresses</a></h1>
+      
     
     
       <p class="meta">
@@ -780,6 +667,216 @@ Hope this helps somebody!
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/01/14/configurable-attributes-super-attributes-configurable-product/">Getting Configurable Attributes (Super Attributes) of a Configurable Product</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-14T00:00:00+05:45" pubdate data-updated="true">Jan 14<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">In one of those time when you need to know what attributes of a product is used to make the current configurable product &#8220;configurable&#8221;, then here it goes :D Those configurable attributes are called as &#8220;Super Attributes&#8221;. Looking into the lower level at the Database level the attributes id are saved in the table &#8220;catalog_product_super_attribute&#8221;. In this configurable product&#8217;s Id and the attribute are saved. To get the attribute&#8217;s id you can directly write a custom query and fetch it. But to get its attribute code, attribute level you will then have to create an object attribute using the fetched id. But there is one shot option as well to do the same, in a managed Magento Way!
+
+Here is the way. The code comments are self explanatory I guess!!
+
+[source language=&#8221;php&#8221;]
+/**
+	 * Load Product you want to get Super attributes of
+	 */
+	$product=Mage::getModel(&quot;catalog/product&quot;)-&gt;load(52520);
+
+	/**
+	 * Get Configurable Type Product Instace and get Configurable attributes collection
+	 */
+	$configurableAttributeCollection=$product-&gt;getTypeInstance()-&gt;getConfigurableAttributes();
+
+	/**
+	 * Use the collection to get the desired values of attribute
+	 */
+	foreach($configurableAttributeCollection as $attribute){
+		echo &quot;Attr-Code:&quot;.$attribute-&gt;getProductAttribute()-&gt;getAttributeCode().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Label:&quot;.$attribute-&gt;getProductAttribute()-&gt;getFrontend()-&gt;getLabel().&quot;&lt;br/&gt;&quot;;
+		echo &quot;Attr-Id:&quot;.$attribute-&gt;getProductAttribute()-&gt;getId().&quot;&lt;br/&gt;&quot;;
+	}
+[/source]
+
+Happy Codding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/">Creating Custom Sourced Multiselect Product Attribute</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-13T00:00:00+05:45" pubdate data-updated="true">Jan 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Creating Multiselect type of product attribute whose source will be the Magento&#8217;s core tables is pretty simple. Just go to Manage Attributes and create a new one. But if you want the attribute&#8217;s source table be a custom table, then you need to think. Some times a case pops up that the store admin wants to save custom type of data for attribute&#8217;s option and you need to manage an image according to the attribute&#8217;s option. So for each option of the multiselect attribute option there is an image associated with it. In this case one of the method to sort out the things is to create a module that gives you an GUI to save option&#8217;s data in custom table and give option to upload the image along with it. Later, use this tables data as source of the attribute for product. The first part, saving the data in custom option is not our concern. You can go through <a href="http://subesh.com.np/2010/01/custom-table-custom-module-magento/">this</a> for doing those. But the main point of this article is to use the custom source as source of the muliselect attributes.
+
+Assumming that first part, i.e. the saving of options are already done, you will now need to create a product attributes through SQL Setup
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+$installer = $this;
+$setup = new Mage_Eav_Model_Entity_Setup(&#8216;core_setup&#8217;);
+$installer-&gt;startSetup();
+$setup-&gt;addAttribute(&#8216;catalog_product&#8217;, &#8216;my_attribute&#8217;, array(
+    &#8216;input&#8217;         =&gt; &#8216;multiselect&#8217;,
+	&#8216;required&#8217;		=&gt; false,
+    &#8216;type&#8217;          =&gt; &#8216;text&#8217;,
+    &#8216;label&#8217;         =&gt; &#8216;My Attribute Label&#8217;,
+    &#8216;source&#8217;        =&gt; &#8216;mymodule/source_option&#8217;,
+    &#8216;backend&#8217;       =&gt; &#8216;mymodule/backend_option&#8217;,
+    &#8216;global&#8217;        =&gt; Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    &#8216;visible&#8217;       =&gt; 1,
+));
+$installer-&gt;startSetup();
+$installer-&gt;endSetup();
+[/source]
+
+The source of the attribute is set to some Model, Ynamespace_Mymodule_Model_Source_Option. This file should look like this.
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Module_Model_Source_Option
+extends Mage_Eav_Model_Entity_Attribute_Source_Table
+{
+	public function getAllOptions()
+	{
+		return $this-&gt;getOptionFromTable();
+	}
+
+	private function getOptionFromTable(){
+		$return=array();
+		$col=Mage::getModel(&quot;modules/model&quot;)-&gt;getCollection();
+		/**
+		* Given that table has column as id,title,image_name
+		*
+		*/
+		foreach($col as $row){
+			array_push($return,array(&#8216;label&#8217;=&gt;$row-&gt;getTitle(),&#8217;value&#8217;=&gt;$row-&gt;getId()));
+		}
+		return $return;
+
+	}
+
+	public function getOptionText($value)
+	{
+		$options = $this-&gt;getAllOptions();
+		foreach ($options as $option) {
+			if(is_array($value)){
+				if (in_array($option[&#8216;value&#8217;],$value)) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+			else{
+				if ($option[&#8216;value&#8217;]==$value) {
+					return $option[&#8216;label&#8217;];
+				}
+			}
+
+		}
+		return false;
+	}
+}
+[/source]
+
+As you can see that the option are retrieved from the custom table in label and value pair. Remember that  getAllOptions is called during product export/import as well.
+
+Next important thing you must know is the backend model. Backend model comes into play when you save and load the product. Let me explain. Let us consider a case when you are saving product. The option of this multiselect attribute is sent in post variables as array, but the values cannot be saved as array, either you have to serialize it or implode it into string to save. So to do this change, backend model is there. Similarly, on load you need to explode or unserialize the data from the database to array. So the major functions of backend model are beforeSave() and afterLoad(), which are triggerd as product is saved or loaded. The backend model should look like this:
+
+[source language=&#8221;php&#8221;]
+&lt;?php
+class Ynamespace_Modules_Model_Backend_Option
+    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
+{
+    /**
+     * Before Attribute Save Process
+     *
+     * @param Varien_Object $object
+     * @return Mage_Catalog_Model_Category_Attribute_Backend_Sortby
+     */
+    public function beforeSave($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if (!is_array($data)) {
+                $data = array();
+            }
+            $object-&gt;setData($attributeCode, join(&#8216;,&#8217;, $data));
+        }
+        return $this;
+    }
+
+    public function afterLoad($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == &#8216;my_attribute&#8217;) {
+            $data = $object-&gt;getData($attributeCode);
+            if ($data) {
+                $object-&gt;setData($attributeCode, split(&#8216;,&#8217;, $data));
+            }
+        }
+        return $this;
+    }
+}
+[/source]
+
+Now you are all set, you should have the values of the multiselect attribute saved in database joined by comma seperated values and while on load those values will be exploded as array. Last thing you can do is export the product data using default profile and check if the error shows up or not regarding this attributes. Must not! I think I&#8217;ve checked its integrity with import and export as well. If it shows any, feel free to contact me.
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -797,6 +894,10 @@ Hope this helps somebody!
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/15/tywin-lannister-quote/">Tywin Lannister Quote</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
       </li>
     
@@ -810,10 +911,6 @@ Hope this helps somebody!
     
       <li class="post">
         <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
       </li>
     
   </ul>
@@ -847,7 +944,7 @@ Hope this helps somebody!
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

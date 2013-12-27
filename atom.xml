@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Subesh Pokhrel]]></title>
   <link href="http://subeshpokhrel.github.io/atom.xml" rel="self"/>
   <link href="http://subeshpokhrel.github.io/"/>
-  <updated>2013-10-24T16:05:29+05:45</updated>
+  <updated>2013-12-27T13:51:59+05:45</updated>
   <id>http://subeshpokhrel.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,18 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tywin Lannister Quote]]></title>
+    <link href="http://subeshpokhrel.github.io/blog/2013/06/15/tywin-lannister-quote/"/>
+    <updated>2013-06-15T09:28:00+05:45</updated>
+    <id>http://subeshpokhrel.github.io/blog/2013/06/15/tywin-lannister-quote</id>
+    <content type="html"><![CDATA[<p>A nice quote by Tywin Lannister taken from <em>A Storm of Sword</em> book.</p>
+
+<blockquote><p>The greatest fools are ofttimes more clever then the men who laugh at them.</p><footer><strong>Tywin Lannister</strong> <cite>A Storm of Swords</cite></footer></blockquote>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Some of the Funniest Comments on Code - Quora Discovery]]></title>
@@ -677,47 +689,6 @@ Happy Brogramming!!
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[AW Blog Listing Helper Released on Magento Connect]]></title>
-    <link href="http://subeshpokhrel.github.io/blog/2011/05/14/aw-blog-listing-helper-released-on-magento-connect/"/>
-    <updated>2011-05-14T00:00:00+05:45</updated>
-    <id>http://subeshpokhrel.github.io/blog/2011/05/14/aw-blog-listing-helper-released-on-magento-connect</id>
-    <content type="html"><![CDATA[The Three Tree yet again comes up with a new module in Magento Connect. The basic function of the Module is to list the post made via AW Blog  extension, categorized by category identifier of the post, using Layout. Yes, only through layout you can list the post anywhere you want. Not only that you can also restrict the size of the list through layout as well.
-
-You must set your layout as follows.
-
-[source language=&#8221;xml&#8221;]
-&lt;reference name=&quot;right&quot;&gt;
-	&lt;block type=&quot;tbloghelper/helper&quot; name=&quot;news.list&quot;&gt;
-		&lt;action method=&quot;addCategoryIdentifier&quot;&gt;
-			&lt;identifier&gt;news&lt;/identifier&gt;
-		&lt;/action&gt;
-		&lt;action method=&quot;addListSize&quot;&gt;
-			&lt;size&gt;5&lt;/size&gt;
-		&lt;/action&gt;
-	&lt;/block&gt;
-&lt;/reference&gt;
-[/source]
-
-You can now set the identifier and size parameters as required and the posts will be listed by this module. Simple yet very good and helpful module. As always we are looking forward to your feedbacks.
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Custom Grid Filter a.k.a My Filter Released on Magento Connect]]></title>
-    <link href="http://subeshpokhrel.github.io/blog/2011/04/23/custom-grid-filter-a-k-a-my-filter-released-on-magento-connect/"/>
-    <updated>2011-04-23T00:00:00+05:45</updated>
-    <id>http://subeshpokhrel.github.io/blog/2011/04/23/custom-grid-filter-a-k-a-my-filter-released-on-magento-connect</id>
-    <content type="html"><![CDATA[TTT has made another very handy Magento module available in Magento Connect and the best part is its free. The Three Tree My Filter Module will allow the administrator save the grid filter for Customer Grid, Product Grid and Order Grid. Those filters can be set to be shown in the menu. And when the listing in the menu is clicked the filters for the grid is automatically set and data will be displayed accordingly. This will remove the clumsy work of setting the filters of the grid every time when you want to get specific set of result in the grid. 
-
-For example if you want to see only Simple product in the product grid, you must always select the product type as simple and then hit search. But using the module you will only have to hit search once. Then save the filter and and add the filter to the menu. You can then directly click on the menu of Custom Filter and get the required result.
-
-We would be glad to hear your response on the module.
-
-Install module from <a target="_blank" href="http://www.magentocommerce.com/magento-connect/the3tree/extension/6427/ttt_myfilter">Magento Connect</a>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[Generating Invoice/Order's Next Increment ID in Magento]]></title>
     <link href="http://subeshpokhrel.github.io/blog/2010/12/16/generating-invoiceorders-next-increment-id-in-magento/"/>
     <updated>2010-12-16T00:00:00+05:45</updated>
@@ -739,6 +710,79 @@ That was the &#8220;prose&#8221; part now lets get down to the &#8220;code poetr
 [/source]
 
 Now, you have the generated Invoice Increment ID. This can be helpful in cases when you want to do something else before Invoice is created but you want to now the Increment Id before hand. Hope this helps.
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Adding Custom Javascript on Admin form in Magento (Backend)]]></title>
+    <link href="http://subeshpokhrel.github.io/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend/"/>
+    <updated>2010-09-28T00:00:00+05:45</updated>
+    <id>http://subeshpokhrel.github.io/blog/2010/09/28/adding-custom-javascript-on-admin-form-in-magento-backend</id>
+    <content type="html"><![CDATA[Sometimes in Magento, while creating a custom module we need to add our custom Javascript code in our Admin form. These Admin forms we create are extened from the Magento&#8217;s core form widget. So there is a less flexibiliy of adding a custom Javasccript code in such types of Admin forms. What to do if you really need to add some custom Javascripts to give user a better user experience? In this post I&#8217;d like to point two conditions how/where to add such custom Javascript codes in the Form class, so that you can give user an interactive Admin form.
+
+The two conditions are:
+<ol>
+	<li>If an element of the form already has a value, disable that form element.</li>
+	<li>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value.</li>
+</ol>
+
+<h2>If an element of the form already has a value, disable that form element</h2>
+
+Lets take an example of core&#8217;s customer creation Admin form. What we can see while creating a customer from Admin end, the field &#8220;Associate to Website&#8221; is available to change for the first time. But when you are editing a customer info the very field is disabled. Lets see how this can be acheivable. If you look into <strong>Mage_Adminhtml_Block_Customer_Edit_Tab_Account</strong> class you can see the following chunk of code.
+
+[source language=&#8221;php&#8221;]
+  if ($customer-&gt;getId()) {
+            $form-&gt;getElement(&#8216;website_id&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+            $form-&gt;getElement(&#8216;created_in&#8217;)-&gt;setDisabled(&#8216;disabled&#8217;);
+        }
+[/source]
+
+What this does is checks for the Id of the customer if it is present the form elements disabled attribute is set to disabled. So initially while creating a new customer this condition is not fulfilled while on edition of the customer data the condition is fulfilled and hence the form element <em>website_id</em> and the <em>created_in</em> are disabled. This was just an example, you can also write similar conditions for your custom form. Suppose your data for the current form is in <em>$formData</em> variable and then by checking certain field value you can add similar condition.
+
+[source language=&#8221;php&#8221;]
+$formData=Mage::registry(&#8216;current_custom_data&#8217;);
+
+if(!empty($formData-&gt;getMyField())){
+	$targetElement=$form-&gt;getElement(&quot;my_field&quot;);
+
+	//For Disabling the field (Value will not be posted on form submit)
+	$targetElement-&gt;setDisabled(&#8216;disabled&#8217;);
+
+	//Or for making the field readonly
+	$targetElement-&gt;setReadonly(true);
+
+}
+[/source]
+
+
+<h2>On triggering an event by acting on some form element to change other form&#8217;s element&#8217;s attribute value</h2>
+
+
+Lets take the same customer edition page, you can see a checkbox with label <strong>Send auto-generated password</strong>. If you check that checkbox then the <strong>New Password</strong> textfield above it gets disabled. To get the similar interactivity for custom form you will have to do as following.
+
+[source language=&#8221;php&#8221;]
+$eventElem=$fieldset-&gt;addField(&#8216;nocode&#8217;, &#8216;checkbox&#8217;, array(
+                &#8216;label&#8217; =&gt; Mage::helper(&#8216;customer&#8217;)-&gt;__(&#8216;Event Element&#8217;),
+                &#8216;name&#8217;  =&gt; &#8216;eventelem&#8217;,
+                &#8216;id&#8217;    =&gt; &#8216;eventelem&#8217;,
+				&#8216;value&#8217;=&gt;1,
+				&#8216;onclick&#8217;=&gt;&#8217;modifyTargetElement(this)&#8217;,
+            ));
+
+		$eventElem-&gt;setAfterElementHtml(&#8216;&lt;script&gt;
+			function modifyTargetElement(checkboxElem){
+				if(checkboxElem.checked){
+					$(&quot;target_element&quot;).disabled=true;
+				}
+				else{
+					$(&quot;target_element&quot;).disabled=false;
+				}
+			}
+		&lt;/script&gt;&#8217;);
+[/source]
+
+What you can see is after an element of a form is initiallized you can add HTML codes (which of course for us is only Javascript code) by calling a <strong>setAfterElementHtml</strong> method and write the implementation of the function called on the event of the Event element.
+I&#8217;ve tried to be more explanatory as possible, if you still have any confusion there is always a comment box below. Happy Coding!
 ]]></content>
   </entry>
   

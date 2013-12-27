@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
+  <title>Subesh Pokhrel</title>
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="In one of those time when you need to know what attributes of a product is used to make the current configurable product &#8220;configurable&#8221;, &hellip;">
+  <meta name="description" content="If you want to create a custom module in Magento that has something to do with storing data into a custom table and using that later, then this is &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,14 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/5">
+  <link rel="canonical" href="http://subeshpokhrel.github.io/blog/page/5/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Subesh Pokhrel" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -36,10 +36,17 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Subesh Pokhrel</a></h1>
   
-    <h2>A blogging framework for hackers.</h2>
+    <h2>Magento Developers Blog</h2>
   
+  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -71,213 +78,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2010/01/14/configurable-attributes-super-attributes-configurable-product/">Getting Configurable Attributes (Super Attributes) of a Configurable Product</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-01-14T00:00:00+05:45" pubdate data-updated="true">Jan 14<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">In one of those time when you need to know what attributes of a product is used to make the current configurable product &#8220;configurable&#8221;, then here it goes :D Those configurable attributes are called as &#8220;Super Attributes&#8221;. Looking into the lower level at the Database level the attributes id are saved in the table &#8220;catalog_product_super_attribute&#8221;. In this configurable product&#8217;s Id and the attribute are saved. To get the attribute&#8217;s id you can directly write a custom query and fetch it. But to get its attribute code, attribute level you will then have to create an object attribute using the fetched id. But there is one shot option as well to do the same, in a managed Magento Way!
-
-Here is the way. The code comments are self explanatory I guess!!
-
-[source language=&#8221;php&#8221;]
-/**
-	 * Load Product you want to get Super attributes of
-	 */
-	$product=Mage::getModel(&quot;catalog/product&quot;)-&gt;load(52520);
-
-	/**
-	 * Get Configurable Type Product Instace and get Configurable attributes collection
-	 */
-	$configurableAttributeCollection=$product-&gt;getTypeInstance()-&gt;getConfigurableAttributes();
-
-	/**
-	 * Use the collection to get the desired values of attribute
-	 */
-	foreach($configurableAttributeCollection as $attribute){
-		echo &quot;Attr-Code:&quot;.$attribute-&gt;getProductAttribute()-&gt;getAttributeCode().&quot;&lt;br/&gt;&quot;;
-		echo &quot;Attr-Label:&quot;.$attribute-&gt;getProductAttribute()-&gt;getFrontend()-&gt;getLabel().&quot;&lt;br/&gt;&quot;;
-		echo &quot;Attr-Id:&quot;.$attribute-&gt;getProductAttribute()-&gt;getId().&quot;&lt;br/&gt;&quot;;
-	}
-[/source]
-
-Happy Codding!
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2010/01/08/custom-table-custom-module-magento/">Using Custom Table for Custom Module in Magento</a></h1>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/01/13/creating-custom-sourced-multiselect-product-attribute/">Creating Custom Sourced Multiselect Product Attribute</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-01-13T00:00:00+05:45" pubdate data-updated="true">Jan 13<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">Creating Multiselect type of product attribute whose source will be the Magento&#8217;s core tables is pretty simple. Just go to Manage Attributes and create a new one. But if you want the attribute&#8217;s source table be a custom table, then you need to think. Some times a case pops up that the store admin wants to save custom type of data for attribute&#8217;s option and you need to manage an image according to the attribute&#8217;s option. So for each option of the multiselect attribute option there is an image associated with it. In this case one of the method to sort out the things is to create a module that gives you an GUI to save option&#8217;s data in custom table and give option to upload the image along with it. Later, use this tables data as source of the attribute for product. The first part, saving the data in custom option is not our concern. You can go through <a href="http://subesh.com.np/2010/01/custom-table-custom-module-magento/">this</a> for doing those. But the main point of this article is to use the custom source as source of the muliselect attributes.
-
-Assumming that first part, i.e. the saving of options are already done, you will now need to create a product attributes through SQL Setup
-
-[source language=&#8221;php&#8221;]
-&lt;?php
-$installer = $this;
-$setup = new Mage_Eav_Model_Entity_Setup(&#8216;core_setup&#8217;);
-$installer-&gt;startSetup();
-$setup-&gt;addAttribute(&#8216;catalog_product&#8217;, &#8216;my_attribute&#8217;, array(
-    &#8216;input&#8217;         =&gt; &#8216;multiselect&#8217;,
-	&#8216;required&#8217;		=&gt; false,
-    &#8216;type&#8217;          =&gt; &#8216;text&#8217;,
-    &#8216;label&#8217;         =&gt; &#8216;My Attribute Label&#8217;,
-    &#8216;source&#8217;        =&gt; &#8216;mymodule/source_option&#8217;,
-    &#8216;backend&#8217;       =&gt; &#8216;mymodule/backend_option&#8217;,
-    &#8216;global&#8217;        =&gt; Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
-    &#8216;visible&#8217;       =&gt; 1,
-));
-$installer-&gt;startSetup();
-$installer-&gt;endSetup();
-[/source]
-
-The source of the attribute is set to some Model, Ynamespace_Mymodule_Model_Source_Option. This file should look like this.
-[source language=&#8221;php&#8221;]
-&lt;?php
-class Ynamespace_Module_Model_Source_Option
-extends Mage_Eav_Model_Entity_Attribute_Source_Table
-{
-	public function getAllOptions()
-	{
-		return $this-&gt;getOptionFromTable();
-	}
-
-	private function getOptionFromTable(){
-		$return=array();
-		$col=Mage::getModel(&quot;modules/model&quot;)-&gt;getCollection();
-		/**
-		* Given that table has column as id,title,image_name
-		*
-		*/
-		foreach($col as $row){
-			array_push($return,array(&#8216;label&#8217;=&gt;$row-&gt;getTitle(),&#8217;value&#8217;=&gt;$row-&gt;getId()));
-		}
-		return $return;
-
-	}
-
-	public function getOptionText($value)
-	{
-		$options = $this-&gt;getAllOptions();
-		foreach ($options as $option) {
-			if(is_array($value)){
-				if (in_array($option[&#8216;value&#8217;],$value)) {
-					return $option[&#8216;label&#8217;];
-				}
-			}
-			else{
-				if ($option[&#8216;value&#8217;]==$value) {
-					return $option[&#8216;label&#8217;];
-				}
-			}
-
-		}
-		return false;
-	}
-}
-[/source]
-
-As you can see that the option are retrieved from the custom table in label and value pair. Remember that  getAllOptions is called during product export/import as well.
-
-Next important thing you must know is the backend model. Backend model comes into play when you save and load the product. Let me explain. Let us consider a case when you are saving product. The option of this multiselect attribute is sent in post variables as array, but the values cannot be saved as array, either you have to serialize it or implode it into string to save. So to do this change, backend model is there. Similarly, on load you need to explode or unserialize the data from the database to array. So the major functions of backend model are beforeSave() and afterLoad(), which are triggerd as product is saved or loaded. The backend model should look like this:
-
-[source language=&#8221;php&#8221;]
-&lt;?php
-class Ynamespace_Modules_Model_Backend_Option
-    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
-{
-    /**
-     * Before Attribute Save Process
-     *
-     * @param Varien_Object $object
-     * @return Mage_Catalog_Model_Category_Attribute_Backend_Sortby
-     */
-    public function beforeSave($object) {
-        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
-        if ($attributeCode == &#8216;my_attribute&#8217;) {
-            $data = $object-&gt;getData($attributeCode);
-            if (!is_array($data)) {
-                $data = array();
-            }
-            $object-&gt;setData($attributeCode, join(&#8216;,&#8217;, $data));
-        }
-        return $this;
-    }
-
-    public function afterLoad($object) {
-        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
-        if ($attributeCode == &#8216;my_attribute&#8217;) {
-            $data = $object-&gt;getData($attributeCode);
-            if ($data) {
-                $object-&gt;setData($attributeCode, split(&#8216;,&#8217;, $data));
-            }
-        }
-        return $this;
-    }
-}
-[/source]
-
-Now you are all set, you should have the values of the multiselect attribute saved in database joined by comma seperated values and while on load those values will be exploded as array. Last thing you can do is export the product data using default profile and check if the error shows up or not regarding this attributes. Must not! I think I&#8217;ve checked its integrity with import and export as well. If it shows any, feel free to contact me.
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/01/08/custom-table-custom-module-magento/">Using Custom Table for Custom Module in Magento</a></h1>
     
     
       <p class="meta">
@@ -407,7 +210,9 @@ Hope this helps if any one is in need&#8230; and @inchoo..please don&#8217;t twi
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/">Moving Magento Shop From Development Enviornment to Production Enviornment or Production to Local</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/31/moving-magento-shop-development-enviornment-production-enviornment-production-local/">Moving Magento Shop From Development Enviornment to Production Enviornment or Production to Local</a></h1>
+      
     
     
       <p class="meta">
@@ -486,7 +291,9 @@ Now I had my Shop enviorment switched. Most work for you as well. LOL.]]>
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/25/creating-block-code-magento/">Creating Block From the Code in Magento</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/25/creating-block-code-magento/">Creating Block From the Code in Magento</a></h1>
+      
     
     
       <p class="meta">
@@ -545,7 +352,9 @@ May be helpful!
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/22/rescent-rating-summary-product-magento/">Getting Rescent Rating Summary of a Product in Magento</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/22/rescent-rating-summary-product-magento/">Getting Rescent Rating Summary of a Product in Magento</a></h1>
+      
     
     
       <p class="meta">
@@ -662,7 +471,9 @@ Happy Coding in Magento!!
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/22/products-price-current-currency-format-store/">Getting the Product&#8217;s Price in Current Currency Format of Store</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/22/products-price-current-currency-format-store/">Getting the Product&#8217;s Price in Current Currency Format of Store</a></h1>
+      
     
     
       <p class="meta">
@@ -714,7 +525,9 @@ In the code above $product is the product, whose price you will want to format.
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/22/options-select-multiselect-attribute-magento-attribute-code/">Get All Options of Select or Multiselect Attribute in Magento by Attribute Code</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/22/options-select-multiselect-attribute-magento-attribute-code/">Get All Options of Select or Multiselect Attribute in Magento by Attribute Code</a></h1>
+      
     
     
       <p class="meta">
@@ -767,7 +580,9 @@ if($attribute->usesSource()){
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/22/custom-options-product-magento/">Getting All Custom Options of a Product in Magento</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/22/custom-options-product-magento/">Getting All Custom Options of a Product in Magento</a></h1>
+      
     
     
       <p class="meta">
@@ -834,7 +649,9 @@ Happy coding in Magento!
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/12/22/adding-custom-options-product-magento/">Adding Custom Options to a Product in Magento</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/22/adding-custom-options-product-magento/">Adding Custom Options to a Product in Magento</a></h1>
+      
     
     
       <p class="meta">
@@ -953,6 +770,108 @@ Hope you like this post!
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/21/showing-breadcrumbs-magento/">Showing Breadcrumbs Anywhere in Magento</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-21T00:00:00+05:45" pubdate data-updated="true">Dec 21<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">In Magento, by default there is a reference place where breadcrumbs get showed, that is just above the content reference! But, sometimes you need to show the breadcrumbs twice! above and below the content. Or sometimes you just need to show the breadcrumbs inside the content, due to some designing issue! I&#8217;ve gone through these situation a lot, and thought why not post a solution in my blog? :D
+
+Here&#8217;s the &#8220;magic code&#8221; for breadcrumbs to show anywhere in Magento
+
+[source language=&#8221;PHP&#8221;]
+<?php  echo $this->getLayout()->getBlock(&#8220;breadcrumbs&#8221;)->toHtml()?>
+[/source]
+
+Its very simple, it just gets the block breadcrumbs defined in page.xml and echoes it as html.
+
+Happy coding!
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2009/12/11/debugging-technique-magento-chapter-1-debugging-layout/">Debugging Technique in Magento - Chapter 1 :: Debugging Layout</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-11T00:00:00+05:45" pubdate data-updated="true">Dec 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">I&#8217;ve been working in Magento, for 1 year now! During this whole year I have learnt a lot, and have been sharing my learnings through this Blog. One of the thing that strikes me a lot is the debugging technique. My collegue ask me a lot regarding Debugging Modules Functionalities, Debugging Module&#8217;s Layout and its template not showing in frontend and backend, Some products and category attribute not showing in the frontend, Installation of Magento Custom Module and its setup not working and many more. And guess what in most of the cases I&#8217;ve developed a procedure or debugging steps, which I follow time and again, to get to the core of the situation. Actually now, I thought of writting down these debugging technique&#8217;s procedure , so that I can tell, please do the following, before you call for my help!
+
+This is the first part of series of post. I&#8217;ll discuss here how to debug layout errors. I&#8217;ll come across other technique as well, later on.
+
+<strong>Case: If you have just added your Layout/Template and wondering why it is not working ?</strong>
+
+First and foremost, If you have installed a new Module or Changed Layout and is not working where/how it is supposed to work, clear the cache from Admin, even if you say i have disabled the cache.
+
+To test if your layout file say, example.xml, is actually being looked up while the page loads, first open your example.xml file and make some error on that file. The error may be invalid tag closing of XML. And then refresh your page. If XML load error is displayed then you are sure that your layout file is being referred.
+
+If not then first see what package/theme you are using in Design and confirm if the layout is uploaded or placed in correct path.
+
+After you are sure that layout is placed okai, then its now time to see whether your layout file is registed in config.xml of your Custom Module or not. Your layout file&#8217;s name should be set in config.xml of any module inside <frontend>. Please check if your tags are correct and under correct parents. Normally layout are inside Frontend&#8211;>Layout&#8211;>Updates.
+
+If you are through to this point, then your problem may lie in the Block defined. But before that see if you have defined correct reference name.
+
+Later on debugging Block. The post may be listed below. Stay tuned.
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -970,6 +889,10 @@ Hope you like this post!
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/15/tywin-lannister-quote/">Tywin Lannister Quote</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/09/16/some-of-the-funniest-comments-on-code-quora-discovery/">Some of the Funniest Comments on Code - Quora Discovery</a>
       </li>
     
@@ -983,10 +906,6 @@ Hope you like this post!
     
       <li class="post">
         <a href="/blog/2012/09/06/is-consciousness-a-form-of-energy/">Is Consciousness a Form of Energy?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/06/ajaxify-now-available-on-github/">Ajaxify - Now Available on Github</a>
       </li>
     
   </ul>
@@ -1020,7 +939,7 @@ Hope you like this post!
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
