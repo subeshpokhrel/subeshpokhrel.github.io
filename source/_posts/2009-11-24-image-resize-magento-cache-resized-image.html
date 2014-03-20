@@ -1,0 +1,136 @@
+---
+layout: post
+title: Image Resize In Magento & cache the resized image
+tags:
+- Cache
+- Custom Module
+- Image
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_description: Image resizing helper class in Magento and cache it according to
+    size, just like the product image in default Magento, for any image in Magento
+  _wp_old_slug: creating-custom-images-cache-in-magento
+---
+Handling Products image in Magento is quite easy to do. Magento has deviced as very good class and function to create product's image by defining widht and height and in addition it caches that image created if you want to get the same sized image next time. But managing other images like category images or other image you may need in your module can be quite troublesome. I went to the core of the function used to cache product's image and came up with the script which can be used to cache any other images, like the product's image.
+
+Basically the theroy is to create the image of sizes defined in the function parameter and while it is being fetched for the second time checked if the same size image exists or not. If yes then returnt the http url of that image else create new image.Next trick is to save the new size image in the folder with name as widhtXheight (101X65), which can be helpful to check if image exists or not for the given width and height parameters.
+
+Below is the code for doing this, you can place this code in your helper, for easy access.
+
+[source language="php"]
+<?php
+/**
+ * @author Subesh Pokhrel
+ * @website subesh.com.np
+ *
+ */
+class Namespace_Module_Helper_Data extends Mage_Core_Helper_Abstract
+{
+
+	/**
+	 * Returns the resized Image URL
+	 *
+	 * @param string $imgUrl - This is relative to the the media folder (custom/module/images/example.jpg)
+	 * @param int $x Width
+	 * @param int $y Height
+	 */
+	public function getResizedUrl($imgUrl,$x,$y=NULL){
+		$imgPath=$this->splitImageValue($imgUrl,"path");
+		$imgName=$this->splitImageValue($imgUrl,"name");
+
+		/**
+		 * Path with Directory Seperator
+		 */
+		$imgPath=str_replace("/",DS,$imgPath);
+
+		/**
+		 * Absolute full path of Image
+		 */
+		$imgPathFull=Mage::getBaseDir("media").DS.$imgPath.DS.$imgName;
+
+
+		/**
+		 * If Y is not set set it to as X
+		 */
+		$widht=$x;
+		$y?$height=$y:$height=$x;
+
+		/**
+		 * Resize folder is widthXheight
+		 */
+		$resizeFolder=$widht."X".$height;
+
+		/**
+		 * Image resized path will then be
+		 */
+		$imageResizedPath=Mage::getBaseDir("media").DS.$imgPath.DS.$resizeFolder.DS.$imgName;
+
+		/**
+		 * First check in cache i.e image resized path
+		 * If not in cache then create image of the width=X and height = Y
+		 */
+		if (!file_exists($imageResizedPath)&amp;amp;&amp;amp; file_exists($imgPathFull)) :
+			$imageObj = new Varien_Image($imgPathFull);
+			$imageObj->constrainOnly(TRUE);
+			$imageObj->keepAspectRatio(TRUE);
+			$imageObj->resize($widht,$height);
+			$imageObj->save($imageResizedPath);
+		endif;
+
+		/**
+		 * Else image is in cache replace the Image Path with / for http path.
+		 */
+		$imgUrl=str_replace(DS,"/",$imgPath);
+
+		/**
+		 * Return full http path of the image
+		 */
+		return Mage::getBaseUrl("media").$imgUrl."/".$resizeFolder."/".$imgName;
+	}
+
+	/**
+	 * Splits images Path and Name
+	 *
+	 * Path=custom/module/images/
+	 * Name=example.jpg
+	 *
+	 * @param string $imageValue
+	 * @param string $attr
+	 * @return string
+	 */
+	public function splitImageValue($imageValue,$attr="name"){
+		$imArray=explode("/",$imageValue);
+
+		$name=$imArray[count($imArray)-1];
+		$path=implode("/",array_diff($imArray,array($name)));
+		if($attr=="path"){
+			return $path;
+		}
+		else
+			return $name;
+
+	}
+}
+[/source]
+
+And you can access this from anywhere by just this.
+
+[source language="php"]
+
+/**
+*But remember your base image or big image must be in Root/media/custom/module/images/example.jpg
+*/
+
+echo Mage::helper('yourmodulehelper')->getResizedUrl("custom/module/images/example.jpg",101,65)
+
+/**
+*By doing this new image will be created in Root/media/custom/module/images/101X65/example.jpg
+*/
+
+[/source]
+
+Stay tuned for more on Magento!

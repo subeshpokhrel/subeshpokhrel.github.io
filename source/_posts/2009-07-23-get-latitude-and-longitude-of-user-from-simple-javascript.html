@@ -1,0 +1,37 @@
+---
+layout: post
+title: Get Latitude and Longitude Of User From Simple Javascript!
+tags:
+- Google Maps
+- javascript
+- latitude
+- longitude
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+---
+I am a big fan of Latitude and Longitude, as you all might know, I have other post related to Latitude and Longitude and Google Maps.
+I came across one of the greatest feature of Mozilla Firefox 3.5, and that was to get the latitude and Longitude of user using simple Javascript. No API to use, No query to Google or anything. Here's the code.
+
+[source language="javascript"]
+<script>
+if (navigator.geolocation) {
+ var watchID = navigator.geolocation.watchPosition(function(position) {
+  do_something(position.coords.latitude, position.coords.longitude);
+}
+);
+} else {
+  alert("I'm sorry, but geolocation services are not supported by your browser.");
+}
+
+function do_something(lat,long){
+alert(lat);
+alert(long);
+}
+</script>
+[/source]
+
+Remember this only works on Mozilla Firefox 3.5. I'll later come up with using this method to plot user on Google Maps, So follow on !

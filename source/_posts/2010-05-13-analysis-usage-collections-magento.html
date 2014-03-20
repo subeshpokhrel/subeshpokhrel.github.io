@@ -1,0 +1,177 @@
+---
+layout: post
+title: Analysis & Usage of Collections in Magento
+tags:
+- database
+- Magento
+- PHP
+- Query
+- String
+status: publish
+type: post
+published: true
+meta:
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+As a Magento Programmer I am fascinated by the use &amp; simplicity of collection used in Magento. Simplicity, does not really mean being simple (it is rather complex structured) but easy to use. With the help of one of my colleague, I got down to understand how collection really represents the "collection" of data we are actually trying to get from database. Here is what I found drilling down into the Magento's Core. I may be "not quite right" with the analysis, you can always comment.
+
+Almost all the collections found inside  <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model/Collection.php</strong> are the child of parent Class <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong>. Primary thing done in the class constructor is initializing its resource and Model. If you look into one of the Collection class you can see in its constructor.
+
+[source language="php"]
+/**
+	 * @class Mage_Checkout_Model_Mysql4_Agreement_Collection
+     * Initialize resource
+     *
+     */
+    protected function _construct()
+    {
+        $this-&gt;_init('checkout/agreement');
+    }
+[/source]
+
+And this _init function has been implemented in its parent class as
+
+[source language="php"]
+/**
+     * Standard resource collection initalization
+     *
+     * @param string $model
+     * @return Mage_Core_Model_Mysql4_Collection_Abstract
+     */
+    protected function _init($model, $resourceModel=null)
+    {
+        $this-&gt;setModel($model);
+        if (is_null($resourceModel)) {
+            $resourceModel = $model;
+        }
+        $this-&gt;setResourceModel($resourceModel);
+        return $this;
+    }
+[/source]
+
+The resource class can be found in <strong>app/code/codepool/Namespace/Module/Model/Mysql4/model.php</strong>. And this resource class in turn initializes the database table to be used in the Module along with the table's primary key.
+
+[source language="php"]
+class Mage_Checkout_Model_Mysql4_Agreement extends Mage_Core_Model_Mysql4_Abstract
+	{
+
+	protected function _construct()
+    {
+        $this-&gt;_init('checkout/agreement', 'agreement_id');
+    }
+	......
+	}
+[/source]
+
+It is this resource class that actually works out the database connections, read/write adapters and performs transactions. So this is the basic deduction about the link of collection with the database and its tables. But how are those collection formed still remains a mystery, not anymore! In this section of the post I will try to explain how are the collections really formed.
+
+If I can, "<strong>collection</strong>" can be defined as collection or array of its resource. And in Magento case, most of the resources are database's query results. Simply you can visualize "<strong>collection</strong>" to be array of your model's resource. If a "<strong>query</strong>" in Magento returns a collection of all the products then it would mean that the very collection is an array of all the individual product's object. But one question still remains how will the database query's result transform into a Magento "<strong>collection</strong>". To understand that we need to understand the collection class and its parents.
+
+The class Structure for <strong>Mage_Core_Model_Mysql4_Collection_Abstract</strong> is like this.
+
+Mage_Core_Model_Mysql4_Collection_Abstract
+<p style="padding-left: 30px;">|__ Varien_Data_Collection_Db (C)</p>
+<p style="padding-left: 60px;">|__	Varien_Data_Collection (C)</p>
+<p style="padding-left: 90px;">|__ IteratorAggregate (I)</p>
+<p style="padding-left: 90px;">|__ Countable (I)</p>
+You can see that all collection implements two Interfaces <strong>IteratorAggregate </strong>&amp; <strong>Countable</strong>.
+
+<a href="http://goo.gl/MjAT" target="_blank">IteratorAggregate </a> is predefined in Standard PHP Library that extends Abstract Base Class <a href="http://goo.gl/rzXS" target="_blank">Traversable </a>. On using this Interface you can then <a href="http://goo.gl/hgtI" target="_blank">Iterate Through Object</a> using "<strong>foreach</strong>" construct. Countable returns the size of the Collection Object.
+
+Among the two Interfaces, <strong>IteratorAggregate </strong>is particularly important. As you can see in Class Hierarchy both the interfaces are implemented by<strong> Varien_Data_Collection</strong> concrete class. <strong>IteratorAggregate</strong> has abstract public method <strong>getIterator()</strong> which returns the Iterator interface and the concrete Class has to implement the method on its own. It is this Iterator that provides the real iteration functionality. You can get a detailed description about Iterator <a href="http://goo.gl/C9Nx" target="_blank">Here</a>.
+
+So if you look into the <strong>Varien_Data_Collection</strong> you will find the <strong>getIterator()</strong> implemented like this.
+
+[source language="php"]
+/**
+	 * @class Varien_Data_Collection
+     * Implementation of IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        $this-&gt;load();
+        return new ArrayIterator($this-&gt;_items);
+    }
+[/source]
+
+As you can see that it first loads the "<strong>items</strong>" (I will get back to this Items) and instanciates the value to an internal Class <a href="http://goo.gl/8LAi" target="_blank">ArrayIterator </a>. And the Iterator returned by this function can then be iterated using <strong>foreach </strong>construct.
+
+Looks like it is going to be a looonnnnng post, let be summarize what I've tried to point out until now. I've tried to show the link between the collection class or rather object with the database table and explain the iteration behavior of the collection object. But one question still remains how will the database query's result transform into a Magento's "<strong>collection</strong>". This is where the "<strong>items</strong>" explanation need to be done.
+
+"<strong>Items</strong>" are actually array if individual object (item) of the collection which represents the array of tuple of the database query result. As you see in the snippet above the <strong>ArrayIterator </strong>takes <strong>$this-&gt;_items</strong> are parameter. But <strong>$this-&gt;_items</strong> are not populated here on <strong>Varien_Data_Collection</strong> but rather on is child class <strong>Varien_Data_Collection_Db</strong>. Here's the snippet from Varien_Data_Collection_Db.
+
+[source language="php"]
+/**
+     * Load data
+     * @class Varien_Data_Collection_Db
+     * @return  Varien_Data_Collection_Db
+     */
+    public function load($printQuery = false, $logQuery = false)
+    {
+        if ($this-&gt;isLoaded()) {
+            return $this;
+        }
+
+        $this-&gt;_renderFilters()
+             -&gt;_renderOrders()
+             -&gt;_renderLimit();
+
+        $this-&gt;printLogQuery($printQuery, $logQuery);
+
+		// Getting Data from DB
+        $data = $this-&gt;getData();
+
+        $this-&gt;resetData();
+
+        if (is_array($data)) {
+
+		    // Looping on each result row
+            foreach ($data as $row) {
+			    // Creating Empty &quot;item&quot; Varien_Object's object
+                $item = $this-&gt;getNewEmptyItem();
+
+                if ($this-&gt;getIdFieldName()) {
+                    $item-&gt;setIdFieldName($this-&gt;getIdFieldName());
+                }
+
+				// Setting Varien_Object's values to that of the row
+                $item-&gt;addData($row);
+
+				/**
+				* Adding the &quot;item&quot; to the collection @class Varien_Data_Collection
+				* So while referring to $this-&gt;_items @class Varien_Data_Collection it will return array of this &quot;item&quot;
+				*/
+                $this-&gt;addItem($item);
+            }
+
+        }
+
+        $this-&gt;_setIsLoaded();
+        $this-&gt;_afterLoad();
+        return $this;
+    }
+
+    /**
+     * Get all data array for collection
+     * @class Varien_Data_Collection_Db
+     * @return array
+     */
+    public function getData()
+    {
+        if ($this-&gt;_data === null) {
+            $this-&gt;_renderFilters()
+                 -&gt;_renderOrders()
+                 -&gt;_renderLimit();
+
+			// Fetching all the row with the Select query set
+            $this-&gt;_data = $this-&gt;_fetchAll($this-&gt;_select);
+            $this-&gt;_afterLoadData();
+        }
+        return $this-&gt;_data;
+    }
+[/source]
+
+You can go through the inline comments I've added. This is it, I've finally worked out the explanation of structure &amp; creation of Magento's Collection and its iterative behavior. I've tried to show pictorially (below) what I have just described. Confused! Plz comment and of course please do comment if I am wrong, because there are "times" when you try to understand things even though they actually aren't just like you think. I'd like to quote <strong>Paulo </strong> :<strong><em>"I see the world in terms of what I would like to see happen, not what actually does"</em></strong>!
+
+<img class="alignnone size-full wp-image-249" title="hierarchy" src="http://subesh.com.np/wp-content/uploads/2010/05/hierarchy.jpg" alt="hierarchy" width="505" height="604" />

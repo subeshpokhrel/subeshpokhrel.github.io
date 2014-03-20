@@ -1,0 +1,107 @@
+---
+layout: post
+title: ! 'Magento: Creating Ajax Updated Tabs In Frontend, Like Product Management
+  Tabs of Backend'
+tags:
+- Ajax
+- Custom Module
+- how-to
+- javascript
+- Magento
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Magento's Product Management GUI in back-end has Tabbed Navigation. There are two types of Tabs implemented there. One type of Tab is normal tab, loading content on page load while other type of tab has its content loaded by "Ajax". Another interesting thing to note is that once the Ajax loaded tab's content is loaded it will not "recall" Ajax to load its content, rather earlier loaded tab content is show. If are "confused" then just see how the "Categories" tab of the Product Management works.
+
+I successfully used the same "behavior" of tabbed navigation in "front-end", was easy at the end (always with Magento, when you get it), but I was struggling at the start. So, like my other posts, to share here's how I used the same type of tab in Magento's Front-end.
+
+First thing is add the Tab's Java-script file. You can either include by layout or in PHTML file. If you want to do from layout then,
+
+[source language="xml"]
+&lt;reference name=&quot;head&quot;&gt;
+        	 &lt;action method=&quot;addJs&quot;&gt;&lt;script&gt;mage/adminhtml/tabs.js&lt;/script&gt;&lt;/action&gt;
+&lt;/reference&gt;
+[/source]
+
+Next thing is to create Tab's Menu inside UL & LI. Here's the structure. (Self Explanatory)
+
+[source language="html"]
+&lt;!-- TAB MENU STRUCTURE --&gt;
+
+&lt;ul id=&quot;page_tabs&quot;&gt;
+	&lt;!-- NORMAL TAB --&gt;
+	&lt;li&gt;
+		&lt;a id=&quot;normaltab&quot; name=&quot;normaltab&quot; class=&quot;tab-item-link&quot; href=&quot;#&quot;&gt; NORMAL TAB &lt;/a&gt;
+		&lt;!-- NOTE: class has to be tab-item-link--&gt;
+
+		&lt;div id=&quot;normaltab_content&quot;&gt; Normal Tab HTML&lt;/div&gt;
+		&lt;!-- NOTE: See the id of this div content it has id equal to its anchor's (&lt;a&gt;) id + Underscore + content --&gt;
+	&lt;/li&gt;
+	&lt;!-- NORMAL TAB END--&gt;
+
+	&lt;!-- AJAX LOADED TAB --&gt;
+	&lt;li&gt;
+		&lt;a id=&quot;ajaxtab&quot; name=&quot;ajaxtab&quot; class=&quot;tab-item-link ajax notloaded&quot; href=&quot;http://example.com/magento/module/controller/action&quot;&gt; AJAX TAB &lt;/a&gt;
+		&lt;!-- NOTE 1: class has to be tab-item-link ajax notloaded --&gt;
+		&lt;!-- NOTE 2: Since this is Ajax Loaded Tab its Anchor should have href value = SOME URL --&gt;
+
+		&lt;div id=&quot;ajaxtab_content&quot;&gt;&lt;/div&gt;
+		&lt;!-- NOTE 1: See the id of this div content it has id equal to its anchor's (&lt;a&gt;) id + Underscore + content --&gt;
+		&lt;!-- NOTE 2: Since its innerHTML will be loaded by by Ajax you can set its innerHTML &quot;blank&quot; --&gt;
+
+	&lt;/li&gt;
+	&lt;!-- AJAX LOADED TAB END --&gt;
+&lt;/ul&gt;
+&lt;!-- TAB MENU STRUCTURE END --&gt;
+
+&lt;!-- TAB CONTENT CONTAINER DIV--&gt;
+&lt;div id=&quot;tabcontainer&quot;&gt;&lt;/div&gt;
+&lt;!-- TAB CONTENT CONTAINER DIV--&gt;
+[/source]
+
+Now its the time to use the Tabs JS included, like below.
+
+[source language="js"]
+&lt;script&gt;
+	// Form Key Required for POST AJAX Method
+	var FORM_KEY=&quot;&lt;?php echo Mage::getSingleton('core/session')-&gt;getFormKey() ?&gt;&quot;;
+
+	// Set this to false, Guess used for some other purpose in backend, not really required in frontend.
+	var varienGlobalEvents=false;
+
+	// Initiallizing Varien Tabs
+	/**
+	* @param 1 : UL Menu ID
+	* @param 2 : Target Tab Content ID
+	* @param 3 : Initially Loading Tab's Id
+	* @param 4 : Don't know yet, just use as it is (LOL)
+	*/
+
+	frontend_tabsJsTabs = new varienTabs('page_tabs', 'tabcontainer', 'normaltab',[]);
+
+&lt;/script&gt;
+[/source]
+
+Done! You must now have a functioning Tab loading by Ajax and Normal, but yes tab would look good if you add CSS to your Tabs. :P Here is how it works.
+
+<ol>
+<li>
+On load it first copies the tab_content div inside the Target Tab Content ID div.
+</li>
+<li>
+On tabbed menu clicked it checks its class name and if it class name does not have "ajax" it simply shows the its_content div.
+</li>
+<li>
+If the menu clicked has "ajax" then it checks for another class name "notloaded". So if its ajax and notloaded it then makes an Ajax request and updates the responseText to itsid_content div and then removes the "notloaded" class name for the menu. After that it then displays the itsid_content div, hiding previous ones.
+</li>
+<li>
+If you re-click the "Ajax" typed menu, it will not find "notloaded" class in its menu, then it just shows its_content div.
+</li>
+</ol>
+
+A good trick, I thought while doing this, using class name to restrict the Ajax call.

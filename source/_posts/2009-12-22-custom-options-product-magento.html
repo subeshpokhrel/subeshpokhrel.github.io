@@ -1,0 +1,49 @@
+---
+layout: post
+title: Getting all custom options of a product in Magento
+tags:
+- Custom Module
+- custom options
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Custom options are the options that can be added to any product, which gives an option for the user of the site to select what type of product they actually want. Here is a scenario where custom option can be helpful. If you have a product say ball and your stores sells plastic,rubber,glass balls. So you need to give the user to select what type of ball they actually want. Yes, you can do this by using configurable product as well, but why create an attribute for one product only! In this case custom option might be very helpful.
+
+Here's the code to get the all the custom options of a product. Please see that you need to specify the id of the product for which you are retriving custom option for. I've echoed some text as well to give you an idea what exactly you are getting in each loop.
+
+[sourcecode language="php"]
+$product = Mage::getModel(&quot;catalog/product&quot;)-&gt;load(167);
+	$i = 1;
+
+	echo &quot;&lt;pre&gt;&quot;;
+
+	foreach ($product-&gt;getOptions() as $o) {
+
+		echo &quot;&lt;strong&gt;Custom Option:&quot; . $i . &quot;&lt;/strong&gt;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TYPE: &quot; . $o-&gt;getType() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option TITLE: &quot; . $o-&gt;getTitle() . &quot;&lt;br/&gt;&quot;;
+		echo &quot;Custom Option Values: &lt;br/&gt;&quot;;
+
+		// Getting Values if it has option values, case of select,dropdown,radio,multiselect
+
+		$values = $o-&gt;getValues();
+		foreach ($values as $v) {
+
+				print_r($v-&gt;getData());
+		}
+
+		$i++;
+
+		echo &quot;----------------------------------&lt;br/&gt;&quot;;
+	}
+[/sourcecode]
+
+Happy coding in Magento!

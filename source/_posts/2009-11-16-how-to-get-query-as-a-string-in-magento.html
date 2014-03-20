@@ -1,0 +1,35 @@
+---
+layout: post
+title: How to get Query as a String in Magento?
+tags:
+- Magento
+- Query
+- String
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+---
+Magento as you might know or not! has really a very PIA (Pain in the A**) type of methods to create SQL, execute and fetch! There are two ways of getting SQL from the collection of Magento. Here are the two ways.
+
+<strong>1. Only Echoing Query String.</strong>
+For just echoing the query string you must call printlogquery(), method the the collection. Like.
+[source language="php"]
+/** If $collection is your collection**/
+$collection->printlogquery(true);
+/** Don't forget to write true in param**/
+[/source]
+
+But by this method you cannot assign the query you get echoed to some variable. To get the query string here is what you do.
+
+<strong>2. Getting the query String</strong>
+[source language="php"]
+$query=$collection->getSelectSql(true);
+echo $query;
+[/source]
+
+You can then use this $query to concat with more query, in some cases you desperately need this.
+
+Stay Tuned!

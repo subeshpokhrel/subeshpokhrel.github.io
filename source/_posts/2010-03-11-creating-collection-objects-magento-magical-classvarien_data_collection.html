@@ -1,0 +1,26 @@
+---
+layout: post
+title: Creating Collection of Objects in Magento using a "Magical Class":Varien_Data_Collection
+tags:
+- how-to
+- Magento
+- PHP
+- Query
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Have you ever wondered how Collection in Magento are built, containing array of individual Entity Objects of Magento? Collections are one of the most important data structure (if I am right) used in Magento. Most of the queries in Magento will result into collection, and then you will apply a foreach loop to access individual Entity Objects and their values. Today I came into a different situation where I had individual objects but needed to create a collection of those objects, so that I could return the collection from a function.
+
+I have not drilled down to the details of collection, untill today when I really need it! Do you think its very late? because I have been into Magento for more than a year now!. Better late than never! So, I got the way of working out my situation. Here is how I created a collection from Magento's "Magical Class" Varien_Data_Collection. I call this "Magical Class", because it worked like a Magic to me :D
+
+[source language="php"]
+$collection=new Varien_Data_Collection();
+$collection-&gt;addItem($objProduct);
+[/source]
+
+There are various other functions in this class you might need to "work around" a problem. So, have a look and certainly do comment if you also think this class to be a Magical Class!

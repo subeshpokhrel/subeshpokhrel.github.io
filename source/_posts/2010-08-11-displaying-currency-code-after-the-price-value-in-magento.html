@@ -1,0 +1,80 @@
+---
+layout: post
+title: Displaying Currency code after the price value in Magento
+tags:
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+I had a time to research on Magento's currency format and its display  on Magento webshop. I then came across a block where I could change the  format of currency display, in this case I am talking about moving the  currency symbol to the right of the price value. In other words I found a  way to show $10.00 as 10.00$. Notice the <strong>$</strong> (Dollar) sign moving at the right of the price value.
+Here's a description of how this can be achievable. The basic idea is to rewrite <strong>Mage_Core_Model_Locale</strong> class's currency function and add additional code. First you must write a rewrite code in your module's<strong> config.xml</strong>.
+
+[source language="xml"]
+ &lt;core&gt;
+ &lt;rewrite&gt;
+ &lt;locale&gt;Namespace_Module_Model_Locale&lt;/locale&gt;
+ &lt;/rewrite&gt;
+ &lt;/core&gt;
+ [/source]
+
+Then in <strong>Namespace_Module_Model_Locale</strong> class you can add the following code.
+
+[source language="php"]
+ class Namespace_Module_Model_Locale extends Mage_Core_Model_Locale{
+ /*
+ * Code: subesh.com.np
+ */
+
+public function currency($currency)
+ {
+ Varien_Profiler::start('locale/currency');
+ if (!isset(self::$_currencyCache[$this-&gt;getLocaleCode()][$currency])) {
+ try {
+ $currencyObject = new Zend_Currency($currency, $this-&gt;getLocale());
+
+// Additionally Added Code
+ // The options array's position key has other values as well.
+
+// 	Zend_Currency::STANDARD
+ // 	Zend_Currency::RIGHT
+ //	Zend_Currency::LEFT
+
+$options = array(
+ 'position'	=&gt; Zend_Currency::RIGHT
+ );
+
+$currencyObject-&gt;setFormat($options);
+
+// END Additionally Added Code
+
+} catch (Exception $e) {
+ $currencyObject = new Zend_Currency($this-&gt;getCurrency(), $this-&gt;getLocale());
+ $options = array(
+ 'name'      =&gt; $currency,
+ 'currency'  =&gt; $currency,
+ 'symbol'    =&gt; $currency
+ );
+ $currencyObject-&gt;setFormat($options);
+ }
+
+self::$_currencyCache[$this-&gt;getLocaleCode()][$currency] = $currencyObject;
+ }
+ Varien_Profiler::stop('locale/currency');
+ return self::$_currencyCache[$this-&gt;getLocaleCode()][$currency];
+ }
+
+}
+
+[/source]
+
+You can see the comment of the code above for more detail understanding.
+
+<strong><em>P.S: Be informed that you need to change the Class Name you are about to create on the basis of your Namespace and Module name.</em></strong>

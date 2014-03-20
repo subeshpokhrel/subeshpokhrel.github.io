@@ -1,0 +1,41 @@
+---
+layout: post
+title: How To Get Latitude and Longitude of a Place Using Google Maps
+tags:
+- gmarker
+- Google Maps
+- latitude
+- longitude
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+  related_posts: ''
+---
+I was so frustrated during one project where I need to find out the geological latitude and longitude of the place, with the help of Google Maps. So I googled a lot and came up with a function function (overlay,point).On calling this function on mouse click event the latitude and longitude are returned as <strong><em>point.lat()</em></strong> for latitude and <em><strong>point.lng()</strong></em> for longitude. This is the source code just the javascript part.
+<a href="http://subesh.com.np/demo/tabinfo.html"><strong>[UPDATE DEMO]</strong></a>
+
+[sourcecode lang="javascript"]
+  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAPHLcOOGHX2-uLk3K8q1nMRTkUAbhgKwL1jWWfpv-KGJeCrct7hTsLLnZdnZjzehmRIkaePagQvKNbw" type="text/javascript"></script>
+ <script type="text/javascript">
+    //<![CDATA[
+
+    var map = new GMap2(document.getElementById("map"));
+    map.setCenter(new GLatLng(37.4419, -122.1419), 4);
+
+	var marker = new GMarker(new GLatLng(37.4419, -122.1419), {draggable: false});
+	map.addOverlay(marker);
+	GEvent.addListener(map, 'click', function(overlay, point) {
+		  var lati=point.lat();
+		  var long=point.lng();
+		  var marker= new GMarker(new GLatLng(lati, long),{draggable: false});
+		  map.addOverlay(marker);
+		  marker.openInfoWindowHtml("Latitude:"+lati+"<br />"+"Longitude:"+long);
+		 });
+
+	//
+    
+[/sourcecode]
+What I have done here is I have displayed the latitude and longitude on a information window of a GMarker. GMarker represents a point on the map. I may put something about GMarker later on.]]>

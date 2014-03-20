@@ -1,0 +1,42 @@
+---
+layout: post
+title: Adding Tabs in Product View Page Through Layout In Magento
+tags:
+- Block
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+---
+One of my new colleague, today asked me how to add tabs in product view page in Magento. He told me earlier he had used his own tabs CSS and Javascript to do, but now he found out that Magento gives default Tab Javascript to do the same. Then, I thought why not share with everyone else! Here it goes...
+
+It is extremely easy to add a tab and its Javascript, but comparatively difficult to make its CSS, and I won't talk about that here :D. You can manage tabs in product page of Magento just through layout files. No need to work on Javascript. Just use the following xml tags inside your catalog_product_view layout.
+
+[source language='xml']
+<block type="catalog/product_view_tabs" name="product.info.tabs" as="info_tabs" template="catalog/product/view/tabs.phtml" >
+                    <action method="addTab" translate="title" module="catalog"><alias>additional</alias><title>General Info</title><block>catalog/product_view_attributes</block><template>catalog/product/view/attributes.phtml</template></action>
+                    <action method="addTab" translate="title" module="catalog"><alias>deliverytime</alias><title>Delivery Time</title><block>    catalog/product_view</block><template>catalog/product/view/delivery.phtml</template></action>
+                    <action method="addTab" translate="title" module="catalog"><alias>printinginfo</alias><title>Printing Info</title><block>    catalog/product_view</block><template>catalog/product/view/printing_info.phtml</template></action>
+<!--  4th tab -->
+<action method="addTab" translate="title" module="catalog"><alias>notes</alias><title>Notes</title><block>catalog/product_view</block><template>catalog/product/view/notes.phtml</template></action>
+                </block>
+[/source]
+
+In the code above the fourth tab, we have called <strong>addTab </strong>method of <strong>catalog/product_view_tabs</strong> block, with the parameters <strong>alias </strong>as <strong><em>notes</em></strong>, <strong>title </strong>as <strong><em>Notes</em></strong>, <strong>block </strong>as <strong><em>catalog/product_view</em></strong> and <strong>template </strong>as <strong><em>catalog/product/view/notes.phtml</em></strong>.
+
+
+After adding this in your layout, echo the following in your view.phtml file.
+
+[source language='php']
+<?php
+ echo $this->getChildHtml('product.info.tabs');
+?>
+[/source]
+
+After that you will see four tabbed navigation in your product view page. Easy isn't it?

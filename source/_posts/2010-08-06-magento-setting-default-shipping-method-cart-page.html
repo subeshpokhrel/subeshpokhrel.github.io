@@ -1,0 +1,44 @@
+---
+layout: post
+title: ! 'Magento: Setting Up a Default Shipping Method on Cart Page'
+tags:
+- Custom Module
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+  _wp_old_slug: '262'
+---
+I recently came to a situation where I need to show a shipping price amount on cart before selecting the shipping address from the checkout page. Basically shipping price is shown after the user has added the shipping address and selected the shipping method. So to show shipping price on cart page load, I needed to find out the following. Shipping Address (Actually only<strong> country_id</strong> will work) Shipping Method (Set to Flatrate in the code below) So what I did was first check if the user has already specified the shipping address (when user have added the shipping address in the checkout page and navigated back to cart page). If the shipping address is not present then I checked if the user is logged in and checked for default shipping address of the customer and used its country_id (if present), but if the user is not logged in or default shipping address is not present then I set the shipping address (<strong>country_id</strong>) to some country <strong>(NL).</strong>After setting the country I then set the shipping method and then saved the quote so that the prices are calculated.Here's the snippet.
+
+[source language="php"]
+/*** Setting Default Shipping Method
+ * Checking If Quote Already Has Address Or Not
+ * - If Yes then leave as it is
+ * - Else check if Customer has default Shipping Address or Not
+ * -- Yes then get Default Shipping Address and set Shipping Method
+ * -- No Set Default Shipping address to NL*/
+ if(!Mage::getSingleton('checkout/type_onepage')-&gt;getQuote()-&gt;getShippingAddress()-&gt;getCountryId()){
+		$customerSession=Mage::getSingleton(&quot;customer/session&quot;);
+		if($customerSession-&gt;isLoggedIn()){
+		$customerAddress=$customerSession-&gt;getCustomer()-&gt;getDefaultShippingAddress();
+			if($customerAddress-&gt;getId()){
+			$customerCountry=$customerAddress-&gt;getCountryId();
+				$shipping = Mage::getSingleton('checkout/type_onepage')-&gt;getQuote()-&gt;getShippingAddress()-&gt;setCountryId($customerCountry)-&gt;setShippingMethod('flatrate_flatrate')-&gt;save();
+		}else{
+			$shipping = Mage::getSingleton('checkout/type_onepage')-&gt;getQuote()-&gt;getShippingAddress()-&gt;setCountryId('NL')-&gt;setShippingMethod('flatrate_flatrate')-&gt;save();
+			}
+		}
+	}
+[/source]
+
+Cheers!
+
+
+[UPDATE]
+The original solution seems to show some issue. Thanks to the great reader of this blog the "perfect" solution for this case can be found in comments. As always new and better solutions are always welcome.

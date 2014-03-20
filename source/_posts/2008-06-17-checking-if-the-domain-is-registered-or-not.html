@@ -1,0 +1,57 @@
+---
+layout: post
+title: Checking if the domain is registered or not ?
+tags:
+- domain
+- PHP
+- whois
+status: publish
+type: post
+published: true
+meta:
+  _su_title: ''
+  _edit_last: '2'
+  related_posts: ''
+---
+On doing one of my project, I came across this situation when I need to find out whether the domain name supplied by the user is available or not? I then came up with a solution, here's is what I did. But before that let me explain somethings. There is something called WHOIS LOOKUP. WHOIS LOOKUP is action relating to look on official WHOIS database server for the information related to domain name.
+
+According to wikipedia WHOIS "WHOIS  is a TCP-based query-response  protocol for querying an official database in order to determine the owner of a domain name, an IP address, or an autonomous system number on the Internet". ICAAN is presently undertaking the task for managing the WHOIS information.
+
+For querying WHOIS servers here is the PHP code.
+[sourcecode="php"]
+function check_domain($domain,$ext)
+{
+
+	/************************	SERVER DEFINITIONS	************************************/
+	$serverdefs= array(
+							"com" => array("whois.crsnic.net","No match for"),
+							"net" => array("whois.crsnic.net","No match for"),
+							"org" => array("whois.pir.org","NOT FOUND"),
+							"biz" => array("whois.biz","Not found"),
+							"info" => array("whois.afilias.net","NOT FOUND"),
+
+					);
+	/*********************** 	END SERVER DEFINITIONS	*********************************/
+
+
+    $server = $serverdefs[$ext][0];
+    $nomatch = $serverdefs[$ext][1];
+
+	$output="";
+    if(($sc = fsockopen($server,43))==false){return 2;}
+           fputs($sc,"$domain.$ext\n");
+
+	while(!feof($sc)){$output.=fgets($sc,128);}
+    fclose($sc);
+    //compare what has been returned by the server
+    if (eregi($nomatch,$output)){
+		return true; // if matched
+    }else{
+        return false;
+    }
+}
+[/sourcecode]
+
+<strong>Code #04 - #13</strong> defines the array of official WHOIS server for respective extensions of domains and the respective responses (a chunk of) we get after querying the database servers. For example if we query <em>whois.crsnic.net</em> we get response which contains the phrase "<em>No match for</em>" if the domain does not exists.
+<strong>Code #19 - #23</strong> requests the respective server on the basis of extension  and gets the response in form of string on variable <em>$output</em>.
+Then the response is matched with the respective value of response defined in the array (which contains the phrase when the domain does not exists). Then it outputs the boolean value accordingly if the domain does not exists or can be registered it returns <em>true</em>, <em>false </em>otherwise.

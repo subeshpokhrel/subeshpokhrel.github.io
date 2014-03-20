@@ -1,0 +1,27 @@
+---
+layout: post
+title: Showing Breadcrumbs Anywhere in Magento
+tags:
+- Block
+- breadcrumbs
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_keywords: magento,block,breadcrumbs,anywhere
+---
+In Magento, by default there is a reference place where breadcrumbs get showed, that is just above the content reference! But, sometimes you need to show the breadcrumbs twice! above and below the content. Or sometimes you just need to show the breadcrumbs inside the content, due to some designing issue! I've gone through these situation a lot, and thought why not post a solution in my blog? :D
+
+Here's the "magic code" for breadcrumbs to show anywhere in Magento
+
+[source language="PHP"]
+<?php  echo $this->getLayout()->getBlock("breadcrumbs")->toHtml()?>
+[/source]
+
+Its very simple, it just gets the block breadcrumbs defined in page.xml and echoes it as html.
+
+Happy coding!

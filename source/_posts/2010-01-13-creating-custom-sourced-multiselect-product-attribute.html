@@ -1,0 +1,127 @@
+---
+layout: post
+title: Creating Custom Sourced Multiselect Product Attribute
+tags:
+- Custom Module
+- how-to
+- Import
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Creating Multiselect type of product attribute whose source will be the Magento's core tables is pretty simple. Just go to Manage Attributes and create a new one. But if you want the attribute's source table be a custom table, then you need to think. Some times a case pops up that the store admin wants to save custom type of data for attribute's option and you need to manage an image according to the attribute's option. So for each option of the multiselect attribute option there is an image associated with it. In this case one of the method to sort out the things is to create a module that gives you an GUI to save option's data in custom table and give option to upload the image along with it. Later, use this tables data as source of the attribute for product. The first part, saving the data in custom option is not our concern. You can go through <a href="http://subesh.com.np/2010/01/custom-table-custom-module-magento/">this</a> for doing those. But the main point of this article is to use the custom source as source of the muliselect attributes.
+
+Assumming that first part, i.e. the saving of options are already done, you will now need to create a product attributes through SQL Setup
+
+[source language="php"]
+&lt;?php
+$installer = $this;
+$setup = new Mage_Eav_Model_Entity_Setup('core_setup');
+$installer-&gt;startSetup();
+$setup-&gt;addAttribute('catalog_product', 'my_attribute', array(
+    'input'         =&gt; 'multiselect',
+	'required'		=&gt; false,
+    'type'          =&gt; 'text',
+    'label'         =&gt; 'My Attribute Label',
+    'source'        =&gt; 'mymodule/source_option',
+    'backend'       =&gt; 'mymodule/backend_option',
+    'global'        =&gt; Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    'visible'       =&gt; 1,
+));
+$installer-&gt;startSetup();
+$installer-&gt;endSetup();
+[/source]
+
+The source of the attribute is set to some Model, Ynamespace_Mymodule_Model_Source_Option. This file should look like this.
+[source language="php"]
+&lt;?php
+class Ynamespace_Module_Model_Source_Option
+extends Mage_Eav_Model_Entity_Attribute_Source_Table
+{
+	public function getAllOptions()
+	{
+		return $this-&gt;getOptionFromTable();
+	}
+
+	private function getOptionFromTable(){
+		$return=array();
+		$col=Mage::getModel(&quot;modules/model&quot;)-&gt;getCollection();
+		/**
+		* Given that table has column as id,title,image_name
+		*
+		*/
+		foreach($col as $row){
+			array_push($return,array('label'=&gt;$row-&gt;getTitle(),'value'=&gt;$row-&gt;getId()));
+		}
+		return $return;
+
+	}
+
+	public function getOptionText($value)
+	{
+		$options = $this-&gt;getAllOptions();
+		foreach ($options as $option) {
+			if(is_array($value)){
+				if (in_array($option['value'],$value)) {
+					return $option['label'];
+				}
+			}
+			else{
+				if ($option['value']==$value) {
+					return $option['label'];
+				}
+			}
+
+		}
+		return false;
+	}
+}
+[/source]
+
+As you can see that the option are retrieved from the custom table in label and value pair. Remember that  getAllOptions is called during product export/import as well.
+
+Next important thing you must know is the backend model. Backend model comes into play when you save and load the product. Let me explain. Let us consider a case when you are saving product. The option of this multiselect attribute is sent in post variables as array, but the values cannot be saved as array, either you have to serialize it or implode it into string to save. So to do this change, backend model is there. Similarly, on load you need to explode or unserialize the data from the database to array. So the major functions of backend model are beforeSave() and afterLoad(), which are triggerd as product is saved or loaded. The backend model should look like this:
+
+[source language="php"]
+&lt;?php
+class Ynamespace_Modules_Model_Backend_Option
+    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
+{
+    /**
+     * Before Attribute Save Process
+     *
+     * @param Varien_Object $object
+     * @return Mage_Catalog_Model_Category_Attribute_Backend_Sortby
+     */
+    public function beforeSave($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == 'my_attribute') {
+            $data = $object-&gt;getData($attributeCode);
+            if (!is_array($data)) {
+                $data = array();
+            }
+            $object-&gt;setData($attributeCode, join(',', $data));
+        }
+        return $this;
+    }
+
+    public function afterLoad($object) {
+        $attributeCode = $this-&gt;getAttribute()-&gt;getName();
+        if ($attributeCode == 'my_attribute') {
+            $data = $object-&gt;getData($attributeCode);
+            if ($data) {
+                $object-&gt;setData($attributeCode, split(',', $data));
+            }
+        }
+        return $this;
+    }
+}
+[/source]
+
+Now you are all set, you should have the values of the multiselect attribute saved in database joined by comma seperated values and while on load those values will be exploded as array. Last thing you can do is export the product data using default profile and check if the error shows up or not regarding this attributes. Must not! I think I've checked its integrity with import and export as well. If it shows any, feel free to contact me.

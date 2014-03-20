@@ -1,0 +1,38 @@
+---
+layout: post
+title: Adding CSS Class name to My Account Link (Anchor Tag) in Magento through XML
+  Layout
+tags:
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _wp_old_slug: ''
+  _syntaxhighlighter_encoded: '1'
+  _edit_last: '2'
+---
+At the first instance I thought WTH! must be pretty simple, add params in XML layout and "<strong>Voila!</strong>". But later I found that it was not simpler as I thought. I had to get into the addLink method for sometime <strong>(1/2hr)</strong> and finally I came up with correct structure of XML layout. At the end it again seemed simple though, but it needed a healthy effort.
+
+Here's the XML structure of layout from <em>customer.xml</em> where you add class to <strong>My Account link</strong>.
+
+[source language="xml"]
+&lt;!-- customer.xml--&gt;
+    &lt;reference name=&quot;top.links&quot;&gt;
+        &lt;action method=&quot;addLink&quot; translate=&quot;label title&quot; module=&quot;customer&quot;&gt;
+			&lt;label&gt;My Account&lt;/label&gt;
+			&lt;url helper=&quot;customer/getAccountUrl&quot;/&gt;
+			&lt;title&gt;My Account&lt;/title&gt;
+			&lt;prepare/&gt;
+			&lt;urlParams/&gt;
+			&lt;class/&gt;
+			&lt;position&gt;10&lt;/position&gt;
+			&lt;aParams&gt;
+				&lt;class&gt;my-class-name&lt;/class&gt;
+			&lt;/aParams&gt;
+		&lt;/action&gt;
+    &lt;/reference&gt;
+&lt;!-- customer.xml--&gt;
+[/source]
+
+One notable thing in the structure above is the <strong>aParams</strong> which is responsible for adding the class to the Anchor tag, not the List tag. Hope this helps someone! Happy Coding.

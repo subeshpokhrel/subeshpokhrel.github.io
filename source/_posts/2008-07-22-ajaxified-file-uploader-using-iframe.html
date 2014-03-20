@@ -1,0 +1,41 @@
+---
+layout: post
+title: Ajaxified File Uploader Using IFrame
+tags:
+- Ajax
+- fileupload
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  related_posts: ''
+  _su_title: ''
+---
+Today, while writing a code for AJAX file uploader, I was trying to do with [wiki]SALAJAX[/wiki]. But, with <strong>SALAJAX</strong> I could not manage to send the headers for <strong>$_FILES</strong>. So I thought of an alternative. And the alternative was to load the action page of the form on [wiki]IFrame[/wiki], whose display would be hidden and the work for uploading the file will be done on the background without refreshing the page. Yeha.. Its not [wiki]AJAX[/wiki], but it gives a user the feel of asynchronous working on the page. So, my code is <strong>Asynchronous Feel Without Javascript and XML (AFWJAX)</strong>. What do think about this?
+So, Here's the code.The code below is for the form.
+[sourcecode="html"]
+<form action="iframeinc.php" method="post" enctype="multipart/form-data" id="uploadform" target="iframe" name="uploadform">
+ File:
+  <input name="pic" type="file" id="pic" style="margin-right:50px;" />
+  <br />
+<input type="submit" name="Submit" value="Upload" ><br />
+<iframe name="iframe" src="iframeinc.php" width="200" height="500" style="display:none;"> </iframe>
+</form>
+[/sourcecode]
+
+You can see on <strong>#1</strong> the action of the form is <strong>iframeinc.php</strong>. The code for this page is given below. There are some other things you should remember. Like the <strong>target</strong> for the form is set <strong>iframe</strong>, whose <strong>display</strong> is set <strong>none</strong> so that it is not seen.  And this iframe is the of the iframe created on <strong>#6</strong>, whose source is the <strong>iframeinc.php</strong>. Now here's its code.
+[sourcecode="php"]
+<?php
+if($_POST){
+
+	// $newname is the new path/name of the file on the server.
+	$copied = copy($_FILES['pic']['tmp_name'], "$newname");
+
+}
+?>
+[/sourcecode]
+
+Remember to set <strong>$newname</strong> value before running this. At first run you may see this as a regular post script, but try to reload with f5 or reload button of your browser, you will not be asked to retry or resend the post header. So, there are own ways of catching your nose.
+<a href="http://subeshexamples.googlecode.com/files/upload.rar"><strong>[Download Source]</strong></a>

@@ -1,0 +1,86 @@
+---
+layout: post
+title: MagDoc – Powered by Scribd Released on Magento Connect
+tags:
+- Custom Module
+- Extensions
+- Free Extensions
+- Magento
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+---
+MagDoc will give store administrator a feature of managing/displaying document in the Magento storefront powered by richly featured “<strong><em>the world’s largest social reading and publishing platform</em></strong>” -  <strong>Scribd</strong>. This module provides a unique user experience for reading a document online using the Scribd Reader application embedded in HTML.
+
+Get this extension on <a target="_blank" href="http://www.magentocommerce.com/magento-connect/sp-magdoc-8372.html">Magento Connect</a>
+<h2>Features</h2>
+<ol>
+	<li>Uses the <strong>free API service</strong> provided by Scribd to upload and manage your document from the Magento administration area.</li>
+	<li>Upload as much document you want to upload, because there is <strong>no restriction on the storage limit.</strong></li>
+	<li>Tag your uploaded documents on Scribd.</li>
+	<li>Set scope <strong>Private</strong> or <strong>Public</strong> for your uploaded document.</li>
+	<li>Upload and transform any file -- <strong>including PDF, Word and PowerPoint</strong> -- into a web document that’s discoverable through <strong>search engines, shared on social networks and read on billions of mobile devices.</strong></li>
+	<li>Assign uploaded files to your product which can be shown in the storefront using a multi functional online <strong>Scribd Reader</strong>.</li>
+	<li>Supports <strong>all the document formats</strong> supported by Scribd. This list of the supported format can be found on <a target="_blank" href="http://www.scribd.com/developers/api?method_name=doc_types" target="_blank"> This Location </a></li>
+</ol>
+
+
+<h2>Installation Guide</h2>
+<ol>
+	<li>Get the extension from<a target="_blank" href="http://www.magentocommerce.com/magento-connect/sp-magdoc-8372.html" target="_blank"> Magento Connect</a>.</li>
+	<li>Install the extension from Magento Connect Manager.</li>
+	<li>Voila! Installation completed.</li>
+</ol>
+
+
+<h2>Setting up the Module</h2>
+<ol>
+	<li>Sign up for an account on <a target="_blank" href="http://www.scribd.com"> http://www.scribd.com </a></li>
+	<li>Get the API Key and Secret Key from Scribd. The procedure for getting your API key and Secret Key is described on <a target="_blank" href="http://support.scribd.com/entries/25453-where-can-i-find-my-api-key">http://support.scribd.com/entries/25453-where-can-i-find-my-api-key</a>.</li>
+	<li>In Magento backend goto System--&gt;Configuration--&gt;MagDoc--&gt;Settings.</li>
+	<li>Fill out the API key and Secret Key value you obtain from Scribd and save the settings.</li>
+	<li>Now the module is set up and ready to be used.</li>
+</ol>
+
+
+
+<h2>User Guide</h2>
+<ol>
+	<li> Document can be uploaded on Scribd from Magento administration area. In admin area go to <strong>Magdoc-->Manage Document</strong>. You can add/edit/delete documents from here.</li>
+	<li>Documents can be assigned to product. Create or Edit any product. A new  option for selecting the document for the product will be visible in the  product edit area. But make sure the attribute “<strong>magdoc_id</strong>” is already  in the attribute set of the product being edited. Select the required  document and save the product.</li>
+	<li>Visit the product details page on the frontend. The document will be visible using <strong>Scribd Reader</strong>.</li>
+</ol>
+
+
+<h2>Developer Guide</h2>
+To display Scribd document in the product details page. This should be placed in appropriate place. Also you can see that the height and width for the Scribd Reader can be configured from layout.
+
+[source lang="xml"]
+&lt;block type=&quot;magdoc/magdoc&quot; name=&quot;magdoc&quot; template=&quot;magdoc/magdoc.phtml&quot;&gt;
+            	&lt;action method=&quot;setDocumentHeight&quot;&gt;&lt;width&gt;600px&lt;/width&gt;&lt;/action&gt;
+            	&lt;action method=&quot;setDocumentWidth&quot;&gt;&lt;width&gt;850px&lt;/width&gt;&lt;/action&gt;
+ &lt;/block&gt;
+[/source]
+
+Here’s a tip for showing the Scribd document on tabs on product details page.
+
+[source lang="xml"]
+&lt;block type=&quot;catalog/product_view_tabs&quot; name=&quot;product.info.tabs&quot; as=&quot;info_tabs&quot; template=&quot;catalog/product/view/tabs.phtml&quot; &gt;
+                    &lt;action method=&quot;addTab&quot; translate=&quot;title&quot; module=&quot;catalog&quot;&gt;
+                    	&lt;alias&gt;magdoc&lt;/alias&gt;
+                    	&lt;title&gt;Document&lt;/title&gt;
+                    	&lt;block&gt;magdoc/magdoc&lt;/block&gt;
+                    	&lt;template&gt;magdoc/magdoc.phtml&lt;/template&gt;
+                   	&lt;/action&gt;
+        &lt;/block&gt;
+
+[/source]
+
+I hope the module will be useful for the store owners. If you have any feedbacks, please report in the comment section below.
+
+<br/>
+
+<blockquote>Disclaimer: <strong>Scribd</strong> is the property of Scribd Inc. This module is NOT the official module of Scribd.</blockquote>

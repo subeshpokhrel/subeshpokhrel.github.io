@@ -1,0 +1,45 @@
+---
+layout: post
+title: Getting Customer's Info Using Single Query Including Billing and Shipping Addresses
+tags:
+- how-to
+- Magento
+- PHP
+- Query
+- String
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Query in Magento can be quite troublesome, if you are a starter..or non-starter. So I've tried to share some of the difficult queries using collection in Magento, so that it will be helpful to my blog readers and also a place where I can later refer to. Here is one of them, may not be dificult to all, but for me I had a very bad time initially, when I first started on Magento about a year ago. I had always thought to post on my blog, but when one of my collegue asked me about this I remembered and here's the query.
+
+[source language="php"]
+$collection = Mage::getResourceModel('customer/customer_collection')
+				-&gt;addNameToSelect()
+				-&gt;addAttributeToSelect('email')
+				-&gt;addAttributeToSelect('created_at')
+				-&gt;addAttributeToSelect('group_id')
+				-&gt;joinAttribute('billing_street', 'customer_address/street', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_postcode', 'customer_address/postcode', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_city', 'customer_address/city', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_telephone', 'customer_address/telephone', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_fax', 'customer_address/fax', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_region', 'customer_address/region', 'default_billing', null, 'left')
+				-&gt;joinAttribute('billing_country_code', 'customer_address/country_id', 'default_billing', null, 'left')
+
+				-&gt;joinAttribute('shipping_street', 'customer_address/street', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_postcode', 'customer_address/postcode', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_city', 'customer_address/city', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_telephone', 'customer_address/telephone', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_fax', 'customer_address/fax', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_region', 'customer_address/region', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('shipping_country_code', 'customer_address/country_id', 'default_shipping', null, 'left')
+				-&gt;joinAttribute('taxvat', 'customer/taxvat', 'entity_id', null, 'left');
+
+[/source]
+
+Hope this helps somebody!

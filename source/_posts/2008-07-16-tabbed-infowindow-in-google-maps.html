@@ -1,0 +1,52 @@
+---
+layout: post
+title: Tabbed Infowindow in Google Maps
+tags:
+- Google Maps
+- javascript
+- latitude
+- longitude
+status: publish
+type: post
+published: true
+meta:
+  related_posts: ''
+  _edit_last: '2'
+  _su_title: ''
+---
+I wanted to show different categories of information on one GMarker. That is I wanted to show different types of information on a Infowindow for a point on Google Maps. For that I used a tabbed info window, which helped me to show different data on each tabs. Here is the code of what I have done. I have shown the latitude and longitude of a placed clicked on the map on the tabbed info window. This is just the script part. The demo and download links are given below.
+
+[sourcecode="javascript"]
+ <script type="text/javascript">
+     var iconBlue = new GIcon();
+    iconBlue.image = 'http://labs.google.com/ridefinder/images/mm_20_blue.png';
+    iconBlue.shadow = 'http://labs.google.com/ridefinder/images/mm_20_shadow.png';
+    iconBlue.iconSize = new GSize(12, 20);
+    iconBlue.shadowSize = new GSize(22, 20);
+    iconBlue.iconAnchor = new GPoint(6, 20);
+    iconBlue.infoWindowAnchor = new GPoint(5, 1);
+    var point = new GLatLng(26.88157422515243, 86.30859375);
+    function load() {
+		  if (GBrowserIsCompatible()) {
+			var map = new GMap2(document.getElementById("map"));
+			map.setCenter(point,3);
+			GEvent.addListener(map, 'click', function(overlay, point) {
+			  var lati=point.lat();
+			  var long=point.lng();
+			  var marker= new GMarker(new GLatLng(lati, long),{draggable: false});
+			  map.addOverlay(marker);
+				  var infoTabs = [	new GInfoWindowTab("Lat-Tab", "<h1> Latitude:</h1><br />"+lati),	new GInfoWindowTab("Long-Tab", "<h1>Longitude</h1><br />"+long)];
+			  marker.openInfoWindowTabsHtml(infoTabs);
+			 });
+		}
+	}
+  </script>
+[/sourcecode]
+
+Lets focus on the <strong>#17-#26</strong> Lines of codes. Other Lines are already described on other posts. Please see the related post link below the post.
+<strong>#17:</strong> Creates a GMarker on the point where clicked on the Map.
+<strong>#18:</strong> Addes the GMarker over the Map.
+<strong>#19:</strong> Initiates an array of tabs<strong>infoTabs </strong> with <strong>GInfoWindowTab </strong> function with <strong>tabname</strong> and its <strong>innerHTML</strong> as parameters.
+<strong>#20:</strong> Opens the infowindow calling <strong>openInfoWindowTabsHtml</strong> function and the array of tabs as parameters.
+
+<a href="http://subeshexamples.googlecode.com/files/tabinfo.html"><strong>[Download]</strong></a> <a href="http://subesh.com.np/demo/tabinfo.html"><strong>[Demo]</strong></a>

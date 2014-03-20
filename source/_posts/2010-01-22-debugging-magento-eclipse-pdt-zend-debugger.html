@@ -1,0 +1,63 @@
+---
+layout: post
+title: Debugging Magento Using Eclipse PDT & Zend Debugger
+tags:
+- Custom Module
+- debug
+- how-to
+- Magento
+- PHP
+- tricks
+- zend
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+<strong>Latest Post on Debugging Magento: <a href="http://subesh.com.np/2012/01/debugging-magento-using-eclipse-on-ubuntu/" title="Debugging Magento On Ubuntu">Debugging Magento Using Eclipse on Ubuntu</a></strong>
+
+I had always thought of using Eclipse to debug Magento's complex code flow, and tried number of times before. But without any success I had to abandon it, and thought was not applicable for Magento, remember the fox and the sour grapes :D I also tried using Trial Version of Zend Studio, but with no sucess.
+
+But today I was looking at fontis's blog <a href="http://www.fontis.com.au/blog/magento/debugging-with-xdebug">http://www.fontis.com.au/blog/magento/debugging-with-xdebug</a> and they had indeed used XDebugger and are debugging Magento through command line. So, I thought why not give it a try once again! And as you have already expected i was successfull today!! Wasn't easy though :P
+
+Here's what I've done to get it working on WAMP. Before getting this done I assume you have created a new PHP Project and imported all files, beforehand in Eclipse.
+
+<strong>Step 1</strong>. A very good explanation of downloading Eclipse PDT with Zend Debugger can be found here <a href="http://www.thierryb.net/pdtwiki/index.php?title=Using_PDT_:_Installation_:_Installing_the_Zend_Debugger">Installing_the_Zend_Debugger</a>
+
+<strong>Step 2</strong>. Configuring the Zend Debugger can also be found on same location but I would like to emphasize on its setting here, coz I missed myself on first run :D
+
+Use these settings for For Zend debugger in <strong>php.ini</strong>
+
+[Zend]
+zend_extension_ts=D:/wamp/bin/php/php5.2.5/ext/ZendDebugger.dll
+zend_debugger.allow_hosts=127.0.0.1
+zend_debugger.expose_remotely=always
+
+You should not forget to enable <strong>Zend Debugger</strong> extension on WAMP. Now restart Wamp. You are now well set with Eclipse PDT and Zend Debugger. Next thing you need to do is make debugging settings in your Eclipse.
+
+<strong>Step 3</strong>. In you Eclipse Go to <strong>Windows--&gt;Preference--&gt;Debug</strong> and set as follows
+
+<img class="alignnone size-full wp-image-194" title="debugsettings" src="http://subesh.com.np/wp-content/uploads/2010/01/debugsettings.jpg" alt="debugsettings" width="500" height="497" />
+
+<strong>Step 4</strong>. Then <strong>Windows--&gt;Preference--&gt;Server</strong> and set as follows
+
+<img class="alignnone size-full wp-image-198" title="Debug Server" src="http://subesh.com.np/wp-content/uploads/2010/01/debugserver.jpg" alt="Debug Server" width="500" height="497" />
+
+While setting Server configuration you will be prompt to add server path in path mapping, place that relative to your www root Example: <strong>/mysite</strong> (which will open as localhost/mysite) and select the files in your workspace.
+
+<strong>Step 5</strong>. Now all your settings are done. Now let me tell you about debugging a Block Class of Magento, say <strong>Mage_Catalog_Block_Product_List</strong>. Go to the class file and add a breakpoint anywhere inside <strong>_getProductCollection </strong> function.
+
+<strong>Step 6</strong>. Go to <strong>Run--&gt;Open Run Dialog</strong> and configure as following
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" target="_blank"><img class="alignnone size-full wp-image-200" title="Run Profile1" src="http://subesh.com.np/wp-content/uploads/2010/01/Profile1.png" alt="Run Profile1" width="500" height="369" /></a>
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" target="_blank"><img class="alignnone size-full wp-image-202" title="Profile 2" src="http://subesh.com.np/wp-content/uploads/2010/01/profile2.png" alt="Profile 2" width="502" height="367" /></a>
+
+<strong>Step 7</strong>. All set to go now, Run profile as web page Run--&gt;Debug As--&gt;PHP Webpage.
+
+You can now see PHP Debug perspective, and use Step Over or Step Into to debug your values. Here is what I got.
+
+<a class="aligncenter" href="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" target="_blank"><img class="alignnone size-full wp-image-204" title="debugging" src="http://subesh.com.np/wp-content/uploads/2010/01/debugging.png" alt="debugging" width="501" height="263" /></a>
+
+Hope this might be a life changer.. at least it is for me!

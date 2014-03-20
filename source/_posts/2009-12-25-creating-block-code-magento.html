@@ -1,0 +1,45 @@
+---
+layout: post
+title: Creating Block From the Code in Magento
+tags:
+- Block
+- how-to
+- Import
+- Layout
+- Magento
+- Map Type
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _su_description: Here are some methods of creating block by code in Magento. This
+    type of code can be used directly in template.
+  _su_keywords: magento,layout,code,block,echo,easy
+---
+Here are some methods of creating block by code in Magento. This type of code can be used directly in template, not need to create a layout file or add a child node inside already existing layout file. You can use this to echo a different type of block inside already loading block and template.
+
+[source language="php"]
+// Directly in the PHTML where you want to show the block
+<?php
+echo $this->getLayout()->createBlock("module/block")->setTemplate("module/page.phtml")->toHtml();
+?>
+[/source]
+
+What we have actually done is just load the layout and create an instance of a block class defined inside its paramerter, then assigned a template to the block and finally echoed as html. Simple! The code above will be equivalent to what we do as following in layout and in template file.
+
+[source language='xml']
+// In layout
+<block type="module/block" name="module.name" template="module/page.html"/>
+[/source]
+
+[source language="php"]
+<?php
+// In parent PHTML
+$this->getChildHtml("module.name");
+?>
+[/source]
+
+May be helpful!

@@ -1,0 +1,39 @@
+---
+layout: post
+title: Getting Ordered Items and their Detail from Order ID in Magento
+tags:
+- Custom Module
+- how-to
+- Magento
+- PHP
+- Query
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+Here is a small snippet of code, yet useful, to get ordered items and its details. I've deviced this code a lot before and posted in Magento Commerce's Forum as well. But felt like writting it again, so that I can have a quick refrence to it as well. Next thing, I've tried a lot to get all orders and their items details by single query, but have not yet come up with a solution. If you have any method of finding order and its details by a single query, then please do response. The code below first needs an order ID as it parameters to give order details.
+
+[source language="php"]
+$order = Mage::getModel('sales/order')-&gt;load($order_id);
+$items = $order-&gt;getAllItems();
+$itemcount=count($items);
+$name=array();
+$unitPrice=array();
+$sku=array();
+$ids=array();
+$qty=array();
+foreach ($items as $itemId =&gt; $item)
+{
+	$name[] = $item-&gt;getName();
+	$unitPrice[]=$item-&gt;getPrice();
+	$sku[]=$item-&gt;getSku();
+	$ids[]=$item-&gt;getProductId();
+	$qty[]=$item-&gt;getQtyToInvoice();
+}
+[/source]
+
+Hope this might "just" help somebody in need.

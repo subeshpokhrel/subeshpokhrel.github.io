@@ -1,0 +1,59 @@
+---
+layout: post
+title: External Database Connector FAQ's
+tags:
+- Custom Module
+- Free Extensions
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+---
+We have been receiving a lots of comments on how to "install" External Database Connector (Formarly, TTT_EDB) in Magento. So we thought why not clear that out some of the questions we received here and lets see if this will help you and all.
+
+First of all we would like to say that this is not a fully functional module (Don't Panic..), meaning you will not be able work with tables of external database just by configuring the settings of the module. You will have to code your associated Model/Collection classes based on the <a href="http://subesh.com.np/2012/02/magento-external-database-connector-v1-0-0-released/">Magento External Database Connector Released</a>.
+
+Few things which came and we would want to clear out.
+
+<strong>1. I tried to install the module via Magento Connect, but showed some error during installation?</strong>
+
+We have packaged this extention using Magento 1.5.x. There are complaints on installing using Magento Downloader v1, please use Magento Downloader v2. We will try to fix this problem for v1 ASAP.
+
+<strong>2. Which Config file do I have to use/edit?</strong>
+
+In Magento, database connection settings can be found on app/etc/local.xml, but we are NOT talking about that settings. If we say a config file we are talking about <strong>Sp/Edb/etc/config.xml</strong>.
+
+<strong>3. How do I configure Edb to use my external database's table? </strong>
+
+Edit <strong>Sp/Edb/etc/config.xml</strong> and find the [entities]. You will then find a child node there [report]. Change that to your table alias (lets say magician). Also change the value of [table]tbl_magician[/table]. The value for [table] should be the table name of the external database you want to work with. If you want to work with multiple tables of the external database, you will have to add multiple alias and its respective table name.
+
+<strong><em>Note #1 that the nodes are shown in [ ], because of the rendering issue. 
+Note #2 that you can do the same in your own Module's config file.</em></strong>
+
+<strong>4. How to define Model/Resource/Collection?</strong>
+
+If you follow the basic step defined <a href="http://subesh.com.np/2012/02/magento-external-database-connector-v1-0-0-released/">http://subesh.com.np/2012/02/magento-external-database-connector-v1-0-0-released/</a>. You should be able to set all those up. For multiple table access you must create multiple Model/Resource and Collection.
+<strong>
+5. How do I test if it's working?</strong>
+
+Simplest method would be in your cron.php file found on installed Magento's root folder. Open the cron.php file and inside the try block call the model you just created write the following. If you have followed the documentation exactly as in the link above, then
+
+[source language="php"]
+try {
+$model = Mage::getModel('edb/magician');
+
+// This data will depend on your table schema.
+$model-&gt;setName('The three Tree')-&gt;save();
+$model-&gt;setName('TTT')-&gt;save();
+exit;
+----
+----
+
+}
+[/source]
+
+Then run the cron.php from your browser example.com/cron.php. After this see you external database table, a new row should be inserted.
+
+Hope this clarifies something if not everything. Please send us feedbacks, we would be happy to address that.

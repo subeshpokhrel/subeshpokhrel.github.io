@@ -1,0 +1,87 @@
+---
+layout: post
+title: Custom Query In Magento a Zend Approach [Updated]
+tags:
+- how-to
+- Magento
+- PHP
+- Query
+- String
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+---
+I've already mentioned about<a href="http://subesh.com.np/2009/12/using-custom-query-in-magento/"> custom query in Magento</a>, before but now I think its time to upgrade that method to next level because it would always be good to have standard code for reference.So it is just a new improved way of using a custom query.
+First of all we will need is a connection instance. Lets use default_setup instance because it can used for read and write purpose.
+
+[source language="php"]
+$connection = Mage::getSingleton('core/resource')-&gt;getConnection('default_setup');
+[/source]
+
+Then we will use this connection to instanciate Zend_Db_Select object and write query like
+
+[source language="php"]
+$select = new Zend_Db_Select($connection);
+$table = 'catalog_product_index_price';
+$select-&gt;from($table, array('entity_id'))
+	-&gt;where('entity_id = ?', $entityId);
+
+
+// Getting result
+
+$result = $select-&gt;query();
+$rowCount = $result-&gt;rowCount();
+
+if ($rowCount) {
+	foreach ($result-&gt;fetchAll() as $data) {
+		return $data['entity_id'];
+	}
+}
+[/source]
+
+The above one is for select but what about inserting data? It is simple as well. All you have to do is create an associative array of data to be inserted and use connection to add data. For example
+
+[source language="php"]
+$connection = Mage::getSingleton('core/resource')-&gt;getConnection('default_setup');
+$table = 'catalog_product_index_price';
+
+
+$insertData = array();
+$insertData ['price'] = $productPrice;
+$insertData ['final_price'] = $productPrice;
+$insertData ['min_price'] = $productPrice;
+$insertData ['max_price'] = $productPrice;
+$insertData ['tier_price'] = $productPrice;
+
+$connection-&gt;insert($table, $insertData);
+[/source]
+
+I think this should be a good enough code for using custom query in Magento. About Zend_Db_Select please visit <a href="http://framework.zend.com/manual/en/zend.db.select.html">http://framework.zend.com/manual/en/zend.db.select.html</a>.
+
+<strong>[UPDATE]</strong>
+
+If you want to update the data with custom query and have a condition then you can send the conditions as array as third params to update function. For example.
+
+[source language="php"]
+$connection = Mage::getSingleton('core/resource')-&gt;getConnection('default_setup');
+$table = 'catalog_product_index_price';
+
+$updateCond = array(); // Update condition array container.
+$insertData = array();
+$insertData ['price'] = $productPrice;
+$insertData ['final_price'] = $productPrice;
+$insertData ['min_price'] = $productPrice;
+$insertData ['max_price'] = $productPrice;
+$insertData ['tier_price'] = $productPrice;
+
+$updateCond [] = 'store_id = 0';
+$updateCond [] = 'entity_id = 3';
+
+$connection-&gt;insert($table, $insertData, $updateCond);
+[/source]
+
+Happy Brogramming!!

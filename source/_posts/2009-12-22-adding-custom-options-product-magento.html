@@ -1,0 +1,104 @@
+---
+layout: post
+title: Adding custom options to a product in Magento
+tags:
+- Custom Module
+- custom options
+- how-to
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+---
+Adding custom option in Magento is pretty easy! You just need to know the format of an array, which is taken by catalog/product_option Model to set the custom option. I've deviced a simple function (<strong>setCustomOption</strong>) that just does that. The function, according to the input type and values assigned creates an array, which is then used by the <strong>catalog/product_option</strong> Model to save the option to the product.
+
+Here is the function.
+
+[source language="php"]
+/**
+	 * @param $value - Must be comma seperated options.
+	 * @param $title - Title of the custom option.
+	 * @param $type - Type of custom option - drop_down,radio,checkbox,multiple,area,field.
+	 * @param $noOption - Specifies if the custom options has options or not.
+	 */
+	function setCustomOption ($value, $title, $type, $noOption = false)
+	{
+		$custom_options = array();
+		if ($type && $value != "" && $value) {
+			$values = explode(',', $value);
+			if (count($values)) {
+				/**If the custom option has options*/
+				if (! $noOption) {
+					$is_required = 0;
+					$sort_order = 0;
+					$custom_options[] = array(
+						'is_delete' => 0 , 'title' => $title , 'previous_group' => '' , 'previous_type' => '' , 'type' => $type , 'is_require' => $is_required , 'sort_order' => $sort_order , 'values' => array()
+					);
+					foreach ($values as $v) {
+						$titleopt = ucfirst(trim($v));
+						switch ($type) {
+							case 'drop_down':
+							case 'radio':
+							case 'checkbox':
+							case 'multiple':
+							default:
+								$title = ucfirst(trim($v));
+								$custom_options[count($custom_options) - 1]['values'][] = array(
+									'is_delete' => 0 , 'title' => $titleopt , 'option_type_id' => - 1 , 'price_type' => '' , 'price' => '' , 'sku' => '' , 'sort_order' => ''
+								);
+							break;
+						}
+					}
+					return $custom_options;
+				}
+				/**If the custom option doesn't have options | Case: area and field*/
+				else {
+					$is_required = 0;
+					$sort_order = '';
+					$custom_options[] = array(
+						"is_delete" => 0 , "title" => $title , "previous_group" => "text" , "price_type" => 'fixed' , "price" => '' , "type" => $type , "is_required" => $is_required
+					);
+					return $custom_options;
+				}
+			}
+		}
+		return false;
+	}
+[/source]
+
+And to save the custom option, first get the array built by the above function and pass it to the <strong>catalog/product_option</strong> Model's function to save. Here's how you do it.
+
+[source language="php"]
+
+$arrayOption = array();
+	/**
+	 * For Creating dropdown,select,multiselect,radio type of custom option
+	 */
+	$arrayOption[] = setCustomOption("OPT1,OPT2", "Select Option", "drop_down");
+	/**
+	 * For Creating textfield and textarea type of custom option
+	 */
+	$arrayOption[] = setCustomOption("Anyvalue", "Area", "area", true);
+	/**
+	 * Load the product you want to assign custom option to
+	 */
+	$product = Mage::getModel("catalog/product")->load(167);
+	foreach ($arrayOption as $options) {
+		foreach ($options as $option) {
+			$opt = Mage::getModel('catalog/product_option');
+			$opt->setProduct($product);
+			$opt->addOption($option);
+			$opt->saveOptions();
+		}
+	}
+
+[/source]
+
+After running the code you will get something like this.
+
+[caption id="attachment_156" align="alignnone" width="347" caption="Custom Option added to a Product"]<img src="http://subesh.com.np/wp-content/uploads/2009/12/opt.png" alt="Custom Option added to a Product" title="Custom Option added to a Product" width="347" height="374" class="size-full wp-image-156" />[/caption]
+
+Hope you like this post!

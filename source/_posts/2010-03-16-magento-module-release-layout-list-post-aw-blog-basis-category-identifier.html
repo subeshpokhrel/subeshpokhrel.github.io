@@ -1,0 +1,36 @@
+---
+layout: post
+title: ! 'Magento Module Release: Uses Layout To List Post, made by AW Blog, on the
+  basis of Category Identifier'
+tags:
+- Custom Module
+- Layout
+- Magento
+- PHP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+I've always wanted to contribute something in Magento Community and I think today the day has arrived. The module is named as Sirius Blog Helper, just a name, Who cares about the "Name" unless it works :D. The basic function of the Module is to list the post made via <a href="http://www.magentocommerce.com/extension/1516/blog">AW Blog</a> extension, categorized by category identifier of the post, using Layout. Yes, only through layout you can list the post anywhere you want. Not only that you can also restrict the size of the list through layout as well.
+
+Suppose you want to list 5 recent post made under "news" category identifier. Here's how you can do it easily, of course you have to install the module first. The Module can be currently downloaded from <a href="http://subeshexamples.googlecode.com/files/Sirius_Bloghelper.zip">Here</a>, and will be soon available in Magento Connect as well.
+
+[source language="xml"]
+&lt;reference name=&quot;right&quot;&gt;
+	&lt;block type=&quot;sbloghelper/helper&quot; name=&quot;news.list&quot;&gt;
+		&lt;action method=&quot;addCategoryIdentifier&quot;&gt;
+			&lt;identifier&gt;news&lt;/identifier&gt;
+		&lt;/action&gt;
+		&lt;action method=&quot;addListSize&quot;&gt;
+			&lt;size&gt;5&lt;/size&gt;
+		&lt;/action&gt;
+	&lt;/block&gt;
+&lt;/reference&gt;
+[/source]
+
+Simple isn't it? You can place similar kind of code in layout out to list other post categorically. Hope this helps to someone. Please do post your feedbacks.
+
+[caption id="attachment_226" align="alignnone" width="253" caption="Frontend Screen Shots"]<img src="http://subesh.com.np/wp-content/uploads/2010/03/frontend-253x300.png" alt="Frontend Screen Shots" title="Frontend Screen Shots" width="253" height="300" class="size-medium wp-image-226" />[/caption] 

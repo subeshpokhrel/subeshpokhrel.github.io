@@ -1,0 +1,41 @@
+---
+layout: post
+title: ! 'Solution: Error Message Not Showing up in Frontend in Magento'
+tags:
+- Block
+- Custom Module
+- how-to
+- Magento
+- PHP
+- tricks
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _syntaxhighlighter_encoded: '1'
+---
+I recently got to a situation where I needed to add a new frontend template for some module and after some action show the error or success message. Not the first time though :P. Interesting thing was even if I added this code in the PHTML file.
+
+[source language="php"]
+
+&lt;?php echo $this-&gt;getMessagesBlock()-&gt;getGroupedHtml() ?&gt;
+
+[/source]
+
+It did not work. Yes, after adding this block it had worked before. In my case, the probable case might be that I had called the module's template from CMS page. In other case it should work. So, I looked for work around and the following did the trick.
+
+[source language="php"]
+// Getting Messages from Session
+$messages=Mage::getSingleton(&quot;customer/session&quot;)-&gt;getMessages();
+
+// Creating Block Mage_Core_Block_Messages
+// Setting Message
+// echoing the Message's HTML
+echo $this-&gt;getLayout()-&gt;createBlock(&quot;core/messages&quot;)-&gt;setMessages($messages)-&gt;getGroupedHtml();
+
+[/source]
+
+The Error/Success or Notice messages are set on session. So what I did was take those message/s from the session and create a new block, same as what <strong>$this->getMessagesBlock()</strong> might have called, and set those message to the created block and echoed its HTML.
+
+Clever? or not?
